@@ -1,0 +1,50 @@
+# /* vim: set filetype=python : */
+# arch-tag: general-purpose SCons build file for sgml-common
+
+from glob import glob
+
+Import('env')
+d = env.Dictionary()
+if not 'JADE' in d:
+    d['JADE'] = 'jade'
+if not 'INDEXNODE' in d:
+    d['INDEXNODE'] = 'ch.index'
+
+master = d['MASTERBASE'] 
+mastersgml = master + '.sgml'
+sources = [mastersgml] + glob('*/*.sgml') + glob('*/*/*.sgml')
+db2htmlcmd = 'docbook-2-html -j $JADE ${HTMLCMD} ${HTMLARGS}  ${SOURCE}'
+
+def MakeIndex(target, source, env):
+    if os.path.isdir('index'):
+        env.Command("rm -r index")
+    env.Command("mkdir index")
+    env.Command("collateindex.pl -i $INDEXNODE -N -o index/index.sgml")
+    env.Command(db2htmlcmd, HTMLCMD="-O -V -O html-index")
+    env.Command("mv ${MASTERBASE}-html/HTML.index index/")
+    env.Command("rm -r ${MASTERBASE-html}")
+    env.Command("collateindex.pl -i $INDEXNODE -g -o index/index.sgml index/HTML.index")
+
+Btxt = Builder(action="docbook2txt $SOURCE", src_suffix='.sgml', suffix='.txt')
+Bpdf = Builder(action="docbook-2-pdf -j ${JADE} -q -O -V -O paper-size=Letter ${PDFARGS} ${SOURCE}",
+        src_suffix='.sgml', sufix='.pdf')
+Bps = Builder(action="pdftops ${SOURCE}", src_suffix='.pdf', suffix='.ps')
+
+env.Append(BUILDERS = {'Text': Btxt, 'PS': Bps, 'PDF': Bpdf})
+if 'DOINDEX' in d:
+    env['BUILDERS']['Index'] = Builder(action = MakeIndex)
+    index = env.Index('index/index.sgml', mastersgml)
+    env.Depends(index, sources)
+    deps = sources + [index]
+else:
+    deps = sources
+
+text = env.Text(mastersgml)
+env.Depends(text, deps)
+
+pdf = env.PDF(mastersgml)
+env.Depends(pdf, deps)
+
+ps = env.PS(pdf)
+
+
