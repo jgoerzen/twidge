@@ -4,6 +4,10 @@
 from glob import glob
 import os, re
 
+############################################################
+# Setup
+############################################################
+
 #Import('env')
 d = env.Dictionary()
 if not 'JADE' in d:
@@ -27,6 +31,33 @@ while 'index/index.sgml' in sources:
 epsfiles = glob('*/*.eps') + glob('*/*/*.eps')
 db2htmlcmd = 'docbook-2-html -D $JADE ${HTMLARGS}  ${SOURCE}'
 db2htmlindexcmd = 'docbook-2-html -D $JADE -O -V -O html-index ${HTMLARGS} ${SOURCE}'
+
+##################################################
+# SCANNERS
+##################################################
+
+SGML_includes_re = re.compile(r'ENTITY[^>]+SYSTEM[^>]+"(.+)"', re.M)
+def SGML_includes_scan(node, env, path):
+    contents = node.get_contents()
+    ret = SGML_includes_re.findall(contents)
+    print "ret =", ret
+    return ret
+SGML_includes_scanner = Scanner(name = 'SGML_includes',
+    function = SGML_includes_scan, recursive = 1)
+
+SGML_image_pdf_re = re.compile(r'^.*<(graphic|imagedata).+fileref="([^"]+\.pdf)".*$', re.M)
+SGML_image_png_re = re.compile(r'^.*<(graphic|imagedata).+fileref="([^"]+\.png)".*$', re.M)
+def SGML_image_scanner(node, env, path, arg):
+    print "Image scanning", str(node)
+    contents = node.get_contents()
+    return SGML_includes_scan(node, env, path) + arg.findall(contents)
+
+SGML_pdf_scanner = Scanner(name = 'SGML_pdf',
+         function = SGML_image_scanner, argument = SGML_image_pdf_re,
+         recursive = 1)
+SGML_png_scanner = Scanner(name = 'SGML_png',
+        function = SGML_image_scanner, argument = SGML_image_png_re,
+        recursive = 1)
 
 ##################################################
 # BUILDERS
@@ -146,7 +177,10 @@ text = env.Text(mastersgml)
 env.Depends(text, deps)
 
 # PDF
-pdf = env.PDF(mastersgml)
+pdfsgml = File(mastersgml)
+pdfsgml.source_scanner = SGML_pdf_scanner
+
+pdf = env.PDF(pdfsgml)
 env.Depends(pdf, deps)
 env.Depends(pdf, epipdf)
 env.Alias('pdf', pdf)
@@ -159,7 +193,9 @@ ps = env.PDF2PS(source = pdf)
 env.Alias('ps', ps)
 
 # HTML
-buildhtml = env.HTML('html/index.html', mastersgml)
+htmlsgml = File(mastersgml)
+htmlsgml.source_scanner = SGML_png_scanner
+buildhtml = env.HTML('html/index.html', htmlsgml)
 env.Depends(buildhtml, deps)
 #env.Depends(html, epipng)
 pnginstalls = env.InstallAs(['html/' + str(x) for x in epipng], epipng)
