@@ -19,6 +19,10 @@ sources = [mastersgml] + glob('chapters/*.sgml') + glob('chapters/*/*.sgml')
 db2htmlcmd = 'docbook-2-html -D $JADE ${HTMLARGS}  ${SOURCE}'
 db2htmlindexcmd = 'docbook-2-html -D $JADE -O -V -O html-index ${HTMLARGS} ${SOURCE}'
 
+##################################################
+# BUILDERS
+##################################################
+
 #### PLAIN TEXT
 Btxt = Builder(action="docbook2txt $SOURCE", src_suffix='.sgml', suffix='.txt')
 
@@ -27,7 +31,7 @@ Bpdf = Builder(action="docbook-2-pdf -D ${JADE} -q -O -V -O paper-size=Letter ${
         src_suffix='.sgml', suffix='.pdf')
 Bps = Builder(action="pdftops ${SOURCE}", src_suffix='.pdf', suffix='.ps')
 
-#HTML
+#### HTML
 Bhtml = Builder(action = [ \
         'if test -d ${TARGET.dir} ; then rm -r ${TARGET.dir} ; fi',
         'mkdir ${TARGET.dir}',
@@ -37,9 +41,18 @@ Bhtml = Builder(action = [ \
         'ln -s ${TOPNODE}.html ${TARGET.dir}/index.html',
         'cp ${GTKIMGPATH}/*.png ${TARGET.dir}/'])
 
-# General setup
+#### PLUCKER
+Bplucker = Builder(action = 'plucker-build --bpp=4 --compression=zlib ' + \
+        '--doc-name="${MASTERBASE}" -H file:${SOURCE.abspath} -M 5 ' + \
+        '--maxheight=320 --maxwidth=310 --staybelow=file:`pwd`/${SOURCE.dir} ' + \
+        '--title="${MASTERBASE}" -p . -f ${MASTERBASE}')
 
-env.Append(BUILDERS = {'Text': Btxt, 'PS': Bps, 'PDF': Bpdf, 'HTML': Bhtml})
+##################################################
+# General setup
+##################################################
+
+env.Append(BUILDERS = {'Text': Btxt, 'PS': Bps, 'PDF': Bpdf, 'HTML': Bhtml,
+        'Plucker': Bplucker})
 
 #### INDEX GENERATION
 if 'DOINDEX' in d:
@@ -60,23 +73,31 @@ else:
 
 ##################################################
 # BUILD RULES
-##################################################
+#####.#############################################
+# Text
 text = env.Text(mastersgml)
 env.Depends(text, deps)
 
+# PDF
 pdf = env.PDF(mastersgml)
 env.Depends(pdf, deps)
 env.Alias('pdf', pdf)
 env.Clean(pdf, ['jadetex.cfg', '${MASTERBASE}.aux', '${MASTERBASE}.dvi',
         '${MASTERBASE}.jtex', '${MASTERBASE}.log', '${MASTERBASE}.out'])
 
+# PS
 ps = env.PS(pdf)
 env.Alias('ps', ps)
 
+# HTML
 html = env.HTML('html/index.html', mastersgml)
 env.Depends(html, deps)
 env.Alias('html', html)
 env.Clean(html, 'html')
+
+# Plucker
+plucker = env.Plucker(master + '.pdb', 'html/index.html')
+env.Alias('plucker', plucker)
 
 env.Default(html)
 
