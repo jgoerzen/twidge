@@ -16,11 +16,14 @@ if not 'PS2EPSI' in d:
     d['PS2EPSI'] = '../sgml-common/ps2epsi'
 if not 'GENEPIFILES' in d:
     d['GENEPIFILES'] = []
+if not 'EPSFILES' in d:
+    d['EPSFILES'] = []
 
 master = d['MASTERBASE'] 
 mastersgml = master + '.sgml'
 sources = [mastersgml] + glob('*/*.sgml') + glob('*/*/*.sgml')
-sources.remove('index/index.sgml')
+while 'index/index.sgml' in sources:
+    sources.remove('index/index.sgml')
 epsfiles = glob('*/*.eps') + glob('*/*/*.eps')
 db2htmlcmd = 'docbook-2-html -D $JADE ${HTMLARGS}  ${SOURCE}'
 db2htmlindexcmd = 'docbook-2-html -D $JADE -O -V -O html-index ${HTMLARGS} ${SOURCE}'
@@ -35,7 +38,7 @@ Btxt = Builder(action="docbook2txt $SOURCE", src_suffix='.sgml', suffix='.txt')
 #### PDF / POSTSCRIPT
 Bpdf = Builder(action="docbook-2-pdf -D ${JADE} -q -O -V -O paper-size=Letter ${PDFARGS} ${SOURCE}",
         src_suffix='.sgml', suffix='.pdf')
-Bps = Builder(action="pdftops ${SOURCE}", src_suffix='.pdf', suffix='.ps')
+Bpdf2ps = Builder(action="pdftops ${SOURCE}", src_suffix='.pdf', suffix='.ps')
 
 #### MAN PAGES
 # FIXME: test this
@@ -54,7 +57,7 @@ Bhtml = Builder(action = [ \
 #### PNG
 Bepip2png = Builder(action = 'gs -q -dTextAlphaBits=4 -dGraphicsAlphaBits=4 ' +\
         '-r90 -dBATCH -dNOPAUSE -dSAFER -sOutputFile=$TARGET ' + \
-        '-sDEVICE=png16m $SOURCE -c showpage', src_suffix='.p.epi', suffix='.png')
+        '-sDEVICE=png16m $SOURCE -c showpage', src_suffix='.p_epi', suffix='.png')
 
 #### EPI from PS
 def getpagenumfromname(target, source, env, for_signature):
@@ -63,16 +66,16 @@ d['GETPAGE'] = getpagenumfromname
 def getpagenumsuffix(env, sourcelist):
     return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.epi'
 def getppagenumsuffix(env, sourcelist):
-    return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.p.epi'
+    return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.p_epi'
 
 Aps2epi = Action(['psselect -q ${GETPAGE} $SOURCE temp.ps',
         'psresize -w ${WIDTH} -h ${HEIGHT} temp.ps temp2.ps',
         '$PS2EPSI temp2.ps $TARGET',
         'rm temp.ps temp2.ps'])
-Bps2epi = Builder(action=Aps2epi, src_suffix='.ps', suffix='.epi',
-        overrides = {'WIDTH': '6.375in', 'HEIGHT': '8.25in'})
-Bps2epip = Builder(action=Aps2epi, src_suffix='.ps', suffix=getppagenumsuffix,
-        overrides = {'WIDTH': '8.5in', 'HEIGHT': '11in'})
+Bps2epi = Builder(action=Aps2epi, src_suffix='.ps', suffix='.epi')
+Bps2epip = Builder(action=Aps2epi, src_suffix='.ps', suffix='.p_epi')
+Bepi2pdf = Builder(action="epstopdf -o=${TARGET} ${SOURCE}", suffix='.pdf',
+        src_suffix='.epi')
 
 #### PLUCKER
 Bplucker = Builder(action = 'plucker-build --bpp=4 --compression=zlib ' + \
@@ -84,8 +87,9 @@ Bplucker = Builder(action = 'plucker-build --bpp=4 --compression=zlib ' + \
 # General setup
 ##################################################
 
-env.Append(BUILDERS = {'Text': Btxt, 'PS': Bps, 'PDF': Bpdf, 'HTML': Bhtml,
-        'Plucker': Bplucker, 'PS2EPI': Bps2epi, 'PS2EPIP': Bps2epip})
+env.Append(BUILDERS = {'Text': Btxt, 'PDF2PS': Bpdf2ps, 'PDF': Bpdf, 'HTML': Bhtml,
+        'Plucker': Bplucker, 'PS2EPI': Bps2epi, 'PS2EPIP': Bps2epip,
+        'EPI2PDF': Bepi2pdf, 'EPIP2PNG': Bepip2png})
 
 #### INDEX GENERATION
 if 'DOINDEX' in d:
@@ -108,10 +112,30 @@ else:
 # BUILD CONVERSION RULES
 ##################################################
 
-# EPI
-#epi = env.PS2EPI(target = d['GENEPIFILES'], WIDTH='6.375in', HEIGHT='8.25in')
-epips = env.PS('figures/20030422/Weighted.pdf')
-epi = env.PS2EPI('figures/20030422/Weighted_1.epi', epips, WIDTH='6.375in', HEIGHT='8.25in')
+# EPI... convert to PDF for print and PNG for web.
+gendepi = []
+epipdf = []
+pgendepi = []
+epipng = []
+for epi in d['GENEPIFILES']:
+    pdfname = re.sub('_\d+\.epi$', '.pdf', epi)
+    # Convert from source PDF to PS.
+    pdfconv = env.PDF2PS(source = pdfname)
+
+    # Convert from PS to EPI for print.
+    epifile = env.PS2EPI(epi, pdfconv, WIDTH='6.375in', HEIGHT='8.25in')
+    gendepi.append(epifile)
+
+    # Convert from PS to EPI for PNG.
+    epip = epi.replace(".epi", ".p_epi")
+    pepifile = env.PS2EPIP(epip, pdfconv, WIDTH='8.5in', HEIGHT='11in')
+    pgendepi.append(pepifile)
+
+for epi in gendepi + d['EPSFILES']:
+    epipdf.append(env.EPI2PDF(source = epi))
+
+for epi in pgendepi + d['EPSFILES']:
+    epipng.append(env.EPIP2PNG(source = epi))
 
 ##################################################
 # BUILD RULES
@@ -123,18 +147,19 @@ env.Depends(text, deps)
 # PDF
 pdf = env.PDF(mastersgml)
 env.Depends(pdf, deps)
-env.Depends(pdf, epi)
+env.Depends(pdf, epipdf)
 env.Alias('pdf', pdf)
 env.Clean(pdf, ['jadetex.cfg', '${MASTERBASE}.aux', '${MASTERBASE}.dvi',
         '${MASTERBASE}.jtex', '${MASTERBASE}.log', '${MASTERBASE}.out'])
 
 # PS
-ps = env.PS(pdf)
+ps = env.PDF2PS(source = pdf)
 env.Alias('ps', ps)
 
 # HTML
 html = env.HTML('html/index.html', mastersgml)
 env.Depends(html, deps)
+env.Depends(html, epipng)
 env.Alias('html', html)
 env.Clean(html, 'html')
 
@@ -142,7 +167,4 @@ env.Clean(html, 'html')
 plucker = env.Plucker(master + '.pdb', 'html/index.html')
 env.Alias('plucker', plucker)
 
-
-
 env.Default(html)
-
