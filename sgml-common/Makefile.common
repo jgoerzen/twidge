@@ -66,6 +66,43 @@ $(MASTERBASE).ps: $(MASTER) $(BASICDEPS) $(INDEXSGMLFILE) $(EPSFILES)
 	docbook-2-ps -q -O -V -O paper-size=Letter $(PSARGS) $(MASTER)
 
 ######################################################################
+# Figure generation
+######################################################################
+
+%_1.epi: %.ps
+	$(get-epi)
+%_2.epi: %.ps
+	$(get-epi)
+%_3.epi: %.ps
+	$(get-epi)
+%_4.epi: %.ps
+	$(get-epi)
+%_5.epi: %.ps
+	$(get-epi)
+%_6.epi: %.ps
+	$(get-epi)
+%_7.epi: %.ps
+	$(get-epi)
+%_8.epi: %.ps
+	$(get-epi)
+%_9.epi: %.ps
+	$(get-epi)
+%_10.epi: %.ps
+	$(get-epi)
+%_11.epi: %.ps
+	$(get-epi)
+%_12.epi: %.ps
+	$(get-epi)
+
+%.png: %.epi
+	@echo " *** Generating PNG image for $<"
+	gs -q -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -r90 -dBATCH -dNOPAUSE \
+		-dSAFER -sOutputFile=$@ -sDEVICE=png16m $< -c showpage
+
+%.ps: %.pdf
+	pdftops $<
+
+######################################################################
 # HTML generation
 ######################################################################
 
@@ -89,6 +126,7 @@ html/index.html: $(MASTER) $(BASICDEPS) $(INDEXSGMLFILE) $(PNGFILES)
 	$(copy-figures)
 #	tidy -m html/*.html
 	ln -s $(TOPNODE).html html/index.html
+	-cp -v /usr/share/gtk-doc/*.png html/
 
 ######################################################################
 # Cleaning
@@ -107,7 +145,7 @@ clean:
 # Utility functions
 ######################################################################
 
-GETPAGE=$(shell echo $(1) | sed -e "s/^.*_\([0-9]\).epi/\\1/g")
+GETPAGE=$(shell echo $(1) | sed -e "s/^.*_\([0-9]*\).epi/\\1/g")
 define get-epi
 @echo " *** Generating EPI image for $<"
 psselect -q $(call GETPAGE,$@) $< temp.ps
