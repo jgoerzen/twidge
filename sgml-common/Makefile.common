@@ -57,6 +57,13 @@ $(INDEXDATAFILE): $(MASTER) $(BASICDEPS)
 endif # DOINDEX
 
 ######################################################################
+# Text generation
+######################################################################
+$(MASTERBASE).txt: $(MASTER) $(BASICDEPS) $(INDEXSGMLFILE)
+	@echo " *** Generating text output"
+	docbook2txt $(MASTER)
+
+######################################################################
 # PostScript generation
 ######################################################################
 
@@ -159,7 +166,7 @@ html/index.html: $(MASTER) $(BASICDEPS) $(INDEXSGMLFILE) $(PNGFILES)
 
 clean:
 	-rm -f `find . -name "*~"` `find . -name "*.png"` `find . -name "*.epi"`
-	-rm -r html-temp linux-guide-html html index
+	-rm -r html-temp linux-guide-html html index $(MASTERBASE).txt
 	-rm *.aux *.log *.dvi *.tex *.jtex *.ps *.html *.log *.out jadetex.cfg
 	-rm *.ps html/*.html figures/topology/*.epi figures/topology/*.png
 	-rm *.log *.pdb
