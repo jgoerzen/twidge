@@ -63,10 +63,10 @@ Bepip2png = Builder(action = 'gs -q -dTextAlphaBits=4 -dGraphicsAlphaBits=4 ' +\
 def getpagenumfromname(target, source, env, for_signature):
     return re.search('^.*_(\d+)\.(png){0,1}epi$', str(target[0])).group(1)
 d['GETPAGE'] = getpagenumfromname
-def getpagenumsuffix(env, sourcelist):
-    return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.epi'
-def getppagenumsuffix(env, sourcelist):
-    return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.pngepi'
+#def getpagenumsuffix(env, sourcelist):
+#    return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.epi'
+#def getppagenumsuffix(env, sourcelist):
+#    return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.pngepi'
 
 Aps2epi = Action(['psselect -q ${GETPAGE} $SOURCE temp.ps',
         'psresize -w ${WIDTH} -h ${HEIGHT} temp.ps temp2.ps',
@@ -135,7 +135,8 @@ for epi in gendepi + d['EPSFILES']:
     epipdf.append(env.EPI2PDF(source = epi))
 
 for epi in pgendepi + d['EPSFILES']:
-    epipng.append(env.EPIP2PNG(source = epi))
+    pngfile = env.EPIP2PNG(source = epi)
+    epipng.append(pngfile)
 
 ##################################################
 # BUILD RULES
@@ -159,12 +160,14 @@ env.Alias('ps', ps)
 # HTML
 html = env.HTML('html/index.html', mastersgml)
 env.Depends(html, deps)
-env.Depends(html, epipng)
-env.Alias('html', html)
+#env.Depends(html, epipng)
+pnginstalls = env.InstallAs(['html/' + str(x) for x in epipng], epipng)
+env.Depends(pnginstalls, html)
+env.Alias('html', pnginstalls)
 env.Clean(html, 'html')
 
 # Plucker
 plucker = env.Plucker(master + '.pdb', 'html/index.html')
 env.Alias('plucker', plucker)
 
-env.Default(html)
+env.Default(pnginstalls)
