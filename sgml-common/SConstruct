@@ -147,6 +147,7 @@ else:
 # Text
 text = env.Text(mastersgml)
 env.Depends(text, deps)
+env.Alias('text', text)
 
 # PDF
 pdfsgml = File(mastersgml)

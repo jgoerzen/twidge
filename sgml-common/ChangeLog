@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jgoerzen@complete.org--projects/sgml-common--head--1.0
 #
 
+2004-05-21 14:28:00 GMT	John Goerzen <jgoerzen@complete.org>	patch-20
+
+    Summary:
+      Fixed text target
+    Revision:
+      sgml-common--head--1.0--patch-20
+
+
+    modified files:
+     ChangeLog SConstruct
+
+
 2004-02-27 15:22:59 GMT	John Goerzen <jgoerzen@complete.org>	patch-19
 
     Summary:
