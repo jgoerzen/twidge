@@ -151,23 +151,24 @@ env.Depends(pdf, deps)
 env.Depends(pdf, epipdf)
 env.Alias('pdf', pdf)
 env.Clean(pdf, ['jadetex.cfg', '${MASTERBASE}.aux', '${MASTERBASE}.dvi',
-        '${MASTERBASE}.jtex', '${MASTERBASE}.log', '${MASTERBASE}.out'])
+        '${MASTERBASE}.jtex', '${MASTERBASE}.log', '${MASTERBASE}.out',
+        'jade-out.fot'])
 
 # PS
 ps = env.PDF2PS(source = pdf)
 env.Alias('ps', ps)
 
 # HTML
-html = env.HTML('html/index.html', mastersgml)
-env.Depends(html, deps)
+buildhtml = env.HTML('html/index.html', mastersgml)
+env.Depends(buildhtml, deps)
 #env.Depends(html, epipng)
 pnginstalls = env.InstallAs(['html/' + str(x) for x in epipng], epipng)
-env.Depends(pnginstalls, html)
-env.Alias('html', pnginstalls)
-env.Clean(html, 'html')
+env.Depends(pnginstalls, buildhtml)
+html = env.Alias('html', pnginstalls)
+env.Clean(buildhtml, 'html')
 
 # Plucker
 plucker = env.Plucker(master + '.pdb', 'html/index.html')
 env.Alias('plucker', plucker)
 
-env.Default(pnginstalls)
+env.Default(html)
