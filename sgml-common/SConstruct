@@ -18,10 +18,6 @@ if not 'GTKIMGPATH' in d:
     d['GTKIMGPATH'] = '/usr/share/gtk-doc/data'
 if not 'PS2EPSI' in d:
     d['PS2EPSI'] = '../sgml-common/ps2epsi'
-if not 'GENEPIFILES' in d:
-    d['GENEPIFILES'] = []
-if not 'EPSFILES' in d:
-    d['EPSFILES'] = []
 
 def removeindex(l):
     while 'index/index.sgml' in l:
@@ -31,7 +27,6 @@ master = d['MASTERBASE']
 mastersgml = master + '.sgml'
 sources = [mastersgml] + glob('*/*.sgml') + glob('*/*/*.sgml')
 removeindex(sources)
-epsfiles = glob('*/*.eps') + glob('*/*/*.eps')
 db2htmlcmd = 'docbook-2-html -D $JADE ${HTMLARGS}  ${SOURCE}'
 db2htmlindexcmd = 'docbook-2-html -D $JADE -O -V -O html-index ${HTMLARGS} ${SOURCE}'
 
@@ -53,7 +48,7 @@ def SGML_includes_scan(node, env, path):
     return ret
 
 SGML_includes_scanner = Scanner(name = 'SGML_includes',
-    function = SGML_includes_scan, recursive = 1)
+    function = SGML_includes_scan, recursive = 1, skeys = ['.sgml', '.ent'])
 
 SGML_image_pdf_re = re.compile(r'^.*<(graphic|imagedata).+fileref="([^"]+\.pdf)".*$', re.M)
 SGML_image_png_re = re.compile(r'^.*<(graphic|imagedata).+fileref="([^"]+\.png)".*$', re.M)
@@ -147,36 +142,6 @@ else:
     deps = sources
 
 ##################################################
-# BUILD CONVERSION RULES
-##################################################
-
-# EPI... convert to PDF for print and PNG for web.
-gendepi = []
-epipdf = []
-pgendepi = []
-epipng = []
-for epi in d['GENEPIFILES']:
-    pdfname = re.sub('_\d+\.epi$', '.pdf', epi)
-    # Convert from source PDF to PS.
-    psfile = env.PDF2PS(source = pdfname)
-
-    # Convert from PS to EPI for print.
-    epifile = env.PS2EPI(epi, psfile, WIDTH='6.375in', HEIGHT='8.25in')
-    gendepi.append(epifile)
-
-    # Convert from PS to EPI for PNG.
-    epip = epi.replace(".epi", ".pngepi")
-    pepifile = env.PS2EPIP(epip, psfile, WIDTH='8.5in', HEIGHT='11in')
-    pgendepi.append(pepifile)
-
-for epi in gendepi + d['EPSFILES']:
-    epipdf.append(env.EPI2PDF(source = epi))
-
-for epi in pgendepi + d['EPSFILES']:
-    pngfile = env.EPIP2PNG(source = epi)
-    epipng.append(pngfile)
-
-##################################################
 # BUILD RULES
 ###################################################
 # Text
@@ -190,6 +155,10 @@ figsindoc = [x for x in recursescan(SGML_pdf_scanner, pdfsgml, env) if str(x).en
 epipdf = []
 for file in figsindoc:
     pdfname = re.sub('_\d+\.pdf$', '.pdf', str(file))
+    if pdfname == str(file):
+        # This is not a filename that fits our pattern; add unmodified.
+        epipdf.append(file)
+        continue
     psfile = env.PDF2PS(source = pdfname)
     epifile = env.PS2EPI(str(file).replace(".pdf", ".epi"), psfile,
             WIDTH='6.375in', HEIGHT='8.25in')
@@ -213,6 +182,10 @@ figsindoc = [x for x in recursescan(SGML_png_scanner, htmlsgml, env) if str(x).e
 epipng = []
 for file in figsindoc:
     pdfname = re.sub('_\d+\.png$', '.pdf', str(file))
+    if pdfname == str(file):
+        # This is not a filename that fits our pattern; add unmodified. 
+        epipng.append(file)
+        continue
     psfile = env.PDF2PS(source = pdfname)
     epifile = env.PS2EPIP(str(file).replace(".png", ".pngepi"), psfile,
             WIDTH='8.5in', HEIGHT='11in')
@@ -222,6 +195,7 @@ env.Depends(buildhtml, epipng)
 env.Depends(buildhtml, deps)
 pnginstalls = env.InstallAs(['html/' + str(x) for x in epipng], epipng)
 env.Depends(pnginstalls, buildhtml)
+html = env.Alias('html', buildhtml)
 html = env.Alias('html', pnginstalls)
 env.Clean(buildhtml, 'html')
 
