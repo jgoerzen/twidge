@@ -46,14 +46,10 @@ def recursescan(scanner, node, env):
         retval.extend(recursescan(scanner, item, env))
     return retval
 
-
-
 SGML_includes_re = re.compile(r'<!ENTITY[^>]+SYSTEM[^>]+"(.+)"', re.M)
 def SGML_includes_scan(node, env, path):
-    contents = node.get_contents()
-    ret = SGML_includes_re.findall(contents)
+    ret = SGML_includes_re.findall(node.get_contents())
     removeindex(ret)
-    print "ret =", ret
     return ret
 
 SGML_includes_scanner = Scanner(name = 'SGML_includes',
@@ -62,13 +58,10 @@ SGML_includes_scanner = Scanner(name = 'SGML_includes',
 SGML_image_pdf_re = re.compile(r'^.*<(graphic|imagedata).+fileref="([^"]+\.pdf)".*$', re.M)
 SGML_image_png_re = re.compile(r'^.*<(graphic|imagedata).+fileref="([^"]+\.png)".*$', re.M)
 def SGML_image_scanner(node, env, path, arg):
-    print "Image scanning", str(node)
     root, ext = os.path.splitext(str(node))
     contents = node.get_contents()
-    ret = SGML_includes_scan(node, env, path) + \
+    return SGML_includes_scan(node, env, path) + \
             [os.getcwd() + '/' + x[1] for x in arg.findall(contents)]
-    print "Image scanner ret:", ret
-    return ret
 
 SGML_pdf_scanner = Scanner(name = 'SGML_pdf',
          function = SGML_image_scanner, argument = SGML_image_pdf_re,
@@ -112,10 +105,6 @@ Bepip2png = Builder(action = 'gs -q -dTextAlphaBits=4 -dGraphicsAlphaBits=4 ' +\
 def getpagenumfromname(target, source, env, for_signature):
     return re.search('^.*_(\d+)\.(png){0,1}epi$', str(target[0])).group(1)
 d['GETPAGE'] = getpagenumfromname
-#def getpagenumsuffix(env, sourcelist):
-#    return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.epi'
-#def getppagenumsuffix(env, sourcelist):
-#    return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.pngepi'
 
 Aps2epi = Action(['psselect -q ${GETPAGE} $SOURCE temp.ps',
         'psresize -w ${WIDTH} -h ${HEIGHT} temp.ps temp2.ps',
@@ -200,7 +189,6 @@ pdf = env.PDF(pdfsgml)
 figsindoc = [x for x in recursescan(SGML_pdf_scanner, pdfsgml, env) if str(x).endswith('.pdf')]
 epipdf = []
 for file in figsindoc:
-    print "Processing figindoc", str(file)
     pdfname = re.sub('_\d+\.pdf$', '.pdf', str(file))
     psfile = env.PDF2PS(source = pdfname)
     epifile = env.PS2EPI(str(file).replace(".pdf", ".epi"), psfile,
@@ -220,10 +208,18 @@ env.Alias('ps', ps)
 
 # HTML
 htmlsgml = File(mastersgml)
-#htmlsgml.source_scanner = SGML_png_scanner
 buildhtml = env.HTML('html/index.html', htmlsgml)
+figsindoc = [x for x in recursescan(SGML_png_scanner, htmlsgml, env) if str(x).endswith('.png')]
+epipng = []
+for file in figsindoc:
+    pdfname = re.sub('_\d+\.png$', '.pdf', str(file))
+    psfile = env.PDF2PS(source = pdfname)
+    epifile = env.PS2EPIP(str(file).replace(".png", ".pngepi"), psfile,
+            WIDTH='8.5in', HEIGHT='11in')
+    epipng.append(env.EPIP2PNG(source = epifile))
+
+env.Depends(buildhtml, epipng)
 env.Depends(buildhtml, deps)
-#env.Depends(html, epipng)
 pnginstalls = env.InstallAs(['html/' + str(x) for x in epipng], epipng)
 env.Depends(pnginstalls, buildhtml)
 html = env.Alias('html', pnginstalls)
