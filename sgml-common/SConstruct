@@ -19,23 +19,29 @@ sources = [mastersgml] + glob('chapters/*.sgml') + glob('chapters/*/*.sgml')
 db2htmlcmd = 'docbook-2-html -D $JADE ${HTMLARGS}  ${SOURCE}'
 db2htmlindexcmd = 'docbook-2-html -D $JADE -O -V -O html-index ${HTMLARGS} ${SOURCE}'
 
-def MakeHTML(target, source, env):
-    if os.path.isdir('html'):
-        env.Command("rm -r html")
-    env.Command("mkdir html")
-    env.Command(db2htmlcmd)
-    env.Command("mv ${MASTERBASE}-html/* html/")
-    env.Command("rmdir ${MASTERBASE}-html")
-    env.Command("ln -s ${TOPNODE}.html html/index.html")
-    env.Command("cp ${GTKIMGPATH}/*.png html/")
-
+#### PLAIN TEXT
 Btxt = Builder(action="docbook2txt $SOURCE", src_suffix='.sgml', suffix='.txt')
+
+#### PDF / POSTSCRIPT
 Bpdf = Builder(action="docbook-2-pdf -D ${JADE} -q -O -V -O paper-size=Letter ${PDFARGS} ${SOURCE}",
         src_suffix='.sgml', suffix='.pdf')
 Bps = Builder(action="pdftops ${SOURCE}", src_suffix='.pdf', suffix='.ps')
-Bhtml = Builder(action = MakeHTML)
+
+#HTML
+Bhtml = Builder(action = [ \
+        'if test -d ${TARGET.dir} ; then rm -r ${TARGET.dir} ; fi',
+        'mkdir ${TARGET.dir}',
+        db2htmlcmd,
+        'mv ${MASTERBASE}-html/* ${TARGET.dir}/',
+        'rmdir ${MASTERBASE}-html',
+        'ln -s ${TOPNODE}.html ${TARGET.dir}/index.html',
+        'cp ${GTKIMGPATH}/*.png ${TARGET.dir}/'])
+
+# General setup
 
 env.Append(BUILDERS = {'Text': Btxt, 'PS': Bps, 'PDF': Bpdf, 'HTML': Bhtml})
+
+#### INDEX GENERATION
 if 'DOINDEX' in d:
     Bindex = Builder(action = ['if test -d ${TARGET.dir}  ; then rm -r ${TARGET.dir} ; fi',
         "mkdir ${TARGET.dir}",
@@ -47,21 +53,30 @@ if 'DOINDEX' in d:
     env['BUILDERS']['Index'] = Bindex
     index = env.Index('index/index.sgml', mastersgml)
     env.Depends(index, sources)
+    env.Clean(index, 'index')
     deps = sources + [index]
 else:
     deps = sources
 
+##################################################
+# BUILD RULES
+##################################################
 text = env.Text(mastersgml)
 env.Depends(text, deps)
 
 pdf = env.PDF(mastersgml)
 env.Depends(pdf, deps)
 env.Alias('pdf', pdf)
+env.Clean(pdf, ['jadetex.cfg', '${MASTERBASE}.aux', '${MASTERBASE}.dvi',
+        '${MASTERBASE}.jtex', '${MASTERBASE}.log', '${MASTERBASE}.out'])
 
 ps = env.PS(pdf)
+env.Alias('ps', ps)
 
-html = env.HTML(mastersgml)
+html = env.HTML('html/index.html', mastersgml)
 env.Depends(html, deps)
+env.Alias('html', html)
+env.Clean(html, 'html')
 
 env.Default(html)
 
