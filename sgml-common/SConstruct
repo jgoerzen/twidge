@@ -23,11 +23,14 @@ if not 'GENEPIFILES' in d:
 if not 'EPSFILES' in d:
     d['EPSFILES'] = []
 
+def removeindex(l):
+    while 'index/index.sgml' in l:
+        l.remove('index/index.sgml')
+
 master = d['MASTERBASE'] 
 mastersgml = master + '.sgml'
 sources = [mastersgml] + glob('*/*.sgml') + glob('*/*/*.sgml')
-while 'index/index.sgml' in sources:
-    sources.remove('index/index.sgml')
+removeindex(sources)
 epsfiles = glob('*/*.eps') + glob('*/*/*.eps')
 db2htmlcmd = 'docbook-2-html -D $JADE ${HTMLARGS}  ${SOURCE}'
 db2htmlindexcmd = 'docbook-2-html -D $JADE -O -V -O html-index ${HTMLARGS} ${SOURCE}'
@@ -35,13 +38,24 @@ db2htmlindexcmd = 'docbook-2-html -D $JADE -O -V -O html-index ${HTMLARGS} ${SOU
 ##################################################
 # SCANNERS
 ##################################################
+def recursescan(scanner, node, env):
+    result = scanner(node, env) 
+    retval = []
+    for item in result:
+        retval.append(item)
+        retval.extend(recursescan(scanner, item, env))
+    return retval
 
-SGML_includes_re = re.compile(r'ENTITY[^>]+SYSTEM[^>]+"(.+)"', re.M)
+
+
+SGML_includes_re = re.compile(r'<!ENTITY[^>]+SYSTEM[^>]+"(.+)"', re.M)
 def SGML_includes_scan(node, env, path):
     contents = node.get_contents()
     ret = SGML_includes_re.findall(contents)
+    removeindex(ret)
     print "ret =", ret
     return ret
+
 SGML_includes_scanner = Scanner(name = 'SGML_includes',
     function = SGML_includes_scan, recursive = 1)
 
@@ -49,8 +63,12 @@ SGML_image_pdf_re = re.compile(r'^.*<(graphic|imagedata).+fileref="([^"]+\.pdf)"
 SGML_image_png_re = re.compile(r'^.*<(graphic|imagedata).+fileref="([^"]+\.png)".*$', re.M)
 def SGML_image_scanner(node, env, path, arg):
     print "Image scanning", str(node)
+    root, ext = os.path.splitext(str(node))
     contents = node.get_contents()
-    return SGML_includes_scan(node, env, path) + arg.findall(contents)
+    ret = SGML_includes_scan(node, env, path) + \
+            [os.getcwd() + '/' + x[1] for x in arg.findall(contents)]
+    print "Image scanner ret:", ret
+    return ret
 
 SGML_pdf_scanner = Scanner(name = 'SGML_pdf',
          function = SGML_image_scanner, argument = SGML_image_pdf_re,
@@ -178,9 +196,17 @@ env.Depends(text, deps)
 
 # PDF
 pdfsgml = File(mastersgml)
-pdfsgml.source_scanner = SGML_pdf_scanner
-
 pdf = env.PDF(pdfsgml)
+figsindoc = [x for x in recursescan(SGML_pdf_scanner, pdfsgml, env) if str(x).endswith('.pdf')]
+epipdf = []
+for file in figsindoc:
+    print "Processing figindoc", str(file)
+    pdfname = re.sub('_\d+\.pdf$', '.pdf', str(file))
+    psfile = env.PDF2PS(source = pdfname)
+    epifile = env.PS2EPI(str(file).replace(".pdf", ".epi"), psfile,
+            WIDTH='6.375in', HEIGHT='8.25in')
+    epipdf.append(env.EPI2PDF(source = epifile))
+
 env.Depends(pdf, deps)
 env.Depends(pdf, epipdf)
 env.Alias('pdf', pdf)
@@ -194,7 +220,7 @@ env.Alias('ps', ps)
 
 # HTML
 htmlsgml = File(mastersgml)
-htmlsgml.source_scanner = SGML_png_scanner
+#htmlsgml.source_scanner = SGML_png_scanner
 buildhtml = env.HTML('html/index.html', htmlsgml)
 env.Depends(buildhtml, deps)
 #env.Depends(html, epipng)
