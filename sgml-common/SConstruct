@@ -1,38 +1,50 @@
-# /* vim: set filetype=python : */
+# vim: set filetype=python :
 # arch-tag: general-purpose SCons build file for sgml-common
 
 from glob import glob
+import os
 
-Import('env')
+#Import('env')
 d = env.Dictionary()
 if not 'JADE' in d:
     d['JADE'] = 'jade'
 if not 'INDEXNODE' in d:
     d['INDEXNODE'] = 'ch.index'
+if not 'GTKIMGPATH' in d:
+    d['GTKIMGPATH'] = '/usr/share/gtk-doc/data'
 
 master = d['MASTERBASE'] 
 mastersgml = master + '.sgml'
-sources = [mastersgml] + glob('*/*.sgml') + glob('*/*/*.sgml')
-db2htmlcmd = 'docbook-2-html -j $JADE ${HTMLCMD} ${HTMLARGS}  ${SOURCE}'
+sources = [mastersgml] + glob('chapters/*.sgml') + glob('chapters/*/*.sgml')
+db2htmlcmd = 'docbook-2-html -D $JADE ${HTMLARGS}  ${SOURCE}'
+db2htmlindexcmd = 'docbook-2-html -D $JADE -O -V -O html-index ${HTMLARGS} ${SOURCE}'
 
-def MakeIndex(target, source, env):
-    if os.path.isdir('index'):
-        env.Command("rm -r index")
-    env.Command("mkdir index")
-    env.Command("collateindex.pl -i $INDEXNODE -N -o index/index.sgml")
-    env.Command(db2htmlcmd, HTMLCMD="-O -V -O html-index")
-    env.Command("mv ${MASTERBASE}-html/HTML.index index/")
-    env.Command("rm -r ${MASTERBASE-html}")
-    env.Command("collateindex.pl -i $INDEXNODE -g -o index/index.sgml index/HTML.index")
+def MakeHTML(target, source, env):
+    if os.path.isdir('html'):
+        env.Command("rm -r html")
+    env.Command("mkdir html")
+    env.Command(db2htmlcmd)
+    env.Command("mv ${MASTERBASE}-html/* html/")
+    env.Command("rmdir ${MASTERBASE}-html")
+    env.Command("ln -s ${TOPNODE}.html html/index.html")
+    env.Command("cp ${GTKIMGPATH}/*.png html/")
 
 Btxt = Builder(action="docbook2txt $SOURCE", src_suffix='.sgml', suffix='.txt')
-Bpdf = Builder(action="docbook-2-pdf -j ${JADE} -q -O -V -O paper-size=Letter ${PDFARGS} ${SOURCE}",
-        src_suffix='.sgml', sufix='.pdf')
+Bpdf = Builder(action="docbook-2-pdf -D ${JADE} -q -O -V -O paper-size=Letter ${PDFARGS} ${SOURCE}",
+        src_suffix='.sgml', suffix='.pdf')
 Bps = Builder(action="pdftops ${SOURCE}", src_suffix='.pdf', suffix='.ps')
+Bhtml = Builder(action = MakeHTML)
 
-env.Append(BUILDERS = {'Text': Btxt, 'PS': Bps, 'PDF': Bpdf})
+env.Append(BUILDERS = {'Text': Btxt, 'PS': Bps, 'PDF': Bpdf, 'HTML': Bhtml})
 if 'DOINDEX' in d:
-    env['BUILDERS']['Index'] = Builder(action = MakeIndex)
+    Bindex = Builder(action = ['if test -d ${TARGET.dir}  ; then rm -r ${TARGET.dir} ; fi',
+        "mkdir ${TARGET.dir}",
+        "collateindex.pl -i $INDEXNODE -N -o $TARGET",
+        db2htmlindexcmd,
+        "mv ${MASTERBASE}-html/HTML.index ${TARGET.dir}/",
+        "rm -r ${MASTERBASE}-html",
+        "collateindex.pl -i $INDEXNODE -g -o $TARGET ${TARGET.dir}/HTML.index"])
+    env['BUILDERS']['Index'] = Bindex
     index = env.Index('index/index.sgml', mastersgml)
     env.Depends(index, sources)
     deps = sources + [index]
@@ -44,7 +56,12 @@ env.Depends(text, deps)
 
 pdf = env.PDF(mastersgml)
 env.Depends(pdf, deps)
+env.Alias('pdf', pdf)
 
 ps = env.PS(pdf)
 
+html = env.HTML(mastersgml)
+env.Depends(html, deps)
+
+env.Default(html)
 

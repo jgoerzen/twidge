@@ -20,7 +20,7 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 
 # The following variables should be set:
-# MASTERBASE -- basename of master file -- example: linux-guide
+# MASTERBASE -- basename of master file -- example: my-guide
 # BASICDEPS -- various dependencies of the master file.  For instance,
 #   this might include files included in the SGML.  It could also be empty.
 # TOPNODE -- Basename of top id for HTML link.
@@ -166,7 +166,7 @@ html/index.html: $(MASTER) $(BASICDEPS) $(INDEXSGMLFILE) $(PNGFILES)
 
 clean:
 	-rm -f `find . -name "*~"` `find . -name "*.png"` `find . -name "*.epi"`
-	-rm -r html-temp linux-guide-html html index $(MASTERBASE).txt
+	-rm -r html-temp html index $(MASTERBASE).txt
 	-rm *.aux *.log *.dvi *.tex *.jtex *.ps *.html *.log *.out jadetex.cfg
 	-rm *.ps html/*.html figures/topology/*.epi figures/topology/*.png
 	-rm *.log *.pdb
