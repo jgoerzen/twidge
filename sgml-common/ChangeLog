@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jgoerzen@complete.org--projects/sgml-common--head--1.0
 #
 
+2004-02-03 19:40:22 GMT	John Goerzen <jgoerzen@complete.org>	patch-17
+
+    Summary:
+      Tightened up re for finding image tags
+    Revision:
+      sgml-common--head--1.0--patch-17
+
+
+    modified files:
+     ChangeLog SConstruct
+
+
 2004-02-03 19:28:03 GMT	John Goerzen <jgoerzen@complete.org>	patch-16
 
     Summary:
