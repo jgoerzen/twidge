@@ -55,10 +55,10 @@ Bhtml = Builder(action = [ \
         'cp ${GTKIMGPATH}/*.png ${TARGET.dir}/'])
 
 #### PNG
-Bepip2png = Builder(action = 'gs -q -dTextAlphaBits=4 -dGraphicsAlphaBits=4 ' +\
-        '-r90 -dBATCH -dNOPAUSE -dSAFER -sOutputFile=$TARGET ' + \
-        '-sDEVICE=png16m $SOURCE -c showpage', src_suffix='.p_epi', suffix='.png')
-
+#Bepip2png = Builder(action = 'gs -q -dTextAlphaBits=4 -dGraphicsAlphaBits=4 ' +\
+#        '-r90 -dBATCH -dNOPAUSE -dSAFER -sOutputFile=$TARGET ' + \
+#        '-sDEVICE=png16m $SOURCE -c showpage', suffix='.png', src_suffix='.pepi')
+#
 #### EPI from PS
 def getpagenumfromname(target, source, env, for_signature):
     return re.search('^.*_(\d+)\.(p\.){0,1}epi$', str(target[0])).group(1)
@@ -66,16 +66,18 @@ d['GETPAGE'] = getpagenumfromname
 def getpagenumsuffix(env, sourcelist):
     return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.epi'
 def getppagenumsuffix(env, sourcelist):
-    return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.p_epi'
+    return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.pepi'
 
 Aps2epi = Action(['psselect -q ${GETPAGE} $SOURCE temp.ps',
         'psresize -w ${WIDTH} -h ${HEIGHT} temp.ps temp2.ps',
         '$PS2EPSI temp2.ps $TARGET',
         'rm temp.ps temp2.ps'])
 Bps2epi = Builder(action=Aps2epi, src_suffix='.ps', suffix='.epi')
-Bps2epip = Builder(action=Aps2epi, src_suffix='.ps', suffix='.p_epi')
+Bps2epip = Builder(action=Aps2epi, src_suffix='.ps', suffix='.pepi')
 Bepi2pdf = Builder(action="epstopdf -o=${TARGET} ${SOURCE}", suffix='.pdf',
         src_suffix='.epi')
+Bepip2png = Builder(action="epstopdf -o=${TARGET} ${SOURCE}", suffix='.png',
+        src_suffix='.pepi')
 
 #### PLUCKER
 Bplucker = Builder(action = 'plucker-build --bpp=4 --compression=zlib ' + \
@@ -120,15 +122,15 @@ epipng = []
 for epi in d['GENEPIFILES']:
     pdfname = re.sub('_\d+\.epi$', '.pdf', epi)
     # Convert from source PDF to PS.
-    pdfconv = env.PDF2PS(source = pdfname)
+    psfile = env.PDF2PS(source = pdfname)
 
     # Convert from PS to EPI for print.
-    epifile = env.PS2EPI(epi, pdfconv, WIDTH='6.375in', HEIGHT='8.25in')
+    epifile = env.PS2EPI(epi, psfile, WIDTH='6.375in', HEIGHT='8.25in')
     gendepi.append(epifile)
 
     # Convert from PS to EPI for PNG.
-    epip = epi.replace(".epi", ".p_epi")
-    pepifile = env.PS2EPIP(epip, pdfconv, WIDTH='8.5in', HEIGHT='11in')
+    epip = epi.replace(".epi", ".pepi")
+    pepifile = env.PS2EPIP(epip, psfile, WIDTH='8.5in', HEIGHT='11in')
     pgendepi.append(pepifile)
 
 for epi in gendepi + d['EPSFILES']:
@@ -136,6 +138,9 @@ for epi in gendepi + d['EPSFILES']:
 
 for epi in pgendepi + d['EPSFILES']:
     epipng.append(env.EPIP2PNG(source = epi))
+
+for item in epipng:
+    print str(item)
 
 ##################################################
 # BUILD RULES
