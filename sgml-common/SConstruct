@@ -122,7 +122,7 @@ Bplucker = Builder(action = 'plucker-build --bpp=4 --compression=zlib ' + \
 
 env.Append(BUILDERS = {'Text': Btxt, 'PDF2PS': Bpdf2ps, 'PDF': Bpdf, 'HTML': Bhtml,
         'Plucker': Bplucker, 'PS2EPI': Bps2epi, 'PS2EPIP': Bps2epip,
-        'EPI2PDF': Bepi2pdf, 'EPIP2PNG': Bepip2png})
+        'EPI2PDF': Bepi2pdf, 'EPIP2PNG': Bepip2png, 'MAN': Bman})
 
 #### INDEX GENERATION
 if 'DOINDEX' in d:

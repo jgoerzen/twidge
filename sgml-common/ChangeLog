@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jgoerzen@complete.org--projects/sgml-common--head--1.0
 #
 
+2004-02-27 15:22:59 GMT	John Goerzen <jgoerzen@complete.org>	patch-19
+
+    Summary:
+      Added manpage generation support
+    Revision:
+      sgml-common--head--1.0--patch-19
+
+
+    modified files:
+     ChangeLog SConstruct
+
+
 2004-02-03 19:50:11 GMT	John Goerzen <jgoerzen@complete.org>	patch-18
 
     Summary:
