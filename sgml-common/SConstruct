@@ -2,7 +2,7 @@
 # arch-tag: general-purpose SCons build file for sgml-common
 
 from glob import glob
-import os
+import os, re
 
 #Import('env')
 d = env.Dictionary()
@@ -12,10 +12,16 @@ if not 'INDEXNODE' in d:
     d['INDEXNODE'] = 'ch.index'
 if not 'GTKIMGPATH' in d:
     d['GTKIMGPATH'] = '/usr/share/gtk-doc/data'
+if not 'PS2EPSI' in d:
+    d['PS2EPSI'] = '../sgml-common/ps2epsi'
+if not 'GENEPIFILES' in d:
+    d['GENEPIFILES'] = []
 
 master = d['MASTERBASE'] 
 mastersgml = master + '.sgml'
-sources = [mastersgml] + glob('chapters/*.sgml') + glob('chapters/*/*.sgml')
+sources = [mastersgml] + glob('*/*.sgml') + glob('*/*/*.sgml')
+sources.remove('index/index.sgml')
+epsfiles = glob('*/*.eps') + glob('*/*/*.eps')
 db2htmlcmd = 'docbook-2-html -D $JADE ${HTMLARGS}  ${SOURCE}'
 db2htmlindexcmd = 'docbook-2-html -D $JADE -O -V -O html-index ${HTMLARGS} ${SOURCE}'
 
@@ -31,6 +37,10 @@ Bpdf = Builder(action="docbook-2-pdf -D ${JADE} -q -O -V -O paper-size=Letter ${
         src_suffix='.sgml', suffix='.pdf')
 Bps = Builder(action="pdftops ${SOURCE}", src_suffix='.pdf', suffix='.ps')
 
+#### MAN PAGES
+# FIXME: test this
+Bman = Builder(action="docbook2man $SOURCE", src_suffix='.sgml', suffix='.1')
+
 #### HTML
 Bhtml = Builder(action = [ \
         'if test -d ${TARGET.dir} ; then rm -r ${TARGET.dir} ; fi',
@@ -40,6 +50,29 @@ Bhtml = Builder(action = [ \
         'rmdir ${MASTERBASE}-html',
         'ln -s ${TOPNODE}.html ${TARGET.dir}/index.html',
         'cp ${GTKIMGPATH}/*.png ${TARGET.dir}/'])
+
+#### PNG
+Bepip2png = Builder(action = 'gs -q -dTextAlphaBits=4 -dGraphicsAlphaBits=4 ' +\
+        '-r90 -dBATCH -dNOPAUSE -dSAFER -sOutputFile=$TARGET ' + \
+        '-sDEVICE=png16m $SOURCE -c showpage', src_suffix='.p.epi', suffix='.png')
+
+#### EPI from PS
+def getpagenumfromname(target, source, env, for_signature):
+    return re.search('^.*_(\d+)\.(p\.){0,1}epi$', str(target[0])).group(1)
+d['GETPAGE'] = getpagenumfromname
+def getpagenumsuffix(env, sourcelist):
+    return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.epi'
+def getppagenumsuffix(env, sourcelist):
+    return '_' + getpagenumfromname(sourcelist, None, env, 0) + '.p.epi'
+
+Aps2epi = Action(['psselect -q ${GETPAGE} $SOURCE temp.ps',
+        'psresize -w ${WIDTH} -h ${HEIGHT} temp.ps temp2.ps',
+        '$PS2EPSI temp2.ps $TARGET',
+        'rm temp.ps temp2.ps'])
+Bps2epi = Builder(action=Aps2epi, src_suffix='.ps', suffix='.epi',
+        overrides = {'WIDTH': '6.375in', 'HEIGHT': '8.25in'})
+Bps2epip = Builder(action=Aps2epi, src_suffix='.ps', suffix=getppagenumsuffix,
+        overrides = {'WIDTH': '8.5in', 'HEIGHT': '11in'})
 
 #### PLUCKER
 Bplucker = Builder(action = 'plucker-build --bpp=4 --compression=zlib ' + \
@@ -52,7 +85,7 @@ Bplucker = Builder(action = 'plucker-build --bpp=4 --compression=zlib ' + \
 ##################################################
 
 env.Append(BUILDERS = {'Text': Btxt, 'PS': Bps, 'PDF': Bpdf, 'HTML': Bhtml,
-        'Plucker': Bplucker})
+        'Plucker': Bplucker, 'PS2EPI': Bps2epi, 'PS2EPIP': Bps2epip})
 
 #### INDEX GENERATION
 if 'DOINDEX' in d:
@@ -72,8 +105,17 @@ else:
     deps = sources
 
 ##################################################
+# BUILD CONVERSION RULES
+##################################################
+
+# EPI
+#epi = env.PS2EPI(target = d['GENEPIFILES'], WIDTH='6.375in', HEIGHT='8.25in')
+epips = env.PS('figures/20030422/Weighted.pdf')
+epi = env.PS2EPI('figures/20030422/Weighted_1.epi', epips, WIDTH='6.375in', HEIGHT='8.25in')
+
+##################################################
 # BUILD RULES
-#####.#############################################
+###################################################
 # Text
 text = env.Text(mastersgml)
 env.Depends(text, deps)
@@ -81,6 +123,7 @@ env.Depends(text, deps)
 # PDF
 pdf = env.PDF(mastersgml)
 env.Depends(pdf, deps)
+env.Depends(pdf, epi)
 env.Alias('pdf', pdf)
 env.Clean(pdf, ['jadetex.cfg', '${MASTERBASE}.aux', '${MASTERBASE}.dvi',
         '${MASTERBASE}.jtex', '${MASTERBASE}.log', '${MASTERBASE}.out'])
@@ -98,6 +141,8 @@ env.Clean(html, 'html')
 # Plucker
 plucker = env.Plucker(master + '.pdb', 'html/index.html')
 env.Alias('plucker', plucker)
+
+
 
 env.Default(html)
 
