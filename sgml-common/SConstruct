@@ -50,8 +50,8 @@ def SGML_includes_scan(node, env, path):
 SGML_includes_scanner = Scanner(name = 'SGML_includes',
     function = SGML_includes_scan, recursive = 1, skeys = ['.sgml', '.ent'])
 
-SGML_image_pdf_re = re.compile(r'<(graphic|imagedata).+?fileref="(.+?\.pdf)"', re.S)
-SGML_image_png_re = re.compile(r'<(graphic|imagedata).+?fileref="(.+?\.png)"', re.S)
+SGML_image_pdf_re = re.compile(r'<(graphic|imagedata).+?fileref="([^"]+\.pdf)"', re.S)
+SGML_image_png_re = re.compile(r'<(graphic|imagedata).+?fileref="([^"]+\.png)"', re.S)
 def SGML_image_scanner(node, env, path, arg):
     root, ext = os.path.splitext(str(node))
     contents = node.get_contents()
