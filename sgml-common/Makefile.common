@@ -1,6 +1,5 @@
 # -*- Mode: makefile; -*-
 # arch-tag: Primary sgml-common top-level Makefile
-# 
 # Common Makefile for SGML documents
 #
 # Copyright (C) 2002, 2003 John Goerzen
@@ -95,7 +94,32 @@ $(MASTERBASE).ps: $(MASTER) $(BASICDEPS) $(INDEXSGMLFILE) $(EPSFILES)
 %_12.epi: %.ps
 	$(get-epi)
 
-%.png: %.epi
+%_1_l.epi: %.ps
+	$(get-epil)
+%_2_l.epi: %.ps
+	$(get-epil)
+%_3_l.epi: %.ps
+	$(get-epil)
+%_4_l.epi: %.ps
+	$(get-epil)
+%_5_l.epi: %.ps
+	$(get-epil)
+%_6_l.epi: %.ps
+	$(get-epil)
+%_7_l.epi: %.ps
+	$(get-epil)
+%_8_l.epi: %.ps
+	$(get-epil)
+%_9_l.epi: %.ps
+	$(get-epil)
+%_10_l.epi: %.ps
+	$(get-epil)
+%_11_l.epi: %.ps
+	$(get-epil)
+%_12_l.epi: %.ps
+	$(get-epil)
+
+%.png: %_l.epi
 	@echo " *** Generating PNG image for $<"
 	gs -q -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -r90 -dBATCH -dNOPAUSE \
 		-dSAFER -sOutputFile=$@ -sDEVICE=png16m $< -c showpage
@@ -127,7 +151,7 @@ html/index.html: $(MASTER) $(BASICDEPS) $(INDEXSGMLFILE) $(PNGFILES)
 	$(copy-figures)
 #	tidy -m html/*.html
 	ln -s $(TOPNODE).html html/index.html
-	-cp -v /usr/share/gtk-doc/*.png html/
+	-cp -v /usr/share/gtk-doc/data/*.png html/
 
 ######################################################################
 # Cleaning
@@ -154,6 +178,16 @@ psresize -w 6.375in -h 8.25in temp.ps temp2.ps
 ../sgml-common/ps2epsi temp2.ps $@
 rm temp.ps temp2.ps
 endef
+
+GETPAGEL=$(shell echo $(1) | sed -e "s/^.*_\([0-9]*\)_l.epi/\\1/g")
+define get-epil
+@echo " *** Generating large EPI image for $<"
+psselect -q $(call GETPAGEL,$@) $< temp.ps
+psresize -w 8.5in -h 11in temp.ps temp2.ps
+../sgml-common/ps2epsi temp2.ps $@
+rm temp.ps temp2.ps
+endef
+
 
 pdf: $(MASTERBASE).pdf
 
