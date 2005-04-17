@@ -1,4 +1,5 @@
 # -*- Mode: makefile; -*-
+# arch-tag: Primary sgml-common top-level Makefile
 # 
 # Common Makefile for SGML documents
 #

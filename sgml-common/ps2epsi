@@ -1,5 +1,6 @@
 #!/bin/sh
 # $RCSfile: ps2epsi,v $ $Revision: 1.4.2.2 $
+# arch-tag: ps2epsi customized for sgml-common
 
 tmpfile=/tmp/ps2epsi$$
 
