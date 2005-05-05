@@ -8,6 +8,7 @@ import os, re
 # Setup
 ############################################################
 
+SConsignFile('.sconsign-master')
 #Import('env')
 d = env.Dictionary()
 if not 'JADE' in d:
