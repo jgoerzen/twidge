@@ -36,4 +36,13 @@ data EpisodeStatus = Pending -- ^ Ready to download
                    | Skipped -- ^ Skipped by some process or other
                      deriving (Eq, Show, Read, Ord, Enum)
 
-allEpisodeStatuses = enumFrom Pending
+data Podcast = Podcast {castid :: Integer,
+                        castname :: String
+                        feedurl :: String}
+             deriving (Eq, Show, Read)
+
+data Episode = Episode {podcast :: Podcast,
+                        eptitle :: String,
+                        epurl :: String,
+                        epstatus :: EpisodeStatus}
+             deriving (Eq, Show, Read)

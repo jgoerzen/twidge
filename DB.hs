@@ -30,9 +30,11 @@ Written by John Goerzen, jgoerzen\@complete.org
 -}
 module DB where
 import Config
+import Types
 
 import Database.HDBC
 import Database.HDBC.Sqlite3
+import MissingH.Logging.Logger
 
 connect :: IO Connection
 connect = handleSqlError $
@@ -61,11 +63,12 @@ prepSchema dbh tables =
 
 upgradeSchema _ 1 _ = return ()
 upgradeSchema dbh 0 tables =
-    do unless ("podcasts" `elem` tables) $ 
+    do debugM "DB" "Upgrading schema 0 -> 1"
+       unless ("podcasts" `elem` tables) $ 
               run dbh "CREATE TABLE podcasts(\
                       \castid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\
                       \castname TEXT NOT NULL,\
-                      \feedurl TEXT NOT NULL)"
+                      \feedurl TEXT NOT NULL UNIQUE)"
        unless ("episodes" `elem` tables) $
               run dbh "CREATE TABLE episodes (\
                       \castid INTEGER NOT NULL, \
@@ -73,4 +76,24 @@ upgradeSchema dbh 0 tables =
                       \epurl TEXT NOT NULL, \
                       \status TEXT NOT NULL,\
                       \PRIMARY KEY(castid, epurl) )"
-       
+       run dbh "DELETE FROM schemaver" []
+       run dbh "INSERT INTO schemaver VALUES (1)" []
+       commit dbh
+
+{- | Adds a new podcast to the database.  Ignores the castid on the incoming
+podcast, and returns a new object with the castid populated. -}
+addPodcast :: Connection -> Podcast -> IO Podcast
+addPodcast dbh podcast =
+    do run dbh "INSERT INTO podcasts (castname, feedurl) VALUES (?, ?)"
+           [toSql (castname podcast), toSql (feedurl podcast)]
+       r <- quickQuery "SELECT castid FROM podcasts WHERE feedurl = ?"
+            [toSql (feedurl podcast)]
+       case r of
+         [[x]] -> return $ podcast {castid = fromSql x}
+         y -> fail $ "Unexpected result: " ++ show y
+
+updatePodcast :: Connection -> Podcast -> IO ()
+    run dbh "UPDATE podcasts SET castname = ?, feedurl = ? WHERE castid = ?"
+        [toSql (castname podcast), toSql (feedurl podcast),
+         toSql (castid podcast)]
+
