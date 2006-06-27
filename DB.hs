@@ -34,14 +34,43 @@ import Config
 import Database.HDBC
 import Database.HDBC.Sqlite3
 
-connect = 
+connect :: IO Connection
+connect = handleSqlError $
     do fp <- config.getDBName
        connectSqlite3 fp
+       dbh <- connectSqlite3 fp
+       prepDB dbh
+       return dbh
 
-prepdb2 dbh =
+prepDB dbh =
     do tables <- getTables dbh
        schemaver <- prepSchema dbh tables
+       upgradeSchema dbh schemaver tables
 
+prepSchema :: Connection -> String -> IO Int
 prepSchema dbh tables =
     if "schemaver" `elem` tables
-       then do 
+       then do r <- quickQuery dbh "SELECT version FROM schemaver" []
+               case r of
+                 [[x]] -> return (fromSql x)
+                 x -> fail $ "Unexpected result in prepSchema: " ++ show x
+       else do run dbh "CREATE TABLE schemaver (version INTEGER)" []
+               run dbh "INSERT INTO schemaver VALUES (0)" []
+               commit dbh
+               return 0
+
+upgradeSchema _ 1 _ = return ()
+upgradeSchema dbh 0 tables =
+    do unless ("podcasts" `elem` tables) $ 
+              run dbh "CREATE TABLE podcasts(\
+                      \castid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\
+                      \castname TEXT NOT NULL,\
+                      \feedurl TEXT NOT NULL)"
+       unless ("episodes" `elem` tables) $
+              run dbh "CREATE TABLE episodes (\
+                      \castid INTEGER NOT NULL, \
+                      \title TEXT NOT NULL, \
+                      \epurl TEXT NOT NULL, \
+                      \status TEXT NOT NULL,\
+                      \PRIMARY KEY(castid, epurl) )"
+       

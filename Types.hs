@@ -32,6 +32,8 @@ module Types where
 
 data EpisodeStatus = Pending -- ^ Ready to download
                    | Downloaded -- ^ Already downloaded
+                   | Error -- ^ Error downloading
                    | Skipped -- ^ Skipped by some process or other
-                     deriving (Eq, Show, Read)
+                     deriving (Eq, Show, Read, Ord, Enum)
 
+allEpisodeStatuses = enumFrom Pending
