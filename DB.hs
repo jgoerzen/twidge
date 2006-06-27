@@ -38,3 +38,10 @@ connect =
     do fp <- config.getDBName
        connectSqlite3 fp
 
+prepdb2 dbh =
+    do tables <- getTables dbh
+       schemaver <- prepSchema dbh tables
+
+prepSchema dbh tables =
+    if "schemaver" `elem` tables
+       then do 
