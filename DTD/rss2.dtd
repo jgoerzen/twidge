@@ -1,0 +1,85 @@
+<!-- RSS 2.0 DTD
+
+     This version Copyright 2003 Silmaril Consultants
+     Licensed for use under the terms of the XL 1.1
+
+     Peter Flynn <peter@silmaril.ie>, August 2003
+
+     This is a real, working DTD for RSS 2.0.
+
+     This replaces an earlier version which misinterpreted
+     the specification. The header of the earlier version
+     is reproduced here: 
+/**
+* rss.xml
+* Copyright: David Shafik and The Explosive Network
+* Began: 08:33 PM 01/14/03
+* Desc: RSS 2.0 DTD
+* Build #: 0003
+* Version number: 1.0 RC2
+* E-Mail: davey@i...
+* URL: www.its-explosive.net
+* License: XL 1.1
+*/
+
+     Comments and questions about the RSS2.0 Spec should be posted
+     to the Yahoo! group RSS2-Support, *NOT* sent to me. Contact me
+     only about bugs in this DTD!
+
+     This version is based on the specification provided by 
+     Userland at http://feeds.archive.org/validator/docs/rss2.html -->
+
+<!ELEMENT rss (channel)>
+<!ATTLIST rss version CDATA #FIXED "2.0">
+
+<!-- A channel can apparently either have one or more items, 
+     or just a title, link, and description of its own -->
+
+<!ELEMENT channel ((item+)|
+                   (title,link,description,(language|copyright|
+                    managingEditor|webMaster|pubDate|lastBuildDate|
+                    category|generator|docs|cloud|ttl|image|
+                    textInput|skipHours|skipDays)*))>
+
+<!ELEMENT item ((title|description)+,link?,
+                (author|category|comments|enclosure|guid|pubDate|source)*)>
+
+<!ELEMENT author (#PCDATA)>
+<!ELEMENT category (#PCDATA)>
+<!ATTLIST category domain CDATA #IMPLIED>
+<!ELEMENT cloud (#PCDATA)>
+<!ATTLIST cloud domain CDATA #IMPLIED
+                port CDATA #IMPLIED
+                path CDATA #IMPLIED
+                registerProcedure CDATA #IMPLIED
+                protocol CDATA #IMPLIED>
+<!ELEMENT comments (#PCDATA)>
+<!ELEMENT copyright (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT docs (#PCDATA)>
+<!ELEMENT enclosure (#PCDATA)>
+<!ATTLIST enclosure url CDATA #REQUIRED 
+                    length CDATA #REQUIRED 
+                    type CDATA #REQUIRED>
+<!ELEMENT generator (#PCDATA)>
+<!ELEMENT guid (#PCDATA)>
+<!ATTLIST guid isPermaLink (true|false) "true">
+<!ELEMENT height (#PCDATA)>
+<!ELEMENT image (url,title,link,(width|height|description)*)>
+<!ELEMENT language (#PCDATA)>
+<!ELEMENT lastBuildDate (#PCDATA)>
+<!ELEMENT link (#PCDATA)>
+<!ELEMENT managingEditor (#PCDATA)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT pubDate (#PCDATA)>
+<!ELEMENT skipDays (#PCDATA)>
+<!ELEMENT skipHours (#PCDATA)>
+<!ELEMENT source (#PCDATA)>
+<!ATTLIST source url CDATA #REQUIRED>
+<!ELEMENT textInput (title,description,name,link)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT ttl (#PCDATA)>
+<!ELEMENT url (#PCDATA)>
+<!ELEMENT webMaster (#PCDATA)>
+<!ELEMENT width (#PCDATA)>
+
