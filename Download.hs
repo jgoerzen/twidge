@@ -1,4 +1,4 @@
-{- hspod component
+{- hpodder component
 Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@ data Result = Success | TempFail | PermFail
             deriving (Eq, Show, Read)
 
 curl = "curl"
-curlopts = ["-A", "hspod v0.1.0; Haskell; GHC", "-s", "-L", 
+curlopts = ["-A", "hpodder v0.1.0; Haskell; GHC", "-s", "-L", 
                 "-y", "60", "-Y", "1", "--retry", "2", "-f", "-C", "-"]
 
 getURL :: String -> FilePath -> IO Result

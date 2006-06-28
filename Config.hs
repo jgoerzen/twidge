@@ -1,4 +1,4 @@
-{- hspod component
+{- hpodder component
 Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
@@ -43,12 +43,12 @@ getEnclTmp =
     do appdir <- getAppDir
        return $ appdir ++ "/enclosurexfer"
 
-getAppDir = do appdir <- getAppUserDataDirectory "hspod"
+getAppDir = do appdir <- getAppUserDataDirectory "hpodder"
                return appdir
 
 getDBName = 
     do appdir <- getAppDir
-       return $ appdir ++ "/hspod.db"
+       return $ appdir ++ "/hpodder.db"
 
 getDefaultCP =
     do docsdir <- getUserDocumentsDirectory
@@ -65,7 +65,7 @@ startingcp = emptyCP {accessfunc = interpolatingAccess 10}
 
 getCPName =
     do appdir <- getAppDir
-       return $ appdir ++ "/hspod.conf"
+       return $ appdir ++ "/hpodder.conf"
 
 loadCP = 
     do cpname <- getCPName

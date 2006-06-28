@@ -1,4 +1,4 @@
-{- hspod component
+{- hpodder component
 Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
@@ -72,9 +72,9 @@ worker args n commandargs =
 usageerror errormsg =
     do putStrLn errormsg
        putStrLn (usageInfo header options)
-       putStrLn "Run \"hspod lscommands\" for a list of available commands.\n\
-                \Run \"hspod command --help\" for help on a particular command.\n"
+       putStrLn "Run \"hpodder lscommands\" for a list of available commands.\n\
+                \Run \"hpodder command --help\" for help on a particular command.\n"
        exitFailure
 
-header = "Usage: hspod [global-options] command [command-options]\n\n\
+header = "Usage: hpodder [global-options] command [command-options]\n\n\
          \Available global-options are:\n"
