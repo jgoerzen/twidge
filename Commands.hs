@@ -34,6 +34,9 @@ import Data.List
 import Text.Printf
 import Utils
 import Types
+import Config
+import MissingH.ConfigParser
+import MissingH.Either
 
 import qualified Commands.Add
 import qualified Commands.Ls
@@ -72,7 +75,7 @@ fetch =
 
 fetch_worker gi ([], casts) =
     do cp <- loadCP
-       showintro <- get cp "general" "showintro"
+       let showintro = forceEither $ get cp "general" "showintro"
        if showintro 
               then Commands.Setup.cmd_worker gi ([], [])
               else do Commands.Update.cmd_worker gi ([], casts)

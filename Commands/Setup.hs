@@ -32,6 +32,10 @@ import qualified Commands.Update
 import qualified Commands.Download
 import qualified Commands.Catchup
 import qualified Commands.Add
+import MissingH.ConfigParser
+import System.IO
+import MissingH.Either
+import MissingH.Str
 
 i = infoM "setup"
 w = warningM "setup"
@@ -52,16 +56,18 @@ cmd_worker gi ([], []) =
  \You can just press Enter to accept the default location in the brackets,\n\
  \or enter your own location (full path, please!)\n\n\
  \  Download Location ["
-       defaultloc <- get cp "DEFAULT" "downloaddir"
+       let defaultloc = forceEither $ get cp "DEFAULT" "downloaddir"
        putStr defaultloc
        putStr "]: "
-       dlloc_inp <- getLn
+       hFlush stdout
+       dlloc_inp <- getLine
        putStr "\n\nOK!  Last question:  Would you like hpodder to\n\
 \automatically subscribe you to a few sample podcasts?  This could be a nice\n\
 \way to see what's out there.  You can always remove these or add your own\n\
 \later.\n\n\
-  Subscribe to sample podcasts? [Y/n] "
-       subscribe_inp <- getLn
+\  Subscribe to sample podcasts? [Y/n] "
+       hFlush stdout
+       subscribe_inp <- getLine
        cpname <- getCPName
        writeFile cpname $
                  "[DEFAULT]\n\n" ++
@@ -81,7 +87,7 @@ cmd_worker gi ([], []) =
        putStr "\n\nOK, hpodder is ready to run!  Each time you want to\n\
  \download new episodes, just run hpodder.  If you let me subscribe you\n\
  \to episodes, type hpodder and hit Enter to start the podcasts downloading!\n\
- \n\Don't forget to check the hpodder manual for more tips on hpodder!\n\n"
+ \\nDon't forget to check the hpodder manual for more tips on hpodder!\n\n"
 
 cmd_worker _ _ =
     fail $ "Invalid arguments to setup"

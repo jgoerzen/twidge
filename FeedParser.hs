@@ -32,6 +32,7 @@ module FeedParser where
 
 import Types
 import Text.XML.HaXml
+import Text.XML.HaXml.Parse
 import Utils
 
 data Item = Item {itemtitle :: String,
@@ -49,13 +50,17 @@ item2ep pc item =
              epurl = sanitize_basic (enclosureurl item),
              eptype = sanitize_basic (enclosuretype item), epstatus = Pending}
 
-parse :: FilePath -> String -> IO Feed
+parse :: FilePath -> String -> IO (Either String Feed)
 parse fp name = 
     do c <- readFile fp
-       let doc = getContent $ xmlParse name c
-       let title = getTitle doc
-       let feeditems = getEnclosures doc
-       return (Feed {channeltitle = title, items = feeditems})
+       case xmlParse' name c of
+         Left x -> return (Left x)
+         Right y ->
+             do let doc = getContent y
+                let title = getTitle doc
+                let feeditems = getEnclosures doc
+                return $ Right $
+                           (Feed {channeltitle = title, items = feeditems})
        where getContent (Document _ _ e _) = CElem e
 
 getTitle doc = strofm "title" (channel doc)

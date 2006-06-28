@@ -28,13 +28,15 @@ import Config
 import Database.HDBC
 import Control.Monad
 import Utils
+import System.Console.GetOpt
+import MissingH.GetOpt
 
 i = infoM "catchup"
 w = warningM "catchup"
 
 cmd = simpleCmd "catchup" 
       "Tell hpodder to ignore old undownloaded episodes" helptext
-      [Option "n" ["--number-eps"] [] (ReqArg (stdRequired "n") "NUM")
+      [Option "n" ["number-eps"] (ReqArg (stdRequired "n") "NUM")
        "Number of episodes to allow to download (default 1)"] 
       cmd_worker
 
@@ -46,41 +48,20 @@ cmd_worker gi (args, casts) =
        i $ printf "%d podcast(s) to consider\n" (length podcastlist)
        mapM_ (catchupThePodcast gi n) podcastlist
 
-cmd_worker _ _ =
-    fail $ "Invalid arguments to catchup; please see hpodder catchup --help"
-
 catchupThePodcast gi n pc =
     do i $ printf " * Podcast %d: %s" (castid pc) (feedurl pc)
        eps <- getEpisodes (gdbh gi) pc
        let epstoproc = take (length eps - n) eps
        mapM procEp epstoproc
+       commit (gdbh gi)
     where procEp ep = 
-              updateEpisode dbh (ep {epstatus = newstatus})
+              updateEpisode (gdbh gi) (ep {epstatus = newstatus})
               where newstatus = 
                         case epstatus ep of
                           Pending -> Skipped
                           Error -> Skipped
                           x -> x
-                                   
 
-updateFeed gi pcorig f =
-    do count <- foldM (updateEnc gi pc) 0 (items f)
-       i $ printf "   %d new episodes" count
-       return pc
-    where pc = pcorig {castname = sanitize_basic (channeltitle f)}
-
-updateEnc gi pc count item = 
-    do newc <- addEpisode (gdbh gi) (item2ep pc item)
-       return $ count + newc
-
-getFeed pc =
-    do result <- getURL (feedurl pc) "feed.xml"
-       case result of
-         Success -> 
-             do feed <- parse "feed.xml" (feedurl pc)
-                return $ Just (feed {items = reverse (items feed)})
-         _ -> do w "   Failure downloading feed"
-                 return Nothing
 
 helptext = "Usage: hpodder update [castid [castid...]]\n\n" ++ genericIdHelp ++
  "\nRunning update will cause hpodder to look at each requested podcast.  It\n\

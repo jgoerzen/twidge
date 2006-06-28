@@ -69,7 +69,10 @@ getFeed pc =
        case result of
          Success -> 
              do feed <- parse "feed.xml" (feedurl pc)
-                return $ Just (feed {items = reverse (items feed)})
+                case feed of
+                  Right f -> return $ Just (f {items = reverse (items f)})
+                  Left x -> do w $ "   Failure parsing feed: " ++ x
+                               return Nothing
          _ -> do w "   Failure downloading feed"
                  return Nothing
 
