@@ -70,9 +70,8 @@ cmd_worker gi ([], []) =
        subscribe_inp <- getLine
        cpname <- getCPName
        writeFile cpname $
-                 "[DEFAULT]\n\n" ++
                  (if (strip dlloc_inp) /= ""
-                     then "downloaddir = " ++ dlloc_inp ++ "\n"
+                     then "[DEFAULT]\n\ndownloaddir = " ++ dlloc_inp ++ "\n"
                      else "\n") ++
                  "[general]\n\n; The following line tells hpodder that\n\
                  \; you have already gone through the intro.\n\
