@@ -58,8 +58,6 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 -}
 
-module Main where
-
 import Config
 import DB
 
@@ -68,6 +66,8 @@ main =
        infoM "" " - - - hspod - - -"
        (args, commandargs) <- validateCmdLine RequireOrder options header 
                               validate
+       infoM "Done."
+
        
 options = [Option "d" ["debug"] (NoArg ("d", "")) "Enable debugging"]
 
