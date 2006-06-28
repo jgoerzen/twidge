@@ -51,3 +51,12 @@ data Command = Command {cmdname :: String,
                         cmddescrip :: String,
                         execcmd :: [String] -> IO ()}
 
+data Item = Item {itemtitle :: String,
+                  enclosureurl :: String,
+                  enclosuretype :: String}
+          deriving (Eq, Show, Read)
+
+data Feed = Feed {channeltitle :: String,
+                  items :: [Item]}
+            deriving (Eq, Show, Read)
+
