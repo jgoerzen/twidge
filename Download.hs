@@ -31,6 +31,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 module Download(getURL, Result(..)) where
 import System.Cmd
+import System.Exit
 
 data Result = Success | TempFail | PermFail
             deriving (Eq, Show, Read)
@@ -44,7 +45,7 @@ getURL url fp =
     do ec <- rawSystem curl (curlopts ++ [url, "-o", fp])
        return $ case ec of
                   ExitSuccess -> Success
-                  ExitFaulure i ->
+                  ExitFailure i ->
                       case i of
                         5 -> TempFail -- error resolving proxy
                         6 -> TempFail -- error resolving host

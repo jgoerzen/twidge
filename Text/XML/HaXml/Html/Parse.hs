@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -cpp #-}
 -- | This is a parser for HTML documents.  Unlike for XML documents, it
 --   must include a certain amount of error-correction to account for
 --   HTML features like self-terminating tags, unterminated tags, and

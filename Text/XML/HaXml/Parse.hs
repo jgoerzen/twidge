@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -cpp #-}
 -- | A non-validating XML parser.  For the input grammar, see
 --   <http://www.w3.org/TR/REC-xml>.
 module Text.XML.HaXml.Parse

@@ -1,4 +1,4 @@
-Name: hspod
+Name: hpodder
 Version: 0.1.0
 License: GPL
 Maintainer: John Goerzen <jgoerzen@complete.org>
@@ -7,8 +7,8 @@ Copyright: Copyright (c) 2006 John Goerzen
 Build-Depends: haskell-src, network, unix, parsec, MissingH>=0.14.3,
  HDBC>=0.99.2, HDBC-sqlite3>=0.99.2
 
-Executable: hspod
-Main-Is: hspod.hs
+Executable: hpodder
+Main-Is: hpodder.hs
 GHC-Options: -O2
 Extensions: ExistentialQuantification, AllowOverlappingInstances,
     AllowUndecidableInstances

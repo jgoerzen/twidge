@@ -66,3 +66,6 @@ initDirs =
     do appdir <- getAppDir
        mapM_ mkdir [appdir, appdir ++ "/feedxfer", appdir ++ "/enclosurexfer"]
        where mkdir = createDirectoryIfMissing True
+
+sanitize_basic =
+    filter (\c -> not (c `elem` "\n\r\t\0"))

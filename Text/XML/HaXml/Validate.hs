@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -cpp #-}
 -- | Validate a document against a dtd.
 module Text.XML.HaXml.Validate
   ( validate

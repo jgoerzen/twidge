@@ -76,7 +76,7 @@ upgradeSchema dbh 0 tables =
                        \episodeid INTEGER NOT NULL, \
                        \title TEXT NOT NULL, \
                        \epurl TEXT NOT NULL, \
-                       \enctype TEXT NOT NULL,
+                       \enctype TEXT NOT NULL,\
                        \status TEXT NOT NULL,\
                        \UNIQUE(castid, epurl),\
                        \UNIQUE(castid, episodeid))" [] >> return ())
@@ -120,13 +120,13 @@ and preserve the existing record. -}
 addItem :: Connection -> Podcast -> Item -> IO Integer
 addItem dbh pc item =
     do nextepid <- getepid
-       run "INSERT OR IGNORE INTO episodes (castid, episodeid, title, epurl,\
-           \enctype, status) VALUES (?, ?, ?, ?, ?, ?)"
+       run dbh "INSERT OR IGNORE INTO episodes (castid, episodeid, title,\
+           \epurl, enctype, status) VALUES (?, ?, ?, ?, ?, ?)"
            [toSql (castid pc), toSql nextepid, toSql (itemtitle item),
             toSql (enclosureurl item), toSql (enclosuretype item),
             toSql (show Pending)]
-    where nextepid = 
-              do r <- quickQuery "SELECT MAX(episodeid) FROM episodes WHERE castid = ?" [toSql (castid pc)]
+    where getepid = 
+              do r <- quickQuery dbh "SELECT MAX(episodeid) FROM episodes WHERE castid = ?" [toSql (castid pc)]
                  case r of
                    [] -> return 1
-                   [[x]] -> return ((fromSql x) + 1)
+                   [[x]] -> return ((fromSql x) + (1::Int))
