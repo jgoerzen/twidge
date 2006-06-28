@@ -47,7 +47,7 @@ getTitle doc = strofm "title" (channel doc)
 getEnclosures doc =
     concat . map procitem $ item doc
     where procitem i = map (procenclosure title) enclosure
-              where title = strofm "title" (children i)
+              where title = strofm "title" [i]
                     enclosure = tag "enclosure" `o` children $ i
           procenclosure title e =
               Item {itemtitle = title,
