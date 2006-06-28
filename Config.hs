@@ -63,7 +63,7 @@ loadCP =
     do cpname <- getCPName
        defaultcp <- getDefaultCP
        if doesFileExist cpname
-          then do cp <- readfile startingcp cpname
+          then do cp <- readfile defaultcp cpname
                   return $ forceEither cp
           else return defaultcp
 

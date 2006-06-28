@@ -1,0 +1,13 @@
+Name: hspod
+Version: 0.1.0
+License: GPL
+Maintainer: John Goerzen <jgoerzen@complete.org>
+Stability: Alpha
+Copyright: Copyright (c) 2006 John Goerzen
+Build-Depends: haskell-src, network, unix, parsec, MissingH>=0.14.2
+
+Executable: hspod
+Main-Is: hspod.hs
+GHC-Options: -O2
+Extensions: ExistentialQuantification, AllowOverlappingInstances,
+    AllowUndecidableInstances
