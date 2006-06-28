@@ -12,7 +12,7 @@ hugsbuild: setup
 	./setup configure --hugs
 	./setup build
 
-setup: Setup.lhs hspod.cabal
+setup: Setup.lhs hpodder.cabal
 	ghc -package Cabal Setup.lhs -o setup
 
 clean:
