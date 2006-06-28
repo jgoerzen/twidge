@@ -1,4 +1,4 @@
-{- hspod component
+{- hpodder component
 Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ cmd_worker gi (_, [url]) =
        printf "Podcast %s added with id %d.\n" url (castid pc)
 
 cmd_worker _ _ =
-    do fail "Feed URL required; see hspod add --help for info"
+    do fail "Feed URL required; see hpodder add --help for info"
 
 helptext = 
-    "Usage: hspod add feedurl"
+    "Usage: hpodder add feedurl"

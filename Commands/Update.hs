@@ -1,4 +1,4 @@
-{- hspod component
+{- hpodder component
 Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ cmd = simpleCmd "update"
 cmd_worker _ _ =
     do return ()
 
-helptext = "Running update will cause hspod to look at each configured podcast.  It\n\
+helptext = "Running update will cause hpodder to look at each configured podcast.  It\n\
 \will download the feed for each one and update its database of available\n\
 \episodes.  It will not actually download any episodes; see the download\n\
 \command for that."
