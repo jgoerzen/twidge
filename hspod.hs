@@ -68,7 +68,7 @@ main =
     do updateGlobalLogger "" (setLevel DEBUG)
        infoM "" " - - - hspod - - -"
        (args, commandargs) <- validateCmdLine 
-                              (ReturnInOrder (\x -> ("BAREWORD", x)))
+                              RequireOrder
                               options header validate
        infoM "" "Done."
 
