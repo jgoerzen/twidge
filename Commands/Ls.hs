@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Ls(lscasts, lsepisodes) where
+module Commands.Ls(lscasts, lsepisodes, lseps) where
 import Utils
 import MissingH.Logging.Logger
 import DB
@@ -67,6 +67,9 @@ lscasts_help =
 
 lsepisodes = simpleCmd "lsepisodes" "List episodes in hspodder database"
                lsepisodes_help
+             [Option "l" [] (NoArg ("l", "")) "Long format display -- include URLs in putput"] lsepisodes_worker
+
+lseps = simpleCmd "lseps" "Alias for lsepisodes" lsepisodes_help
              [Option "l" [] (NoArg ("l", "")) "Long format display -- include URLs in putput"] lsepisodes_worker
 
 lsepisodes_worker gi (opts, casts) =

@@ -83,7 +83,7 @@ procSuccess gi ep tmpfp =
        res <- rawSystem "id3v2" ["-A", castname . podcast $ ep,
                                  "-t", eptitle ep,
                                  "--WOAS", epurl ep,
-                                 "--WXXX", feedurl . podcast $ ep,
+--                                 "--WXXX", feedurl . podcast $ ep,
                                  finalfn]
        case res of
          ExitSuccess -> return ()

@@ -44,9 +44,11 @@ allCommands :: [(String, Command)]
 allCommands = 
     [Commands.Add.cmd,
      Commands.Download.cmd,
+     fetch,
      Commands.Ls.lscasts,
      lscommands,
      Commands.Ls.lsepisodes,
+     Commands.Ls.lseps,
      Commands.Update.cmd]
 
 lscommands = 
