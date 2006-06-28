@@ -41,6 +41,7 @@ import Commands
 import Types
 import Control.Monad
 import Utils
+import Database.HDBC
 
 main = 
     do updateGlobalLogger "" (setLevel DEBUG)
@@ -61,8 +62,8 @@ worker args n commandargs =
          Just command -> 
              do cp <- loadCP 
                 dbh <- connect
-                execcmd command (tail cmdargs) 
-                            (GlobalInfo {gcp = cp, gdbh = dbh})
+                handleSqlError $ execcmd command (tail cmdargs) 
+                                   (GlobalInfo {gcp = cp, gdbh = dbh})
          Nothing -> usageerror ("Invalid command name " ++ commandname)
        where cmdargs = case commandargs of
                          [] -> ["fake"]

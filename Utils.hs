@@ -59,10 +59,7 @@ simpleCmd name descrip helptext optionsinp func =
                  putStrLn (usageInfo header options)
                  putStrLn helptext
                  exitFailure
-          header = "Usage: hspod [global-options] " ++ name ++ " [command-options]\n\n\
-                    \Run hspod --help for help on global options.\n\
-                    \\n\
-                    \Available command-options for " ++ name ++ " are:\n"
+          header = "Available command-options for " ++ name ++ " are:\n"
                                                                
 
 initDirs = 

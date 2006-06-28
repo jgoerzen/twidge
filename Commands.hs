@@ -35,11 +35,13 @@ import Text.Printf
 import Utils
 import Types
 
+import qualified Commands.Add
 import qualified Commands.Update
 
 allCommands :: [(String, Command)]
 allCommands = 
-    [lscommands,
+    [Commands.Add.cmd,
+     lscommands,
      Commands.Update.cmd]
 
 lscommands = 
