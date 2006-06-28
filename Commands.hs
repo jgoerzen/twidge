@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
 {- |
-   Module     : Types
+   Module     : Commands
    Copyright  : Copyright (C) 2006 John Goerzen
    License    : GNU GPL, version 2 or above
 
@@ -28,26 +28,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 Written by John Goerzen, jgoerzen\@complete.org
 
 -}
-module Types where
+module Commands where
 
-data EpisodeStatus = Pending -- ^ Ready to download
-                   | Downloaded -- ^ Already downloaded
-                   | Error -- ^ Error downloading
-                   | Skipped -- ^ Skipped by some process or other
-                     deriving (Eq, Show, Read, Ord, Enum)
+import Data.List
+import Text.Printf
+import Utils
+import Types
 
-data Podcast = Podcast {castid :: Integer,
-                        castname :: String,
-                        feedurl :: String}
-             deriving (Eq, Show, Read)
+allCommands :: [(String, Command)]
+allCommands = 
+    [lscommands]
 
-data Episode = Episode {podcast :: Podcast,
-                        eptitle :: String,
-                        epurl :: String,
-                        epstatus :: EpisodeStatus}
-             deriving (Eq, Show, Read)
+lscommands = 
+    simpleCmd "lscommands" "Display a list of all available commands" 
+                  [] lscommands_worker
 
-data Command = Command {cmdname :: String,
-                        cmddescrip :: String,
-                        execcmd :: [String] -> IO ()}
-
+lscommands_worker _ =
+    do putStrLn "All available commands:"
+       -- printf "%-20s %s\n" "Name" "Description"
+       putStrLn "-------------------- -------------------------------------------------------"
+       {- mapM_ (\(_, x) -> printf "%-20s %s\n" (cmdname x) (cmddescrip x))
+             allCommands -}
+                 
