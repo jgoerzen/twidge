@@ -86,6 +86,8 @@ procSuccess gi ep tmpfp =
        case res of
          ExitSuccess -> return ()
          ExitFailure y -> w $ "   id3v2 returned: " ++ show y
+       updateEpisode (gdbh gi) (ep {epstatus = Downloaded})
+       commit (gdbh gi)
        
     where idstr = show . castid . podcast $ ep
           fnpart = snd . splitFileName $ epurl ep
