@@ -39,6 +39,7 @@ import MissingH.Str
 import MissingH.Either
 import Data.List
 
+d = debugM "download"
 i = infoM "download"
 w = warningM "download"
 
@@ -78,6 +79,7 @@ procSuccess gi ep tmpfp =
                      not (isSuffixOf ".mp3" newfn)
                   then movefile tmpfp (newfn ++ ".mp3")
                   else movefile tmpfp newfn
+       d "   Setting ID3 tags..."
        res <- rawSystem "id3v2" ["-A", castname . podcast $ ep,
                                  "-t", eptitle ep,
                                  "--WOAS", epurl ep,
@@ -96,7 +98,10 @@ getCP :: Episode -> String -> String -> IO ConfigParser
 getCP ep idstr fnpart =
     do cp <- loadCP
        return $ forceEither $
-              do cp <- set cp idstr "safecasttitle" 
+              do cp <- if has_section cp idstr
+                          then return cp
+                          else add_section cp idstr
+                 cp <- set cp idstr "safecasttitle" 
                        (sanitize_fn . castname . podcast $ ep)
                  cp <- set cp idstr "epid" (show . epid $ ep)
                  cp <- set cp idstr "castid" idstr
