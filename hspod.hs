@@ -43,14 +43,11 @@ import Control.Monad
 
 main = 
     do updateGlobalLogger "" (setLevel DEBUG)
-       infoM "" " - - - hspod - - -"
        argv <- getArgs
        let (optargs, commandargs) = span (isPrefixOf "-") argv
        case getOpt RequireOrder options optargs of
          (o, n, []) -> worker o n commandargs
          (_, _, errors) -> usageerror (concat errors) -- ++ usageInfo header options)
-       infoM "" "Done."
-
        
 options = [Option "d" ["debug"] (NoArg ("d", "")) "Enable debugging",
            Option "" ["help"] (NoArg ("help", "")) "Display this help"]
@@ -68,9 +65,8 @@ worker args n commandargs =
 usageerror errormsg =
     do putStrLn errormsg
        putStrLn (usageInfo header options)
+       putStrLn "Run \"hspod lscommands\" for a list of available commands.\n"
        exitFailure
 
 header = "Usage: hspod [global-options] command [command-options]\n\n\
-         \Run hspod lscommands for information on the available commands.\n\
-         \\n\
          \Available global-options are:\n"

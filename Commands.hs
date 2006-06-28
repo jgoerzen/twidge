@@ -45,8 +45,8 @@ lscommands =
 
 lscommands_worker _ =
     do putStrLn "All available commands:"
-       -- printf "%-20s %s\n" "Name" "Description"
+       printf "%-20s %s\n" "Name" "Description"
        putStrLn "-------------------- -------------------------------------------------------"
-       {- mapM_ (\(_, x) -> printf "%-20s %s\n" (cmdname x) (cmddescrip x))
-             allCommands -}
+       mapM_ (\(_, x) -> printf "%-20s %s\n" (cmdname x) (cmddescrip x))
+             allCommands
                  
