@@ -63,6 +63,8 @@ parse fp name =
                            (Feed {channeltitle = title, items = feeditems})
        where getContent (Document _ _ e _) = CElem e
 
+unesc = xmlUnEscape stdXmlEscaper
+
 getTitle doc = strofm "title" (channel doc)
 
 getEnclosures doc =
@@ -89,10 +91,12 @@ channel =
 --------------------------------------------------
 
 attrofelem :: String -> Content -> AttValue
-attrofelem attrname (CElem (Elem name al _)) =
-    case lookup attrname al of
-       Just x -> x
-       Nothing -> error $ "attrofelem: no " ++ attrname ++ " in " ++ name
+attrofelem attrname (CElem inelem) =
+    case unesc inelem of
+      Elem name al _ -> 
+          case lookup attrname al of
+            Just x -> x
+            Nothing -> error $ "attrofelem: no " ++ attrname ++ " in " ++ name
 attrofelem _ _ =
     error "attrofelem: called on something other than a CElem"
 stratt :: String -> Content -> [String]
@@ -104,10 +108,13 @@ stratt attrname content =
 
 -- Finds the literal children of the named tag, and returns it/them
 tagof :: String -> CFilter
-tagof x = keep /> tag x /> txt
+tagof x = keep /> tag x -- /> txt
 
 -- Retruns the literal string that tagof would find
 strof :: String -> Content -> String
-strof x y = verbatim $ tagof x $ y
+strof x y = verbatim $ tag x /> txt $
+            case tagof x $ y of
+                [CElem elem] -> CElem (unesc elem)
+                z -> error $ "strof: expecting CElem, got " ++ verbatim z
 
 strofm x y = concat . map (strof x) $ y
