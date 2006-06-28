@@ -40,6 +40,7 @@ import System.Exit
 import Commands
 import Types
 import Control.Monad
+import Utils
 
 main = 
     do updateGlobalLogger "" (setLevel DEBUG)
@@ -54,9 +55,14 @@ options = [Option "d" ["debug"] (NoArg ("d", "")) "Enable debugging",
 
 worker args n commandargs =
     do when (lookup "help" args == Just "") $ usageerror ""
+       initDirs
        let commandname = head cmdargs
        case lookup commandname allCommands of
-         Just command -> execcmd command (tail cmdargs)
+         Just command -> 
+             do cp <- loadCP 
+                dbh <- connect
+                execcmd command (tail cmdargs) 
+                            (GlobalInfo {gcp = cp, gdbh = dbh})
          Nothing -> usageerror ("Invalid command name " ++ commandname)
        where cmdargs = case commandargs of
                          [] -> ["fake"]

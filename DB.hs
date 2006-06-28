@@ -99,3 +99,10 @@ updatePodcast dbh podcast =
         [toSql (castname podcast), toSql (feedurl podcast),
          toSql (castid podcast)] >> return ()
 
+getPodcasts :: Connection -> IO [Podcast]
+getPodcasts dbh =
+    do res <- quickQuery dbh "SELECT castid, castname, feedurl FROM podcasts ORDER BY castid" []
+       return $ map convrow res
+    where convrow [svid, svname, svurl] =
+              Podcast {castid = fromSql svid, castname = fromSql svname,
+                       feedurl = fromSql svurl}

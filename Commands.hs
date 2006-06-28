@@ -35,15 +35,18 @@ import Text.Printf
 import Utils
 import Types
 
+import qualified Commands.Update
+
 allCommands :: [(String, Command)]
 allCommands = 
-    [lscommands]
+    [lscommands,
+     Commands.Update.cmd]
 
 lscommands = 
-    simpleCmd "lscommands" "Display a list of all available commands" 
+    simpleCmd "lscommands" "Display a list of all available commands" ""
                   [] lscommands_worker
 
-lscommands_worker _ =
+lscommands_worker _ _ =
     do putStrLn "All available commands:"
        printf "%-20s %s\n" "Name" "Description"
        putStrLn "-------------------- -------------------------------------------------------"

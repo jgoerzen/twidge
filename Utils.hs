@@ -34,21 +34,30 @@ import MissingH.GetOpt
 import System.Console.GetOpt
 import Types
 import System.Exit
+import Config
+import System.Directory
 
-simpleCmd :: String -> String -> [OptDescr a] -> (([a], [String]) -> IO ()) -> 
-             (String, Command)
-simpleCmd name descrip options func =
+simpleCmd :: String -> String -> String -> [OptDescr (String, String)] 
+          -> (GlobalInfo -> ([(String, String)], [String]) -> IO ()) 
+          -> (String, Command)
+simpleCmd name descrip helptext optionsinp func =
     (name, Command {cmdname = name, cmddescrip = descrip,
                     execcmd = worker})
-    where worker argv =
+    where options =
+              optionsinp ++ [Option "" ["help"] (NoArg ("help", "")) "Display this help"]
+          worker argv gi =
               case getOpt RequireOrder options argv of
-                (o, n, []) -> func (o, n)
+                (o, n, []) -> 
+                    if (lookup "help" o == Just "") 
+                       then usageerror []
+                       else func gi (o, n)
                 (_, _, errors) -> usageerror (concat errors)
           usageerror errormsg =
               do putStrLn $ "Error processing arguments for command " ++ 
                           name ++ ":"
                  putStrLn errormsg
                  putStrLn (usageInfo header options)
+                 putStrLn helptext
                  exitFailure
           header = "Usage: hspod [global-options] " ++ name ++ " [command-options]\n\n\
                     \Run hspod --help for help on global options.\n\
@@ -56,3 +65,7 @@ simpleCmd name descrip options func =
                     \Available command-options for " ++ name ++ " are:\n"
                                                                
 
+initDirs = 
+    do appdir <- getAppDir
+       mapM_ mkdir [appdir, appdir ++ "/feedxfer", appdir ++ "/enclosurexfer"]
+       where mkdir = createDirectoryIfMissing True

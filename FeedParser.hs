@@ -33,10 +33,10 @@ module FeedParser(parse) where
 import Types
 import Text.XML.HaXml
 
-parse :: FilePath -> IO Feed
-parse fp = 
+parse :: FilePath -> String -> IO Feed
+parse fp name = 
     do c <- readFile fp
-       let doc = getContent $ xmlParse fp c
+       let doc = getContent $ xmlParse name c
        let title = getTitle doc
        let feeditems = getEnclosures doc
        return (Feed {channeltitle = title, items = feeditems})
@@ -85,7 +85,7 @@ stratt attrname content =
 tagof :: String -> CFilter
 tagof x = keep /> tag x /> txt
 
--- Retruns the literal string that tagof would fine
+-- Retruns the literal string that tagof would find
 strof :: String -> Content -> String
 strof x y = verbatim $ tagof x $ y
 

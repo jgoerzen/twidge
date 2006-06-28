@@ -29,6 +29,11 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 -}
 module Types where
+import MissingH.ConfigParser
+import Database.HDBC
+
+data GlobalInfo = GlobalInfo {gcp :: ConfigParser,
+                              gdbh :: Connection}
 
 data EpisodeStatus = Pending -- ^ Ready to download
                    | Downloaded -- ^ Already downloaded
@@ -49,7 +54,7 @@ data Episode = Episode {podcast :: Podcast,
 
 data Command = Command {cmdname :: String,
                         cmddescrip :: String,
-                        execcmd :: [String] -> IO ()}
+                        execcmd :: [String] -> GlobalInfo -> IO ()}
 
 data Item = Item {itemtitle :: String,
                   enclosureurl :: String,

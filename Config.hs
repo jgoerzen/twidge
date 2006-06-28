@@ -35,9 +35,15 @@ import MissingH.ConfigParser
 import Control.Monad
 import MissingH.Either
 
+getFeedTmp =
+    do appdir <- getAppDir
+       return $ appdir ++ "/feedxfer"
+
+getEnclTmp =
+    do appdir <- getAppDir
+       return $ appdir ++ "/enclosurexfer"
+
 getAppDir = do appdir <- getAppUserDataDirectory "hspod"
-               dde <- doesDirectoryExist appdir
-               unless (dde) (createDirectory appdir)
                return appdir
 
 getDBName = 
