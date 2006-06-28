@@ -36,6 +36,7 @@ import Types
 import System.Exit
 import Config
 import System.Directory
+import DB
 
 simpleCmd :: String -> String -> String -> [OptDescr (String, String)] 
           -> (GlobalInfo -> ([(String, String)], [String]) -> IO ()) 
@@ -69,3 +70,14 @@ initDirs =
 
 sanitize_basic =
     filter (\c -> not (c `elem` "\n\r\t\0"))
+
+genericIdHelp =
+ "You can optionally specify one or more podcast IDs.  If given,\n\
+  \only those IDs will be selected for processing.\n\n\
+  \The special id \"all\" will select all podcast IDs.\n"
+
+getSelectedPodcasts dbh [] = getSelectedPodcasts dbh ["all"]
+getSelectedPodcasts dbh ["all"] = getPodcasts dbh
+getSelectedPodcasts dbh podcastlist =
+    do r <- mapM (getPodcast dbh) (map read podcastlist)
+       return $ concat r

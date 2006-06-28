@@ -110,10 +110,16 @@ updatePodcast dbh podcast =
 getPodcasts :: Connection -> IO [Podcast]
 getPodcasts dbh =
     do res <- quickQuery dbh "SELECT castid, castname, feedurl FROM podcasts ORDER BY castid" []
-       return $ map convrow res
-    where convrow [svid, svname, svurl] =
-              Podcast {castid = fromSql svid, castname = fromSql svname,
-                       feedurl = fromSql svurl}
+       return $ map podcast_convrow res
+
+getPodcast :: Connection -> Integer -> IO [Podcast]
+getPodcast dbh wantedid =
+    do res <- quickQuery dbh "SELECT castid, castname, feedurl FROM podcasts WHERE castid = ? ORDER BY castid" [toSql wantedid]
+       return $ map podcast_convrow res
+
+podcast_convrow [svid, svname, svurl] =
+    Podcast {castid = fromSql svid, castname = fromSql svname,
+             feedurl = fromSql svurl}
 
 {- | Add a new episode.  If the episode already exists, ignore the add request
 and preserve the existing record. -}

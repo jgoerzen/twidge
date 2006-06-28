@@ -29,11 +29,12 @@ import Data.List
 
 i = infoM "ls"
 
-lscasts = simpleCmd "lscasts" "List all configured podcasts on the system" ""
+lscasts = simpleCmd "lscasts" "List all configured podcasts on the system"
+             lscasts_help
           [Option "l" [] (NoArg ("l", "")) "Long format display -- include URLs in output"] lscasts_worker
 
-lscasts_worker gi (opts, []) =
-    do pc <- getPodcasts (gdbh gi)
+lscasts_worker gi (opts, casts) =
+    do pc <- getSelectedPodcasts (gdbh gi) casts
        printf "%-4s %s\n" "ID" "Title"
        when (islong) (printf "     URL\n")
        mapM_ printpc (sort pc)
@@ -41,3 +42,6 @@ lscasts_worker gi (opts, []) =
           printpc pc = do printf "%-4d %s\n" (castid pc) (castname pc)
                           when (islong) (printf "     %s\n" (feedurl pc))
 
+lscasts_help =
+ "Usage: hpodder ls [-l] [castid [castid...]]\n\n" ++ genericIdHelp ++
+ "\nIf no ID is given, then \"all\" will be used.\n"
