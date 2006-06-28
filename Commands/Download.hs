@@ -58,8 +58,9 @@ cmd_worker _ _ =
     fail $ "Invalid arguments to update; please see hpodder download --help"
 
 downloadEpisode gi ep =
-    do i $ printf " * Downloading (%.30s) of (%.30s)"
-       feeddir <- getFeedTmp
+    do i $ printf " * Downloading (%.30s) of (%.30s)" 
+         (eptitle ep) (castname . podcast $ ep)
+       feeddir <- getEnclTmp
        let tmpfp = feeddir ++ "/" ++ md5s (Str (show (ep {epstatus = Pending})))
        r <- getURL (epurl ep) tmpfp
        case r of
@@ -116,8 +117,9 @@ findNonExisting template =
                   hClose h
                   return fp
 
-helptext = "Usage: hpodder update [castid [castid...]]\n\n" ++ genericIdHelp ++
- "\nRunning update will cause hpodder to look at each requested podcast.  It\n\
- \will download the feed for each one and update its database of available\n\
- \episodes.  It will not actually download any episodes; see the download\n\
- \command for that."
+helptext = "Usage: hpodder download [castid [castid...]]\n\n" ++ 
+           genericIdHelp ++
+ "\nThe download command will cause hpodder to download any podcasts\n\
+ \episodes that are marked Pending.  Such episodes are usually generated\n\
+ \by a prior call to \"hpodder update\".  If you want to combine an update\n\
+ \with a download, as is normally the case, you may want \"hpodder fetch\".\n"
