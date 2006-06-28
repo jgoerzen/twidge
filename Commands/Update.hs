@@ -38,24 +38,25 @@ cmd = simpleCmd "update"
 
 cmd_worker gi ([], []) =
     do podcastlist <- getPodcasts (gdbh gi)
-       i $ printf "%d podcasts to consider\n" (length podcastlist)
+       i $ printf "%d podcast(s) to consider\n" (length podcastlist)
        mapM_ (updateThePodcast gi) podcastlist
 
 cmd_worker _ _ =
     fail $ "Invalid arguments to update; please see hpodder update --help"
 
 updateThePodcast gi pc =
-    do i $ printf " * Podcast %d: %s\n" (castid pc) (feedurl pc)
+    do i $ printf " * Podcast %d: %s" (castid pc) (feedurl pc)
        feed <- bracketFeedCWD (getFeed pc)
        case feed of
          Nothing -> return ()
          Just f -> do newpc <- updateFeed gi pc f
-                      i $ "   " ++ (castname newpc)
+                      updatePodcast (gdbh gi) newpc
+                      i $ "   Podcast Title: " ++ (castname newpc)
        commit (gdbh gi)
 
 updateFeed gi pcorig f =
     do count <- foldM (updateEnc gi pc) 0 (items f)
-       i $ printf "   %d new items\n" count
+       i $ printf "   %d new items" count
        return pc
     where pc = pcorig {castname = sanitize_basic (channeltitle f)}
 

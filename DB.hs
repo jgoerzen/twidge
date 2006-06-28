@@ -128,5 +128,6 @@ addItem dbh pc item =
     where getepid = 
               do r <- quickQuery dbh "SELECT MAX(episodeid) FROM episodes WHERE castid = ?" [toSql (castid pc)]
                  case r of
-                   [] -> return 1
+                   [[SqlNull]] -> return 1
                    [[x]] -> return ((fromSql x) + (1::Int))
+                   _ -> fail "Unexpected response in getepid"
