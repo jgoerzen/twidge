@@ -35,7 +35,7 @@ cmd_worker gi (_, [url]) =
                                             castname = "NEWLY ADDED PODCAST",
                                             feedurl = url})
        commit (gdbh gi)
-       printf "Podcast %s added with id %d.\n" url (castid pc)
+       printf "Podcast added:\n    URL: %s\n    ID: %d\n" url (castid pc)
 
 cmd_worker _ _ =
     do fail "Feed URL required; see hpodder add --help for info"
