@@ -66,7 +66,7 @@ worker args n commandargs =
                                    (GlobalInfo {gcp = cp, gdbh = dbh})
          Nothing -> usageerror ("Invalid command name " ++ commandname)
        where cmdargs = case commandargs of
-                         [] -> ["fake"]
+                         [] -> ["fetch"]
                          x -> x
 
 usageerror errormsg =

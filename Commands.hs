@@ -39,6 +39,7 @@ import qualified Commands.Add
 import qualified Commands.Ls
 import qualified Commands.Update
 import qualified Commands.Download
+import qualified Commands.Setup
 
 allCommands :: [(String, Command)]
 allCommands = 
@@ -68,8 +69,12 @@ fetch =
               [] fetch_worker
 
 fetch_worker gi ([], casts) =
-    do Commands.Update.cmd_worker gi ([], casts)
-       Commands.Download.cmd_worker gi ([], casts)
+    do cp <- loadCP
+       showintro <- get cp "general" "showintro"
+       if showintro 
+              then Commands.Setup.cmd_worker gi ([], [])
+              else do Commands.Update.cmd_worker gi ([], casts)
+                      Commands.Download.cmd_worker gi ([], casts)
     
 fetch_worker _ _ =
     fail $ "Invalid arguments to fetch; please see hpodder fetch --help"
