@@ -42,11 +42,14 @@ parse fp =
        return (Feed {channeltitle = title, items = feeditems})
        where getContent (Document _ _ e _) = CElem e
 
-getTitle doc =
-    strofm "title" (children `o` channel $ doc)
+getTitle doc = strofm "title" (channel $ doc)
+
+items = tag "item" `o` children `o` channel
 
 channel =
     tag "channel" `o` children `o` tag "rss"
+
+
 --------------------------------------------------
 -- Utilities
 --------------------------------------------------
