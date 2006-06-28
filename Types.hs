@@ -50,21 +50,14 @@ instance Ord Podcast where
     compare pc1 pc2 = compare (castname pc1) (castname pc2)
 
 data Episode = Episode {podcast :: Podcast,
+                        epid :: Integer,
                         eptitle :: String,
                         epurl :: String,
+                        eptype :: String,
                         epstatus :: EpisodeStatus}
              deriving (Eq, Show, Read)
 
 data Command = Command {cmdname :: String,
                         cmddescrip :: String,
                         execcmd :: [String] -> GlobalInfo -> IO ()}
-
-data Item = Item {itemtitle :: String,
-                  enclosureurl :: String,
-                  enclosuretype :: String}
-          deriving (Eq, Show, Read)
-
-data Feed = Feed {channeltitle :: String,
-                  items :: [Item]}
-            deriving (Eq, Show, Read)
 

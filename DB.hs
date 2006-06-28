@@ -117,22 +117,35 @@ getPodcast dbh wantedid =
     do res <- quickQuery dbh "SELECT castid, castname, feedurl FROM podcasts WHERE castid = ? ORDER BY castid" [toSql wantedid]
        return $ map podcast_convrow res
 
+getEpisodes :: Connection -> Podcast -> IO [Episode]
+getEpisodes dbh pc =
+    do r <- quickQuery dbh "SELECT episodeid, title, epurl, enctype,\
+                            \status FROM episodes WHERE castid = ? ORDER BY \
+                            \episodeid" [toSql (castid pc)]
+       return $ map toItem r
+    where toItem [sepid, stitle, sepurl, senctype, sstatus] =
+              Episode {podcast = pc, epid = fromSql sepid,
+                       eptitle = fromSql stitle,
+                       epurl = fromSql sepurl, eptype = fromSql senctype,
+                       epstatus = read (fromSql sstatus)}
+          toItem x = error $ "Unexpected result in getEpisodes: " ++ show x
+
 podcast_convrow [svid, svname, svurl] =
     Podcast {castid = fromSql svid, castname = fromSql svname,
              feedurl = fromSql svurl}
 
 {- | Add a new episode.  If the episode already exists, ignore the add request
 and preserve the existing record. -}
-addItem :: Connection -> Podcast -> Item -> IO Integer
-addItem dbh pc item =
+addEpisode :: Connection -> Episode -> IO Integer
+addEpisode dbh episode =
     do nextepid <- getepid
        run dbh "INSERT OR IGNORE INTO episodes (castid, episodeid, title,\
            \epurl, enctype, status) VALUES (?, ?, ?, ?, ?, ?)"
-           [toSql (castid pc), toSql nextepid, toSql (itemtitle item),
-            toSql (enclosureurl item), toSql (enclosuretype item),
-            toSql (show Pending)]
+           [toSql (castid (podcast episode)), toSql nextepid, 
+            toSql (eptitle episode), toSql (epurl episode), 
+            toSql (eptype episode), toSql (show (epstatus episode))]
     where getepid = 
-              do r <- quickQuery dbh "SELECT MAX(episodeid) FROM episodes WHERE castid = ?" [toSql (castid pc)]
+              do r <- quickQuery dbh "SELECT MAX(episodeid) FROM episodes WHERE castid = ?" [toSql (castid (podcast episode))]
                  case r of
                    [[SqlNull]] -> return 1
                    [[x]] -> return ((fromSql x) + (1::Int))

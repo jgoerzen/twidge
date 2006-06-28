@@ -28,10 +28,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 Written by John Goerzen, jgoerzen\@complete.org
 
 -}
-module FeedParser(parse) where
+module FeedParser where
 
 import Types
 import Text.XML.HaXml
+import Utils
+
+data Item = Item {itemtitle :: String,
+                  enclosureurl :: String,
+                  enclosuretype :: String}
+          deriving (Eq, Show, Read)
+
+data Feed = Feed {channeltitle :: String,
+                  items :: [Item]}
+            deriving (Eq, Show, Read)
+
+item2ep pc item =
+    Episode {podcast = pc, epid = 0,
+             eptitle = sanitize_basic (itemtitle item), 
+             epurl = sanitize_basic (enclosureurl item),
+             eptype = sanitize_basic (enclosuretype item), epstatus = Pending}
 
 parse :: FilePath -> String -> IO Feed
 parse fp name = 

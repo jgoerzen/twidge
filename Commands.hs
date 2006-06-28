@@ -44,6 +44,7 @@ allCommands =
     [Commands.Add.cmd,
      Commands.Ls.lscasts,
      lscommands,
+     Commands.Ls.lsepisodes,
      Commands.Update.cmd]
 
 lscommands = 

@@ -56,12 +56,12 @@ updateThePodcast gi pc =
 
 updateFeed gi pcorig f =
     do count <- foldM (updateEnc gi pc) 0 (items f)
-       i $ printf "   %d new items" count
+       i $ printf "   %d new episodes" count
        return pc
     where pc = pcorig {castname = sanitize_basic (channeltitle f)}
 
 updateEnc gi pc count item = 
-    do newc <- addItem (gdbh gi) pc item
+    do newc <- addEpisode (gdbh gi) (item2ep pc item)
        return $ count + newc
 
 getFeed pc =
@@ -69,7 +69,7 @@ getFeed pc =
        case result of
          Success -> 
              do feed <- parse "feed.xml" (feedurl pc)
-                return (Just feed)
+                return (Just (reverse feed))
          _ -> do w "   Failure downloading feed"
                  return Nothing
 
