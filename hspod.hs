@@ -65,7 +65,8 @@ worker args n commandargs =
 usageerror errormsg =
     do putStrLn errormsg
        putStrLn (usageInfo header options)
-       putStrLn "Run \"hspod lscommands\" for a list of available commands.\n"
+       putStrLn "Run \"hspod lscommands\" for a list of available commands.\n\
+                \Run \"hspod command --help\" for help on a particular command.\n"
        exitFailure
 
 header = "Usage: hspod [global-options] command [command-options]\n\n\
