@@ -37,7 +37,7 @@ data EpisodeStatus = Pending -- ^ Ready to download
                      deriving (Eq, Show, Read, Ord, Enum)
 
 data Podcast = Podcast {castid :: Integer,
-                        castname :: String
+                        castname :: String,
                         feedurl :: String}
              deriving (Eq, Show, Read)
 

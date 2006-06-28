@@ -60,16 +60,22 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 import Config
 import DB
+import MissingH.Logging.Logger
+import MissingH.GetOpt
+import System.Console.GetOpt
 
 main = 
     do updateGlobalLogger "" (setLevel DEBUG)
        infoM "" " - - - hspod - - -"
        (args, commandargs) <- validateCmdLine RequireOrder options header 
                               validate
-       infoM "Done."
+       infoM "" "Done."
 
        
 options = [Option "d" ["debug"] (NoArg ("d", "")) "Enable debugging"]
 
-validate (_, []) -> Just "No command specified"
-validate (_, x) -> Just $ "Invalid command: " ++ show x
+validate (_, []) = Just "No command specified"
+validate (_, x) = Just $ "Invalid command: " ++ show x
+
+header = "Usage: hspod [options] command [command-options]\n\n\
+         \Run hspod lscommands for information on the available commands\n"

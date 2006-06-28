@@ -29,12 +29,13 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 -}
 module Config where
-import Config
 
 import System.Directory
 import MissingH.ConfigParser
+import Control.Monad
+import MissingH.Either
 
-getAppDir = do appdir <- getAppUSerDataDirectory "hspod"
+getAppDir = do appdir <- getAppUserDataDirectory "hspod"
                dde <- doesDirectoryExist appdir
                unless (dde) (createDirectory appdir)
                return appdir
@@ -52,8 +53,9 @@ getDefaultCP =
                  cp <- set cp "DEFAULT" "downloaddir" downloaddir
                  cp <- set cp "DEFAULT" "namingpatt" 
                        "%(album)s/%(safefilename)s"
+                 return cp
 
-startingcp = emptycp {accessfunc = interpolatingAccess 10}
+startingcp = emptyCP {accessfunc = interpolatingAccess 10}
 
 getCPName =
     do appdir <- getAppDir
@@ -62,7 +64,8 @@ getCPName =
 loadCP = 
     do cpname <- getCPName
        defaultcp <- getDefaultCP
-       if doesFileExist cpname
+       dfe <- doesFileExist cpname
+       if dfe
           then do cp <- readfile defaultcp cpname
                   return $ forceEither cp
           else return defaultcp

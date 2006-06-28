@@ -35,10 +35,11 @@ import Types
 import Database.HDBC
 import Database.HDBC.Sqlite3
 import MissingH.Logging.Logger
+import Control.Monad
 
 connect :: IO Connection
 connect = handleSqlError $
-    do fp <- config.getDBName
+    do fp <- getDBName
        connectSqlite3 fp
        dbh <- connectSqlite3 fp
        prepDB dbh
@@ -49,7 +50,7 @@ prepDB dbh =
        schemaver <- prepSchema dbh tables
        upgradeSchema dbh schemaver tables
 
-prepSchema :: Connection -> String -> IO Int
+prepSchema :: Connection -> [String] -> IO Int
 prepSchema dbh tables =
     if "schemaver" `elem` tables
        then do r <- quickQuery dbh "SELECT version FROM schemaver" []
@@ -64,18 +65,18 @@ prepSchema dbh tables =
 upgradeSchema _ 1 _ = return ()
 upgradeSchema dbh 0 tables =
     do debugM "DB" "Upgrading schema 0 -> 1"
-       unless ("podcasts" `elem` tables) $ 
-              run dbh "CREATE TABLE podcasts(\
-                      \castid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\
-                      \castname TEXT NOT NULL,\
-                      \feedurl TEXT NOT NULL UNIQUE)"
-       unless ("episodes" `elem` tables) $
-              run dbh "CREATE TABLE episodes (\
-                      \castid INTEGER NOT NULL, \
-                      \title TEXT NOT NULL, \
-                      \epurl TEXT NOT NULL, \
-                      \status TEXT NOT NULL,\
-                      \PRIMARY KEY(castid, epurl) )"
+       unless ("podcasts" `elem` tables)
+              (run dbh "CREATE TABLE podcasts(\
+                       \castid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\
+                       \castname TEXT NOT NULL,\
+                       \feedurl TEXT NOT NULL UNIQUE)" [] >> return ())
+       unless ("episodes" `elem` tables)
+              (run dbh "CREATE TABLE episodes (\
+                       \castid INTEGER NOT NULL, \
+                       \title TEXT NOT NULL, \
+                       \epurl TEXT NOT NULL, \
+                       \status TEXT NOT NULL,\
+                       \PRIMARY KEY(castid, epurl) )" [] >> return ())
        run dbh "DELETE FROM schemaver" []
        run dbh "INSERT INTO schemaver VALUES (1)" []
        commit dbh
@@ -86,14 +87,15 @@ addPodcast :: Connection -> Podcast -> IO Podcast
 addPodcast dbh podcast =
     do run dbh "INSERT INTO podcasts (castname, feedurl) VALUES (?, ?)"
            [toSql (castname podcast), toSql (feedurl podcast)]
-       r <- quickQuery "SELECT castid FROM podcasts WHERE feedurl = ?"
+       r <- quickQuery dbh "SELECT castid FROM podcasts WHERE feedurl = ?"
             [toSql (feedurl podcast)]
        case r of
          [[x]] -> return $ podcast {castid = fromSql x}
          y -> fail $ "Unexpected result: " ++ show y
 
 updatePodcast :: Connection -> Podcast -> IO ()
+updatePodcast dbh podcast = 
     run dbh "UPDATE podcasts SET castname = ?, feedurl = ? WHERE castid = ?"
         [toSql (castname podcast), toSql (feedurl podcast),
-         toSql (castid podcast)]
+         toSql (castid podcast)] >> return ()
 
