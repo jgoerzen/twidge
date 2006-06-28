@@ -194,7 +194,7 @@ textOrRefUntil close tok acc pos p (s:ss) k
     | close `prefixes` (s:ss)  = emit (TokFreeText (reverse acc)) pos:
                                  emit tok p:
                                  skip (length close-1) (addcol 1 p) ss k
-    | s=='&'||s=='%' = (if not (null acc)
+    | s=='&' = (if not (null acc)
                            then (emit (TokFreeText (reverse acc)) pos:)
                            else id)
                        (emit (if s=='&' then TokAmp else TokPercent) p:
