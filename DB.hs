@@ -73,10 +73,12 @@ upgradeSchema dbh 0 tables =
        unless ("episodes" `elem` tables)
               (run dbh "CREATE TABLE episodes (\
                        \castid INTEGER NOT NULL, \
+                       \episodeid INTEGER NOT NULL, \
                        \title TEXT NOT NULL, \
                        \epurl TEXT NOT NULL, \
                        \status TEXT NOT NULL,\
-                       \PRIMARY KEY(castid, epurl) )" [] >> return ())
+                       \PRIMARY KEY(castid, epurl),\
+                       \PRIMARY KEY(castid, episodeid))" [] >> return ())
        run dbh "DELETE FROM schemaver" []
        run dbh "INSERT INTO schemaver VALUES (1)" []
        commit dbh
