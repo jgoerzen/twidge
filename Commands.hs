@@ -36,11 +36,13 @@ import Utils
 import Types
 
 import qualified Commands.Add
+import qualified Commands.Ls
 import qualified Commands.Update
 
 allCommands :: [(String, Command)]
 allCommands = 
     [Commands.Add.cmd,
+     Commands.Ls.lscasts,
      lscommands,
      Commands.Update.cmd]
 

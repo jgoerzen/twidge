@@ -46,6 +46,9 @@ data Podcast = Podcast {castid :: Integer,
                         feedurl :: String}
              deriving (Eq, Show, Read)
 
+instance Ord Podcast where
+    compare pc1 pc2 = compare (castname pc1) (castname pc2)
+
 data Episode = Episode {podcast :: Podcast,
                         eptitle :: String,
                         epurl :: String,
