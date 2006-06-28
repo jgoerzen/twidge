@@ -38,13 +38,26 @@ parse fp =
     do c <- readFile fp
        let doc = getContent $ xmlParse fp c
        let title = getTitle doc
-       let feeditems = [] -- getEnclosures doc
+       let feeditems = getEnclosures doc
        return (Feed {channeltitle = title, items = feeditems})
        where getContent (Document _ _ e _) = CElem e
 
-getTitle doc = strofm "title" (channel $ doc)
+getTitle doc = strofm "title" (channel doc)
 
-items = tag "item" `o` children `o` channel
+getEnclosures doc =
+    concat . map procitem $ item doc
+    where procitem i = map (procenclosure title) enclosure
+              where title = strofm "title" (children i)
+                    enclosure = tag "enclosure" `o` children $ i
+          procenclosure title e =
+              Item {itemtitle = title,
+                    enclosureurl = head0 $ stratt "url" e,
+                    enclosuretype = head0 $ stratt "type" e}
+          head0 [] = ""
+          head0 (x:xs) = x
+              
+
+item = tag "item" `o` children `o` channel
 
 channel =
     tag "channel" `o` children `o` tag "rss"
@@ -61,6 +74,12 @@ attrofelem attrname (CElem (Elem name al _)) =
        Nothing -> error $ "attrofelem: no " ++ attrname ++ " in " ++ name
 attrofelem _ _ =
     error "attrofelem: called on something other than a CElem"
+stratt :: String -> Content -> [String]
+stratt attrname content =
+    case attrofelem attrname content of
+      AttValue x -> concat . map mapfunc $ x
+    where mapfunc (Left x) = [x]
+          mapfunc (Right _) = []
 
 -- Finds the literal children of the named tag, and returns it/them
 tagof :: String -> CFilter
