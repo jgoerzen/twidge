@@ -85,8 +85,11 @@ upgradeSchema dbh 0 tables =
 podcast, and returns a new object with the castid populated. -}
 addPodcast :: Connection -> Podcast -> IO Podcast
 addPodcast dbh podcast =
-    do run dbh "INSERT INTO podcasts (castname, feedurl) VALUES (?, ?)"
-           [toSql (castname podcast), toSql (feedurl podcast)]
+    do handleSql 
+        (\e -> fail $ "Error adding podcast; perhaps this URL already exists\n"
+               ++ show e) $
+               run dbh "INSERT INTO podcasts (castname, feedurl) VALUES (?, ?)"
+                         [toSql (castname podcast), toSql (feedurl podcast)]
        r <- quickQuery dbh "SELECT castid FROM podcasts WHERE feedurl = ?"
             [toSql (feedurl podcast)]
        case r of

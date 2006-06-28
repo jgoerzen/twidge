@@ -22,6 +22,7 @@ import MissingH.Logging.Logger
 import DB
 import Types
 import Database.HDBC
+import Text.Printf
 
 i = infoM "add"
 
@@ -34,6 +35,7 @@ cmd_worker gi (_, [url]) =
                                             castname = "NEWLY ADDED PODCAST",
                                             feedurl = url})
        commit (gdbh gi)
+       printf "Podcast %s added with id %d.\n" url (castid pc)
 
 cmd_worker _ _ =
     do fail "Feed URL required; see hspod add --help for info"
