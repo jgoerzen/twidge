@@ -71,6 +71,12 @@ initDirs =
 sanitize_basic =
     filter (\c -> not (c `elem` "\n\r\t\0"))
 
+sanitize_fn =
+    map worker . sanitize_basic
+    where worker x = if x `elem` ";/|!`~ *?%^&(){}[]\\'\"<>" 
+                         then '_'
+                         else x
+
 genericIdHelp =
  "You can optionally specify one or more podcast IDs.  If given,\n\
   \only those IDs will be selected for processing.\n\n\

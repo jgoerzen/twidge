@@ -137,16 +137,23 @@ podcast_convrow [svid, svname, svurl] =
 {- | Add a new episode.  If the episode already exists, ignore the add request
 and preserve the existing record. -}
 addEpisode :: Connection -> Episode -> IO Integer
-addEpisode dbh episode =
+addEpisode dbh ep = 
     do nextepid <- getepid
-       run dbh "INSERT OR IGNORE INTO episodes (castid, episodeid, title,\
-           \epurl, enctype, status) VALUES (?, ?, ?, ?, ?, ?)"
-           [toSql (castid (podcast episode)), toSql nextepid, 
-            toSql (eptitle episode), toSql (epurl episode), 
-            toSql (eptype episode), toSql (show (epstatus episode))]
+       insertEpisode "INSERT OR IGNORE" dbh ep nextepid
     where getepid = 
-              do r <- quickQuery dbh "SELECT MAX(episodeid) FROM episodes WHERE castid = ?" [toSql (castid (podcast episode))]
+              do r <- quickQuery dbh "SELECT MAX(episodeid) FROM episodes WHERE castid = ?" [toSql (castid (podcast ep))]
                  case r of
                    [[SqlNull]] -> return 1
                    [[x]] -> return ((fromSql x) + (1::Int))
                    _ -> fail "Unexpected response in getepid"
+
+{- | Update an episode.  If it doesn't already exist, create ie. -}
+updateEpisode :: Connection -> Episode -> IO Integer
+updateEpisode dbh ep = insertEpisode "INSERT OR REPLACE" dbh ep (epid ep)
+
+insertEpisode insertsql dbh episode newepid =
+    run dbh (insertsql ++ " INTO episodes (castid, episodeid, title,\
+           \epurl, enctype, status) VALUES (?, ?, ?, ?, ?, ?)")
+           [toSql (castid (podcast episode)), toSql newepid, 
+            toSql (eptitle episode), toSql (epurl episode), 
+            toSql (eptype episode), toSql (show (epstatus episode))]

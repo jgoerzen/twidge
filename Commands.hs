@@ -38,10 +38,12 @@ import Types
 import qualified Commands.Add
 import qualified Commands.Ls
 import qualified Commands.Update
+import qualified Commands.Download
 
 allCommands :: [(String, Command)]
 allCommands = 
     [Commands.Add.cmd,
+     Commands.Download.cmd,
      Commands.Ls.lscasts,
      lscommands,
      Commands.Ls.lsepisodes,

@@ -1,0 +1,123 @@
+{- hpodder component
+Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-}
+
+module Commands.Download(cmd) where
+import Utils
+import MissingH.Logging.Logger
+import DB
+import Download
+import FeedParser
+import Types
+import Text.Printf
+import Config
+import Database.HDBC
+import Control.Monad
+import Utils
+import MissingH.Checksum.MD5
+import MissingH.Path.FilePath
+import System.IO
+import System.Directory
+import System.Cmd
+import System.Exit
+import MissingH.ConfigParser
+import MissingH.Str
+import MissingH.Either
+import Data.List
+
+i = infoM "download"
+w = warningM "download"
+
+cmd = simpleCmd "download" 
+      "Downloads all pending podcast episodes (run update first)" helptext 
+      [] cmd_worker
+
+cmd_worker gi ([], casts) =
+    do podcastlist <- getSelectedPodcasts (gdbh gi) casts
+       episodelist <- mapM (getEpisodes (gdbh gi)) podcastlist
+       let episodes = filter (\x -> epstatus x == Pending) . concat $ episodelist
+       i $ printf "%d episode(s) to consider from %d podcast(s)"
+         (length episodes) (length podcastlist)
+       mapM_ (downloadEpisode gi) episodes
+
+cmd_worker _ _ =
+    fail $ "Invalid arguments to update; please see hpodder download --help"
+
+downloadEpisode gi ep =
+    do i $ printf " * Downloading (%.30s) of (%.30s)"
+       feeddir <- getFeedTmp
+       let tmpfp = feeddir ++ "/" ++ md5s (Str (show (ep {epstatus = Pending})))
+       r <- getURL (epurl ep) tmpfp
+       case r of
+         Success -> procSuccess gi ep tmpfp
+         _ -> do updateEpisode (gdbh gi) (ep {epstatus = Error})
+                 commit (gdbh gi)
+                 w "   Error downloading"
+
+procSuccess gi ep tmpfp =
+    do cp <- getCP ep idstr fnpart
+       let newfn = (strip . forceEither $ (get cp idstr "downloaddir")) ++ "/" ++
+                   (strip . forceEither $ (get cp idstr "namingpatt"))
+       createDirectoryIfMissing True (fst . splitFileName $ newfn)
+       finalfn <- if (eptype ep) == "audio/mpeg" && 
+                     not (isSuffixOf ".mp3" newfn)
+                  then movefile tmpfp (newfn ++ ".mp3")
+                  else movefile tmpfp newfn
+       res <- rawSystem "id3v2" ["-A", castname . podcast $ ep,
+                                 "-t", eptitle ep,
+                                 "--WOAS", epurl ep,
+                                 "--WXXX", feedurl . podcast $ ep,
+                                 finalfn]
+       case res of
+         ExitSuccess -> return ()
+         ExitFailure y -> w $ "   id3v2 returned: " ++ show y
+       
+    where idstr = show . castid . podcast $ ep
+          fnpart = snd . splitFileName $ epurl ep
+
+getCP :: Episode -> String -> String -> IO ConfigParser
+getCP ep idstr fnpart =
+    do cp <- loadCP
+       return $ forceEither $
+              do cp <- set cp idstr "safecasttitle" 
+                       (sanitize_fn . castname . podcast $ ep)
+                 cp <- set cp idstr "epid" (show . epid $ ep)
+                 cp <- set cp idstr "castid" idstr
+                 cp <- set cp idstr "safefilename" (sanitize_fn fnpart)
+                 cp <- set cp idstr "safeeptitle" (sanitize_fn . eptitle $ ep)
+                 return cp
+
+movefile old new =
+    do realnew <- findNonExisting new
+       copyFile old realnew
+       removeFile old
+       return new
+
+findNonExisting template =
+    do dfe <- doesFileExist template
+       if (not dfe)
+          then return template
+          else do let (dirname, fn) = splitFileName template
+                  (fp, h) <- openTempFile dirname ("XXXXXX-" ++ fn)
+                  hClose h
+                  return fp
+
+helptext = "Usage: hpodder update [castid [castid...]]\n\n" ++ genericIdHelp ++
+ "\nRunning update will cause hpodder to look at each requested podcast.  It\n\
+ \will download the feed for each one and update its database of available\n\
+ \episodes.  It will not actually download any episodes; see the download\n\
+ \command for that."

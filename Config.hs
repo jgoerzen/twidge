@@ -63,7 +63,7 @@ getDefaultCP =
                  cp <- set cp "general" "showintro" "yes"
                  cp <- set cp "DEFAULT" "downloaddir" downloaddir
                  cp <- set cp "DEFAULT" "namingpatt" 
-                       "%(album)s/%(safefilename)s"
+                       "%(safecasttitle)s/%(safefilename)s"
                  return cp
 
 startingcp = emptyCP {accessfunc = interpolatingAccess 10}
