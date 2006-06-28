@@ -36,8 +36,8 @@ cmd = simpleCmd "update"
       "Re-scan all feeds and update list of needed downloads" helptext 
       [] cmd_worker
 
-cmd_worker gi ([], []) =
-    do podcastlist <- getPodcasts (gdbh gi)
+cmd_worker gi ([], casts) =
+    do podcastlist <- getSelectedPodcasts (gdbh gi) casts
        i $ printf "%d podcast(s) to consider\n" (length podcastlist)
        mapM_ (updateThePodcast gi) podcastlist
 
@@ -73,7 +73,8 @@ getFeed pc =
          _ -> do w "   Failure downloading feed"
                  return Nothing
 
-helptext = "Running update will cause hpodder to look at each configured podcast.  It\n\
-\will download the feed for each one and update its database of available\n\
-\episodes.  It will not actually download any episodes; see the download\n\
-\command for that."
+helptext = "Usage: hpodder update [castid [castid...]]\n\n" ++ genericIdHelp ++
+ "\nRunning update will cause hpodder to look at each requested podcast.  It\n\
+ \will download the feed for each one and update its database of available\n\
+ \episodes.  It will not actually download any episodes; see the download\n\
+ \command for that."
