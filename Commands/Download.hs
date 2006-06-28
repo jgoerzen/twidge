@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Download(cmd) where
+module Commands.Download(cmd, cmd_worker) where
 import Utils
 import MissingH.Logging.Logger
 import DB
@@ -56,7 +56,7 @@ cmd_worker gi ([], casts) =
        mapM_ (downloadEpisode gi) episodes
 
 cmd_worker _ _ =
-    fail $ "Invalid arguments to update; please see hpodder download --help"
+    fail $ "Invalid arguments to download; please see hpodder download --help"
 
 downloadEpisode gi ep =
     do i $ printf " * Downloading (%.30s) of (%.30s)" 

@@ -60,3 +60,20 @@ lscommands_worker _ _ =
        mapM_ (\(_, x) -> printf "%-20s %s\n" (cmdname x) (cmddescrip x))
              allCommands
                  
+
+fetch = 
+    simpleCmd "fetch" "Scan feeds, then download new episodes" fetch_help
+              [] fetch_worker
+
+fetch_worker gi ([], casts) =
+    do Commands.Update.cmd_worker gi ([], casts)
+       Commands.Download.cmd_worker gi ([], casts)
+    
+fetch_worker _ _ =
+    fail $ "Invalid arguments to fetch; please see hpodder fetch --help"
+
+fetch_help = "Usage: hpodder fetch [castid [castid...]]\n\n" ++ 
+             genericIdHelp  ++
+ "\nThe fetch command will cause hpodder to scan all feeds (as with\n\
+ \\"hpodder update\") and then download all new episodes (as with\n\
+ \\"hpodder download\").\n"
