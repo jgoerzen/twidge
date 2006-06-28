@@ -20,15 +20,51 @@ module Commands.Update(cmd) where
 import Utils
 import MissingH.Logging.Logger
 import DB
+import Download
+import FeedParser
 
 i = infoM "update"
+w = warningM "update"
 
 cmd = simpleCmd "update" 
       "Re-scan all feeds and update list of needed downloads" helptext 
       [] cmd_worker
 
+cmd_worker gi ([], []) =
+    do podcastlist <- getPodcasts (gdbh gi)
+       i $ printf "%d podcasts to consider\n" (length podcastlist)
+       mapM_ (updatePodcast gi) podcastlist
+
+updatePodcast gi pc =
+    do i $ printf " * Podcast %d: %s\n" (castid pc) (feedurl pc)
+       feed <- bracketFeedCWD (getFeed pc)
+       case feed of
+         Nothing -> return ()
+         Just f -> do newpc <- updateFeed gi pc f
+                      i $ "   " ++ (castname newpc)
+       commit (gdbh gi)
+
+updateFeed gi pcorig f =
+    do count <- foldM (updateEnc gi pc) 0 (items f)
+       i $ printf "   %d new items\n" count
+       return pc
+    where pc = pcorig {castname = sanitize_basic (channeltitle f)
+
+updateEnc gi pc count item = 
+    do newc <- addItem (gdbh gi) pc item
+       return $ count + newc
+
+getFeed pc =
+    do result <- getURL (feedurl pc) "feed.xml"
+       case result of
+         Success -> 
+             do feed <- parse "feed.xml" (feedurl pc)
+                return (Just feed)
+         _ -> do w "   Failure downloading feed"
+                 return Nothing
+
 cmd_worker _ _ =
-    do return ()
+    fail $ "Invalid arguments to update; please see hpodder update --help"
 
 helptext = "Running update will cause hpodder to look at each configured podcast.  It\n\
 \will download the feed for each one and update its database of available\n\

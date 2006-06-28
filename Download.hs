@@ -29,7 +29,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 -}
 
-module Download where
+module Download(getURL, Result(..)) where
 import System.Cmd
 
 data Result = Success | TempFail | PermFail

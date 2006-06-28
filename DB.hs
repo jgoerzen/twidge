@@ -76,15 +76,18 @@ upgradeSchema dbh 0 tables =
                        \episodeid INTEGER NOT NULL, \
                        \title TEXT NOT NULL, \
                        \epurl TEXT NOT NULL, \
+                       \enctype TEXT NOT NULL,
                        \status TEXT NOT NULL,\
-                       \PRIMARY KEY(castid, epurl),\
-                       \PRIMARY KEY(castid, episodeid))" [] >> return ())
+                       \UNIQUE(castid, epurl),\
+                       \UNIQUE(castid, episodeid))" [] >> return ())
        run dbh "DELETE FROM schemaver" []
        run dbh "INSERT INTO schemaver VALUES (1)" []
        commit dbh
 
 {- | Adds a new podcast to the database.  Ignores the castid on the incoming
-podcast, and returns a new object with the castid populated. -}
+podcast, and returns a new object with the castid populated.
+
+A duplicate add is an error. -}
 addPodcast :: Connection -> Podcast -> IO Podcast
 addPodcast dbh podcast =
     do handleSql 
@@ -111,3 +114,19 @@ getPodcasts dbh =
     where convrow [svid, svname, svurl] =
               Podcast {castid = fromSql svid, castname = fromSql svname,
                        feedurl = fromSql svurl}
+
+{- | Add a new episode.  If the episode already exists, ignore the add request
+and preserve the existing record. -}
+addItem :: Connection -> Podcast -> Item -> IO Integer
+addItem dbh pc item =
+    do nextepid <- getepid
+       run "INSERT OR IGNORE INTO episodes (castid, episodeid, title, epurl,\
+           \enctype, status) VALUES (?, ?, ?, ?, ?, ?)"
+           [toSql (castid pc), toSql nextepid, toSql (itemtitle item),
+            toSql (enclosureurl item), toSql (enclosuretype item),
+            toSql (show Pending)]
+    where nextepid = 
+              do r <- quickQuery "SELECT MAX(episodeid) FROM episodes WHERE castid = ?" [toSql (castid pc)]
+                 case r of
+                   [] -> return 1
+                   [[x]] -> return ((fromSql x) + 1)

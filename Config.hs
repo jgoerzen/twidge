@@ -34,10 +34,15 @@ import System.Directory
 import MissingH.ConfigParser
 import Control.Monad
 import MissingH.Either
+import MissingH.Path
 
 getFeedTmp =
     do appdir <- getAppDir
        return $ appdir ++ "/feedxfer"
+
+bracketFeedCWD func =
+    do feeddir <- getFeedTmp
+       brackettmpdirCWD (feeddir ++ "/tmp-XXXXXX") func
 
 getEnclTmp =
     do appdir <- getAppDir
