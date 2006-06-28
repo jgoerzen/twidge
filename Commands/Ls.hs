@@ -39,11 +39,22 @@ lscasts = simpleCmd "lscasts" "List all configured podcasts on the system"
 
 lscasts_worker gi (opts, casts) =
     do pc <- getSelectedPodcasts (gdbh gi) casts
-       printf "%-4s %s\n" "ID" "Title"
+       printf "%-4s %-7s %s\n" "ID" "Pnd/Tot" "Title"
        when (islong) (printf "     URL\n")
        mapM_ printpc (sort pc)
     where islong = lookup "l" opts == Just ""
-          printpc pc = do printf "%-4d %s\n" (castid pc) (castname pc)
+          printpc pc = do pend <- quickQuery (gdbh gi) "SELECT COUNT(*) FROM \
+                                  \episodes WHERE castid = ? AND \
+                                  \status = 'Pending'" [toSql (castid pc)]
+                          tot <- quickQuery (gdbh gi) "SELECT COUNT(*) FROM \
+                                  \episodes WHERE castid = ?" 
+                                  [toSql (castid pc)]
+                          let (npend, ntot) = case (pend, tot) of
+                                                ([[x]], [[y]]) -> 
+                                                    (fromSql x, fromSql y)
+                                                _ -> error "Bad count result"
+                          printf "%-4d %3d/%3d %s\n" (castid pc) 
+                                     (npend::Int) (ntot::Int) (castname pc)
                           when (islong) (printf "     %s\n" (feedurl pc))
 
 lscasts_help =
@@ -60,13 +71,14 @@ lsepisodes = simpleCmd "lsepisodes" "List episodes in hspodder database"
 
 lsepisodes_worker gi (opts, casts) =
     do pc <- getSelectedPodcasts (gdbh gi) casts
-       printf "%-5s %-5s %-65.65s\n" "CstId" "EpId" "Episode Title"
+       printf "%-5s %-5s %-4s %-60.60s\n" "CstId" "EpId" "Stts" "Episode Title"
        when (islong) (printf "            Episode URL\n")
        eps <- mapM (getEpisodes (gdbh gi)) pc
        mapM_ printep (concat eps)
     where printep ep =
-              do printf "%-5d %-5d %-65.65s\n" (castid (podcast ep)) (epid ep)
-                        (eptitle ep)
+              do printf "%-5d %-5d %-4s %-60.60s\n" 
+                            (castid (podcast ep)) (epid ep) 
+                            (take 4 . show $ epstatus ep) (eptitle ep)
                  when (islong) (printf "            %s\n" (epurl ep))
           islong = lookup "l" opts == Just ""
 
