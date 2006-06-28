@@ -40,10 +40,12 @@ import qualified Commands.Ls
 import qualified Commands.Update
 import qualified Commands.Download
 import qualified Commands.Setup
+import qualified Commands.Catchup
 
 allCommands :: [(String, Command)]
 allCommands = 
     [Commands.Add.cmd,
+     Commands.Catchup.cmd,
      Commands.Download.cmd,
      fetch,
      Commands.Ls.lscasts,
