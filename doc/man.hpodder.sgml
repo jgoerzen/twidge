@@ -27,7 +27,7 @@
     <refsynopsisdiv>
       <cmdsynopsis>
         <command>hpodder</command>
-        <arg choide="opt">-d</arg>
+        <arg choice="opt">-d</arg>
         <arg choice="opt"><replaceable>command</replaceable></arg>
         <arg choice="opt"><replaceable>command_args</replaceable></arg>
 <!--
@@ -244,6 +244,29 @@
       </para>
     </refsect1>
 
+    <refsect1 id="hpodder.options">
+      <title>Options</title>
+      <para>
+        &hpodder; always is invoked with the name of a specific
+        operation, such as <option>update</option> or
+        <option>add</option>.  In &hpodder;, these operations are
+        called <emphasis>commands</emphasis>.  Each command has its
+        own options, which are given after the command on the
+        &hpodder; command line.  A full summary of each command's
+        options is given later in this manual.
+      </para>
+      
+      <para>
+        You may obtain a list of all commands with <command>hpodder
+        lscommands</command>.  Help is available for any individual
+        command with <command>hpodder <replacable>command</replacable>
+        --help</command>.  Global help is available with
+        <command>hpodder --help</command>.
+      </para>
+      <para>There are no current global &hpodder; options, though this
+      is expected to change.
+      </para>
+    </refsect1>
 
     <refsect1 id="dfsbuild.man.options">
       <title>Options</title>

@@ -6,4 +6,5 @@ Move episode in-place atomically:
 
   Then rename to final name
 
+castid lists -- filter out dupes post-process
 
