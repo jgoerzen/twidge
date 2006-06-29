@@ -1,0 +1,440 @@
+  <refentry id="hpodder.man">
+  <indexterm><primary>hpodder</><secondary>Reference For</></>
+  <refentryinfo>
+    <address><email>jgoerzen@complete.org</email></address>
+    <author><firstname>John</firstname><surname>Goerzen</surname></author>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle>hpodder</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo>John Goerzen</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>hpodder</refname>
+    <refpurpose>Scan and download podcasts</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>hpodder</command>
+      <arg choice="opt">-d</arg>
+      <arg choice="opt"><replaceable>command</replaceable></arg>
+      <arg choice="opt"><replaceable>command_args</replaceable></arg>
+      <!--
+      <arg choice="opt">-a <replaceable>arch</replaceable></arg>
+      <arg choice="opt">-R</arg>
+      <arg choice="opt">-v | -V</arg>
+      <arg choice="plain">-c <replaceable>config_file</replaceable></arg>
+      <arg choice="plain">-w <replaceable>working_dir</replaceable></arg>
+      -->
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1 id="hpodder.description">
+    <title>Description</title>
+    <para>
+      Podcasting
+      is a method of publishing radio-like programs on the
+      Internet.  Through podcasting, almost anyone can produce their
+      own audio program, and publish episodes of it as often or as
+      rarely as they like.
+    </para>
+
+    <para>
+      To listen to podcasts, you need a program to download the
+      podcast's episodes from the Internet.  Such a program is
+      called a podcatcher (or sometimes a podcast aggregator).
+      &hpodder; is this program.
+    </para>
+
+    <para>
+      If you'd like to get going RIGHT NOW, skip on down to the
+      Quick Start section.  Otherwise, let's take a look at the
+      features of &hpodder;.
+    </para>
+
+    <refsect2 id="hpodder.features">
+      <title>Feature List</title>
+      <itemizedlist>
+        <listitem><para>Convenient, easy to learn, and fast command-line
+            interface (it's simple to do simple things, and
+            advanced things are possible)</para>
+        </listitem>
+
+        <listitem><para>Automatic discovery of feed metadata such as title</para>
+        </listitem>
+
+        <listitem><para>Full history database for accurate
+            prevention of duplicate downloads and tracking of new episodes</para>
+        </listitem>
+
+        <listitem><para>Conversion tools to convert your existing
+            feed list and history from other applications to
+            &hpodder;.  Supported applications and formats include:
+            castpodder and ipodder.
+          </para>
+        </listitem>
+
+        <listitem><para>Most operations can work fully automatically
+            across your entire podcast database, or they can work
+            manually as well.</para>
+        </listitem>
+
+        <listitem><para>Automatic updating of ID3 (v1 and v2) tags
+            based on metadata in the podcast itself.  This important
+            feature is available through iTunes but is often missed by
+            other podcatchers.</para>
+        </listitem>
+
+        <listitem><para>&hpodder; operations can be easily scripted
+            or scheduled using regular operating system tools.</para>
+        </listitem>
+
+        <listitem><para>Fully customizable naming scheme for
+            downloaded episodes, including a name collision detection
+            and workaround algorithm.</para>
+        </listitem>
+
+        <listitem><para>Automatic support for appending .mp3
+            extensions to MP3 files that lack it.</para>
+        </listitem>
+
+        <listitem><para>Numerous database and history inquiry tools</para>
+        </listitem>
+
+        <listitem><para>Small, minimalist footprint</para>
+        </listitem>
+
+        <listitem><para>Power users and developers can interact
+            directly with the embedded Sqlite3 database used by
+            &hpodder;.  The database has a simple schema that is
+            developer-friendly.</para>
+        </listitem>
+
+        <listitem><para>Support for resuming interrupted downloads
+            of podcasts</para>
+        </listitem>
+
+        <listitem><para>&hpodder; is SAFE and is designed with data
+            integrity in mind from the beginning.  It should be
+            exceedingly difficult to lose a podcast episode, even in the
+            event of a power failure.
+          </para>
+        </listitem>
+
+      </itemizedlist>
+    </refsect2>
+
+    <refsect2 id="hpodder.mo">
+      <title>Method of Operation</title>
+      <para>
+        The basic pattern of operation with &hpodder; is to set up
+        each podcast you want to receive.  Each day (or hour, or
+        whatever), &hpodder; will go out and update its database by
+        pulling in the latest episode lists from the podcast feed.
+        Then, &hpodder; will proceed to download any episodes that
+        you haven't already downloaded.  After each episode is
+        downloaded, &hpodder; will note that fact so it isn't ever
+        downloaded again.
+      </para>
+      <para>
+        Let's look at this in a bit more detail.
+      </para>
+      <para>
+        &hpodder; maintains two tables in a database.  One table
+        lists all the podcasts you know about, as well as where the
+        podcast's feed is to be downloaded from.  The feed is a file
+        that the podcast's author publishes.  It lists all the
+        current episodes of the podcast, and some information about
+        them.  Data is added to this table with the <command>hpodder
+          add</command> command.
+      </para>
+      <para>
+        The second table lists each episode for a given podcast,
+        along with the location from which the episode can be
+        downloaded and some other information about the episode
+        (such as its title).  Information in this table is added by
+        <command>ipodder update</command> and updated by
+        <command>ipodder download</command> or 
+        <command>ipodder catchup</command>.
+      </para>
+      <para>
+        When you first fire up &hpodder;, it will read its
+        configuration file from
+        <filename>~/.hpodder/hpodder.conf</filename>.
+        What happens next depends on the command.
+      </para>
+      <para>
+        For <command>hpodder update</command>, the program will read
+        information about all your podcasts.  It will download each
+        feed.  Once it has the feed, it will look at each episode
+        and compare them to the database.  If a given episode is
+        already in the database, it is ignored.  Any new episodes
+        are recorded in the database, and set to Pending so they
+        will be downloaded on the next download run.
+      </para>
+      <para>
+        For <command>hpodder download</command>, the program will
+        read information about all your episodes.  For each episode
+        marked Pending, the program will download the episode.  It
+        will then update the episode's ID3 tags based on the podcast
+        feed.  Finally, it will move the episode in-place
+        atomically.  Only after all that has been done will
+        &hpodder; mark the episode as Downloaded in the database.
+        In this way, no episode is visible to outside tools until it
+        is completely downloaded in its final form, so you can
+        safely play any visible program in your download directory
+        even as downloads are happening.
+      </para>
+    </refsect2>
+
+  </refsect1>
+
+  <refsect1 id="hpodder.quickstart">
+    <title>Quick Start</title>
+    <para>
+      This section will describe how a first-time &hpodder; user can
+      get up and running quickly.  It assumes you already have
+      &hpodder; compiled or installed on your system.  If not,
+      please follow the instructions in the
+      <filename>INSTALL</filename>
+      file in the
+      source distribution.
+    </para>
+    <para>
+      To get started, simply run <command>hpodder</command> at your
+      shell prompt.  &hpodder; will lead you through the first-time
+      configuration -- which is only two questions and completely
+      self-explanatory!
+    </para>
+    <para>
+      After this, whenever you want to download the latest episodes
+      for your podcast, just run <command>hpodder</command> again.
+    </para>
+    <para>
+      At some point, you'll want to add more podcasts to &hpodder;.
+      To do that, just run a command such as:
+    </para>
+    <para><command>hpodder add
+        <replaceable>http://www.example.com/feed.xml</replaceable></command></para>
+    <para>
+      Just replace the example.com URL here with the real URL of the
+      feed you want to add.  Then run <command>ipodder
+        update</command>.  If the podcast you've just added has a
+      whole bunch of episodes, you may not want to download them
+      all.  In that case, run <command>ipodder catchup
+        <replaceable>id</replaceable></command>, where
+      <replaceable>id</replaceable> is the podcast number that
+      ipodder gave your new podcast when you added it.
+    </para>
+    <para>
+      Again, from here on, you can just run
+      <command>ipodder</command> to download all your new episodes.
+    </para>
+  </refsect1>
+
+  <refsect1 id="hpodder.options">
+    <title>Options</title>
+    <para>
+      &hpodder; always is invoked with the name of a specific
+      operation, such as <option>update</option> or
+      <option>add</option>.  In &hpodder;, these operations are
+      called <emphasis>commands</emphasis>.  Each command has its
+      own options, which are given after the command on the
+      &hpodder; command line.  A full summary of each command's
+      options is given later in this manual.
+    </para>
+    
+    <para>
+      You may obtain a list of all commands with <command>hpodder
+        lscommands</command>.  Help is available for any individual
+      command with <command>hpodder <replaceable>command</replaceable>
+        --help</command>.  Global help is available with
+      <command>hpodder --help</command>.
+    </para>
+    <para>There are no current global &hpodder; options, though this
+      is expected to change.
+    </para>
+  </refsect1>
+
+  <refsect1 id="hpodder.commands">
+    <title>Commands in hpodder</title>
+    <para>
+      &hpodder; has many different commands.  If you do not specify a
+      command, the <command>fetch</command> command is automatically
+      selected for you.  This section will discuss each command in
+      detail.  Note that all commands are case-sensitive and should be
+      <emphasis>given in lowercase</emphasis>.
+    </para>
+    <para>
+      All commands support the command <option>--help</option>.  Running
+      <command>hpodder <replaceable>command</replaceable>
+      --help</command> will display information about the command and
+      its options.  Since all commands support this, it won't be
+      explicitly listed for each command below.
+    </para>
+    <refsect2 id="hpodder.commands.add">
+      <title>add</title>
+      <cmdsynopsis>
+        <command>hpodder add</command>
+        <arg choice="plain"><replaceable>URL</replaceable></arg>
+      </cmdsynopsis>
+      <para>
+        This command is used to add a new podcast to &hpodder;.  You
+        can must provide the URL (link) to the podcast you want to add
+        to this command.  For example:
+      </para>
+      <para><command>hpodder add
+      http://soundofhistory.complete.org/files_soh/podcast.xml</command></para>
+      <para>
+        A podcast can be later removed with <command>hpodder
+        rm</command>.  You can adjust its URL later with
+        <command>hpodder mv</command>.
+      </para>
+    </refsect2>
+    
+    <refsect2 id="hpodder.commands.catchup">
+      <title>catchup</title>
+      <cmdsynopsis>
+        <command>hpodder catchup</command>
+        <arg choice="opt">-n <replaceable>number</replaceable></arg>
+        &arg.castid;
+      </cmdsynopsis>
+      <para>
+        Running <command>catchup</command> will cause &hpodder; to
+        mark all but the most recent episodes as Skipped.  This will
+        prevent &hpodder; from automatically downloading such
+        episodes.
+      </para>
+      <variablelist>
+        <varlistentry><term>-n <replaceable>NUM</replaceable></term>
+          <term>--number-eps=<replaceable>NUM</replaceable></term>
+          <listitem><para>
+              By default, only the single most recent episode is exempted
+              from being "caught up".  If you want to exclude more
+              episodes from being "caught up" -- and thus allow more
+              to be downloaded -- use this option to allow more
+              episodes to remain downloadable.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        &var.castid;
+      </variablelist>
+    </refsect2>
+
+  </refsect1>
+
+  <refsect1 id="hpodder.castids">
+    <title>Specifying podcast IDs</title>
+    <para>
+      FIXME: write
+    </para>
+  </refsect1>
+
+  <refsect1 id="dfsbuild.man.options">
+    <title>Options</title>
+    <para>
+      These are the command-line options for dfsbuild;.  Please
+      note that you must always specify at least <option>-c</option>
+      and <option>-w</option>.
+    </para>
+    <variablelist>
+      <varlistentry><term>-a <replaceable>architecture</replaceable></term>
+        <listitem><para>Specify the Debian architecture of the
+            destination image.  Normally, this defaults to the
+            architecture of the host system.  This option may be useful
+            to, for instance, build an i386 image from your amd64 host.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry><term>-c <replaceable>configfile</replaceable></term>
+        <listitem><para>Specifies the path for the configuration
+            file to use.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry><term>-R</term>
+        <listitem><para>Resume an existing build.  If your build
+            failed, you may be able to restart it from where it left off
+            by using this option.  Resuming is not supported from every
+            point, so do not be surprised if this option doesn't work
+            for you everywhere.  This option is still experimental and
+            may disappear in future versions of dfsbuild.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry><term>-v</term>
+        <listitem><para>Enable verbose mode for dfsbuild messages only.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry><term>-V</term>
+        <listitem><para>Enable verbose mode for both dfsbuild
+            messages and messages from external programs when possible.</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry><term>-w <replaceable>directory</replaceable></term>
+        <listitem><para>Specifies a directory for dfsbuild to use as
+            its "work" directory.  It will create its temporary files,
+            and place the resulting ISO9660 image, in this
+            directory.</para>
+          <para>It is an error if this directory already exists,
+            unless <option>-R</option> is given, in which case it is
+            an error if this directory does not exist.
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    
+    <refsect1 id="dfsbuild.copyright">
+      <title>Copyright</title>
+      <para>
+        dfsbuild, all associated scripts and programs, this manual,
+        and all build scripts are Copyright &copy; 2004-2006 John Goerzen.
+      </para>
+      <para>
+        This program is free software; you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation; either version 2 of the License, or
+        (at your option) any later version.
+      </para>
+
+      <para>
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
+      </para>
+      
+      <para>
+        You should have received a copy of the GNU General Public License
+        along with this program; if not, write to the Free Software
+        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+      </para>
+    </refsect1>
+
+    <refsect1 id="dfs.author">
+      <title>Author</title>
+      <para>
+        dfsbuild;, its modules, documentation, executables, and all
+        included files, except where noted, was written by
+        John Goerzen <email>jgoerzen@complete.org</email> and
+        copyright is held as stated in the COPYRIGHT section.
+      </para>
+    </refsect1>
+
+    <refsect1 id="dfs.seealso">
+      <title>See Also</title>
+      <para>Other related references include:
+        DFS Manual at <filename>/usr/share/doc/dfsbuild</filename>,
+        <application>mkisofs</application>(1),
+        <application>cdebootstrap</application>(1).  Pre-build DFS
+        ISOs for various architectures are available from John
+        Goerzen's DFS page at <ulink
+          url="http://people.debian.org/~jgoerzen/dfs/"></ulink>.
+      </para>
+    </refsect1>
+
+  </refentry>

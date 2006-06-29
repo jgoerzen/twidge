@@ -63,7 +63,7 @@ catchupThePodcast gi n pc =
                           x -> x
 
 
-helptext = "Usage: hpodder catchup [-n x] [castid [castid...]]\n\n" ++ 
+helptext = "Usage: hpodder catchup [-n x] [castid ...]\n\n" ++ 
            genericIdHelp ++
  "\nRunning catchup will cause hpodder to mark all but the n most recent\n\
  \episodes as Skipped.  This will prevent hpodder from automatically\n\

@@ -1,9 +1,10 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
   <!ENTITY index SYSTEM "index/index.sgml">
-  <!ENTITY manpage SYSTEM "man.hpodder.sgml">
+  <!ENTITY man.hpodder SYSTEM "hpodder-manpage.sgml">
+  <!ENTITY hpodder "<application>hpodder</application>">
 ]>
 
-<book id="hpodder.book">
+<book id="hpodder">
   <bookinfo>
     <title>Using the hpodder podcast aggregator</title>
     <author>
@@ -17,7 +18,10 @@
     </legalnotice>
   </bookinfo>
 
-  &man.hpodder;
+  <reference>
+    <title>hpodder Manual</title>
+     &man.hpodder;
+  </reference>
 
   &index;
 </book>
