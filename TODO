@@ -8,3 +8,5 @@ Move episode in-place atomically:
 
 castid lists -- filter out dupes post-process
 
+catchup -- what if some are already pending?
+
