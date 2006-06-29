@@ -42,7 +42,7 @@ w = warningM "import-ipodder"
 
 cmd = simpleCmd "import-ipodder" 
       "Import feeds and history from ipodder or castpodder" 
-      helptext
+      ""
       [Option "" ["from"] (ReqArg (stdRequired "from") "PATH")
        "Location of ipodder data directory (default ~/.ipodder)"] 
       cmd_worker
@@ -105,8 +105,3 @@ loadhistory id =
     do historyfile <- readFile (id ++ "/history.txt")
        return $ filter (/= "") . map strip . lines $ historyfile
 
-helptext = "Usage: hpodder update [castid [castid...]]\n\n" ++ genericIdHelp ++
- "\nRunning update will cause hpodder to look at each requested podcast.  It\n\
- \will download the feed for each one and update its database of available\n\
- \episodes.  It will not actually download any episodes; see the download\n\
- \command for that."

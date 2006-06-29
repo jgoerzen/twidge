@@ -364,10 +364,103 @@
       <variablelist>&var.castid;</variablelist>
     </refsect2>
 
+    <refsect2 id="hpodder.commands.import-ipodder">
+      <title>import-ipodder</title>
+      <cmdsynopsis><command>hpodder import-ipodder</command>
+        <arg
+      choice="opt">--from=<replaceable>PATH</replaceable></arg></cmdsynopsis>
+      <para>
+        With this command, &hpodder; can import both your podcast list
+        and your download history from ipodder or CastPodder.
+        &hpodder; will import all podcasts referenced there, with the
+        exception that any podcasts that are already in &hpodder;'s
+        database will be entirely untouched.
+      </para>
+      <variablelist>
+        <varlistentry><term>--from=<replaceable>PATH</replaceable></term>
+          <listitem><para>By default, &hpodder; will look for the ipodder
+            database in the <filename>.ipodder</filename> directory in
+            the user's home directory.  This may not always be correct:
+            for instance, on non-Unix platforms or when using
+            CastPodder, this directory will be different.  With this
+            option, you can tell &hpodder; where to find the
+            ipodder/CastPodder database.
+            </para></listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+
+    <refsect2 id="hpodder.commands.lscasts">
+      <title>lscasts</title>
+      <cmdsynopsis><command>hpodder lscasts</command>
+        <arg choice="opt">-l</arg></cmdsynopsis>
+      <para>
+        This command will display all podcasts that are configured
+        within &hpodder;.  For each podcast, you will see the podcast
+        ID, the number of pending downloads, the total number of
+        episodes ever seen by &hpodder;, and the title of the podcast.
+      </para>
+      <variablelist>
+        <varlistentry><term>-l</term>
+          <listitem><para>
+              If you add the <option>-l</option> option, then
+          <command>lscasts</command> will also display the feed URL
+          for each podcast.
+            </para></listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+
+    <refsect2 id="hpodder.commands.lscommands">
+      <title>lscommands</title>
+      <cmdsynopsis><command>hpodder lscommands</command></cmdsynopsis>
+      <para>
+        This command will display a list of all available &hpodder;
+        commands along with a brief description of each.
+      </para>
+    </refsect2>
+
+    <refsect2 id="hpodder.commands.lsepisodes">
+      <title>lsepisodes / lseps</title>
+      <cmdsynopsis><command>hpodder lsepisodes</command>
+        <arg choice="opt">-l</arg>&arg.castid;
+      </cmdsynopsis>
+      <cmdsynopsis><command>hpodder lseps</command>
+        <arg choice="opt">-l</arg>&arg.castid;
+      </cmdsynopsis>
+      <para>
+        The <command>lsepisodes</command> command will display a list
+        of every episode known to &hpodder;.  The output will include
+        the ID of the podcast to which the episode belongs, the
+        episode ID, the status of the episode, and the title of the
+        episode.
+      </para>
+      <para>
+        <command>lseps</command> is simply an alias for
+        <command>lsepisodes</command> and performs in the same manner.
+      </para>
+      <variablelist>
+        <varlistentry><term>-l</term>
+          <listitem><para>
+              If you add the <option>-l</option> option, then
+          <command>lsepisodes</command> includes the download URL for
+          each episode in its output.</para></listitem></varlistentry>
+        &var.castid;
+      </variablelist>
+    </refsect2>
+              
+
   </refsect1>
 
   <refsect1 id="hpodder.castids">
     <title>Specifying podcast IDs</title>
+    <para>
+      FIXME: write
+    </para>
+  </refsect1>
+
+  <refsect1 id="hpodder.statuses">
+    <title>Statuses in hpodder</title>
     <para>
       FIXME: write
     </para>
