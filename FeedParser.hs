@@ -35,6 +35,8 @@ import Text.XML.HaXml
 import Text.XML.HaXml.Parse
 import Utils
 import MissingH.Maybe
+import MissingH.Wash.Utility.RFC2279
+import Data.Char
 
 data Item = Item {itemtitle :: String,
                   enclosureurl :: String,
@@ -54,7 +56,7 @@ item2ep pc item =
 parse :: FilePath -> String -> IO (Either String Feed)
 parse fp name = 
     do c <- readFile fp
-       case xmlParse' name c of
+       case xmlParse' name (unifrob c) of
          Left x -> return (Left x)
          Right y ->
              do let doc = getContent y
@@ -63,6 +65,11 @@ parse fp name =
                 return $ Right $
                            (Feed {channeltitle = title, items = feeditems})
        where getContent (Document _ _ e _) = CElem e
+
+unifrob = 
+    encode . (\x -> if ord (head x) >= 60000 
+                       then tail x
+                       else x) . decode
 
 unesc = xmlUnEscape stdXmlEscaper
 
