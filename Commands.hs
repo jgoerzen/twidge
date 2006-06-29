@@ -44,6 +44,7 @@ import qualified Commands.Update
 import qualified Commands.Download
 import qualified Commands.Setup
 import qualified Commands.Catchup
+import qualified Commands.ImportIpodder
 
 allCommands :: [(String, Command)]
 allCommands = 
@@ -51,6 +52,7 @@ allCommands =
      Commands.Catchup.cmd,
      Commands.Download.cmd,
      fetch,
+     Commands.ImportIpodder.cmd,
      Commands.Ls.lscasts,
      lscommands,
      Commands.Ls.lsepisodes,

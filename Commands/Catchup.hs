@@ -63,8 +63,8 @@ catchupThePodcast gi n pc =
                           x -> x
 
 
-helptext = "Usage: hpodder update [castid [castid...]]\n\n" ++ genericIdHelp ++
- "\nRunning update will cause hpodder to look at each requested podcast.  It\n\
- \will download the feed for each one and update its database of available\n\
- \episodes.  It will not actually download any episodes; see the download\n\
- \command for that."
+helptext = "Usage: hpodder catchup [-n x] [castid [castid...]]\n\n" ++ 
+           genericIdHelp ++
+ "\nRunning catchup will cause hpodder to mark all but the n most recent\n\
+ \episodes as Skipped.  This will prevent hpodder from automatically\n\
+ \downloading such episodes.  You can specify the value for n with -n.\n"

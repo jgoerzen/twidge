@@ -34,6 +34,7 @@ import Types
 import Text.XML.HaXml
 import Text.XML.HaXml.Parse
 import Utils
+import MissingH.Maybe
 
 data Item = Item {itemtitle :: String,
                   enclosureurl :: String,
@@ -74,8 +75,11 @@ getEnclosures doc =
                     enclosure = tag "enclosure" `o` children $ i
           procenclosure title e =
               Item {itemtitle = title,
-                    enclosureurl = head0 $ stratt "url" e,
-                    enclosuretype = head0 $ stratt "type" e}
+                    enclosureurl = head0 $ forceMaybe $ stratt "url" e,
+                    enclosuretype = head0 $ case stratt "type" e of
+                                              Nothing -> ["application/octet-stream"]
+                                              Just x -> x
+                                                }
           head0 [] = ""
           head0 (x:xs) = x
               
@@ -90,19 +94,17 @@ channel =
 -- Utilities
 --------------------------------------------------
 
-attrofelem :: String -> Content -> AttValue
+attrofelem :: String -> Content -> Maybe AttValue
 attrofelem attrname (CElem inelem) =
     case unesc inelem of
-      Elem name al _ -> 
-          case lookup attrname al of
-            Just x -> x
-            Nothing -> error $ "attrofelem: no " ++ attrname ++ " in " ++ name
+      Elem name al _ -> lookup attrname al
 attrofelem _ _ =
     error "attrofelem: called on something other than a CElem"
-stratt :: String -> Content -> [String]
+stratt :: String -> Content -> Maybe [String]
 stratt attrname content =
     case attrofelem attrname content of
-      AttValue x -> concat . map mapfunc $ x
+      Just (AttValue x) -> Just (concat . map mapfunc $ x)
+      Nothing -> Nothing
     where mapfunc (Left x) = [x]
           mapfunc (Right _) = []
 
