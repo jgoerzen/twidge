@@ -259,7 +259,7 @@
       <para>
         You may obtain a list of all commands with <command>hpodder
         lscommands</command>.  Help is available for any individual
-        command with <command>hpodder <replacable>command</replacable>
+        command with <command>hpodder <replaceable>command</replaceable>
         --help</command>.  Global help is available with
         <command>hpodder --help</command>.
       </para>

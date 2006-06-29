@@ -1,0 +1,32 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+  <!ENTITY index SYSTEM "index/index.sgml">
+  <!ENTITY manpage SYSTEM "man.hpodder.sgml">
+]>
+
+<book id="hpodder.book">
+  <bookinfo>
+    <title>Using the hpodder podcast aggregator</title>
+    <author>
+      <firstname>John</firstname> <surname>Goerzen</surname>
+    </author>
+    <address><email>jgoerzen@complete.org</email></address>
+    <legalnotice>
+      <para>
+        FIXME: add copyright here
+      </para>
+    </legalnotice>
+  </bookinfo>
+
+  &man.hpodder;
+
+  &index;
+</book>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-set-face: T
+End:
+
+-->
+
