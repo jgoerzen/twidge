@@ -73,7 +73,7 @@ sanitize_basic =
 
 sanitize_fn =
     map worker . sanitize_basic
-    where worker x = if x `elem` ";/|!`~ *?%^&(){}[]\\'\"<>" 
+    where worker x = if x `elem` ";/|!`~ *?%^&(){}[]\\'\"<>:" 
                          then '_'
                          else x
 
