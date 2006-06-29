@@ -1,0 +1,186 @@
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+<!ENTITY dfsbuild "<application>dfsbuild</application>">
+<!ENTITY man.dfsbuild SYSTEM "dfsbuild.sgml">
+    ]>
+
+    <reference>
+  <title>dfsbuild Manual</title>
+
+  <refentry id="dfs.man.dfsbuild">
+    <indexterm><primary>dfsbuild</><secondary>Reference For</></>
+    <refentryinfo>
+      <address><email>jgoerzen@complete.org</email></address>
+      <author><firstname>John</firstname><surname>Goerzen</surname></author>
+    </refentryinfo>
+
+    <refmeta>
+      <refentrytitle>dfsbuild</refentrytitle>
+      <manvolnum>1</manvolnum>
+      <refmiscinfo>John Goerzen</refmiscinfo>
+    </refmeta>
+
+    <refnamediv>
+      <refname>dfsbuild</refname>
+      <refpurpose>Generate custom Debian From Scratch CD
+        images</refpurpose>
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <cmdsynopsis>
+        <command>dfsbuild</command>
+        <arg choice="opt">-a <replaceable>arch</replaceable></arg>
+        <arg choice="opt">-R</arg>
+        <arg choice="opt">-v | -V</arg>
+        <arg choice="plain">-c <replaceable>config_file</replaceable></arg>
+        <arg choice="plain">-w <replaceable>working_dir</replaceable></arg>
+      </cmdsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1 id="dfsbuild.description">
+      <title>Description</title>
+      <para>
+        &dfsbuild; is a program to generate Debian From Scratch (DFS)
+        CD images.  It is highly configurable and can generate images
+        far different from the standard DFS image.
+      </para>
+      <para>
+        The output from &dfsbuild; is an ISO image that is bootable on
+        i386 and amd64, powerpc, or alpha systems. 
+        It uses Grub for the bootloader (on i386/amd64), and
+        in the default configuration, generates DFS ISOs that are
+        bootable and can be used to repair a Linux system or install a
+        new one.
+      </para>
+      <para>
+        &dfsbuild; requires about twice the eventual size of the ISO
+        image to run.  That is, if you are building a 600MB ISO image,
+        you will need approximately 1.2GB free on the disk that holds
+        <replaceable>working_dir</replaceable>.
+      </para>
+      <para>
+        Configuration is accomplished through the config file given
+        with <option>-c</option>.  An example is available in
+        <filename>/etc/dfsbuild/dfs.cfg</filename>.  That example is
+        commented and shows all the available options.
+      </para>
+      <para>
+        dfsbuild must be run as root.
+      </para>
+    </refsect1>
+
+    <refsect1 id="dfsbuild.man.options">
+      <title>Options</title>
+      <para>
+        These are the command-line options for &dfsbuild;.  Please
+        note that you must always specify at least <option>-c</option>
+        and <option>-w</option>.
+      </para>
+      <variablelist>
+        <varlistentry><term>-a <replaceable>architecture</replaceable></term>
+          <listitem><para>Specify the Debian architecture of the
+              destination image.  Normally, this defaults to the
+              architecture of the host system.  This option may be useful
+              to, for instance, build an i386 image from your amd64 host.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>-c <replaceable>configfile</replaceable></term>
+          <listitem><para>Specifies the path for the configuration
+              file to use.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>-R</term>
+          <listitem><para>Resume an existing build.  If your build
+              failed, you may be able to restart it from where it left off
+              by using this option.  Resuming is not supported from every
+              point, so do not be surprised if this option doesn't work
+              for you everywhere.  This option is still experimental and
+              may disappear in future versions of dfsbuild.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry><term>-v</term>
+          <listitem><para>Enable verbose mode for dfsbuild messages only.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry><term>-V</term>
+          <listitem><para>Enable verbose mode for both dfsbuild
+              messages and messages from external programs when possible.</para>
+          </listitem>
+        </varlistentry>
+        
+        <varlistentry><term>-w <replaceable>directory</replaceable></term>
+          <listitem><para>Specifies a directory for dfsbuild to use as
+              its "work" directory.  It will create its temporary files,
+              and place the resulting ISO9660 image, in this
+              directory.</para>
+            <para>It is an error if this directory already exists,
+              unless <option>-R</option> is given, in which case it is
+              an error if this directory does not exist.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      
+    <refsect1 id="dfsbuild.copyright">
+      <title>Copyright</title>
+      <para>
+        dfsbuild, all associated scripts and programs, this manual,
+        and all build scripts are Copyright &copy; 2004-2006 John Goerzen.
+      </para>
+      <para>
+        This program is free software; you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation; either version 2 of the License, or
+        (at your option) any later version.
+      </para>
+
+      <para>
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
+      </para>
+      
+      <para>
+        You should have received a copy of the GNU General Public License
+        along with this program; if not, write to the Free Software
+        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+      </para>
+    </refsect1>
+
+    <refsect1 id="dfs.author">
+      <title>Author</title>
+      <para>
+        &dfsbuild;, its modules, documentation, executables, and all
+        included files, except where noted, was written by
+        John Goerzen <email>jgoerzen@complete.org</email> and
+        copyright is held as stated in the COPYRIGHT section.
+      </para>
+    </refsect1>
+
+    <refsect1 id="dfs.seealso">
+      <title>See Also</title>
+      <para>Other related references include:
+        DFS Manual at <filename>/usr/share/doc/dfsbuild</filename>,
+        <application>mkisofs</application>(1),
+        <application>cdebootstrap</application>(1).  Pre-build DFS
+        ISOs for various architectures are available from John
+        Goerzen's DFS page at <ulink
+          url="http://people.debian.org/~jgoerzen/dfs/"></ulink>.
+      </para>
+    </refsect1>
+
+  </refentry>
+  
+
+    </reference>
+
+
+    <!--
+    Local Variables:
+    mode: sgml
+    sgml-set-face: T
+    End:
+
+    -->
