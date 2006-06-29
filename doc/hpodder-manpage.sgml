@@ -325,6 +325,45 @@
       </variablelist>
     </refsect2>
 
+    <refsect2 id="hpodder.commands.download">
+      <title>download</title>
+      <cmdsynopsis>
+        <command>hpodder download</command>
+        &arg.castid;
+      </cmdsynopsis>
+      <para>
+        The <command>download</command> command is used to actually
+        perform the download of podcasts to your system.  By default,
+        <command>download</command> will download all available
+        episodes.  You can, however, specify only certain podcasts to
+        process; if you do, all available episodes for only those
+        podcasts will be downloaded.
+      </para>
+      <variablelist>&var.castid;</variablelist>
+    </refsect2>
+
+    <refsect2 id="hpodder.commands.fetch">
+      <title>fetch</title>
+      <cmdsynopsis><command>hpodder fetch</command>&arg.castid;</cmdsynopsis>
+      <para>
+        The <command>fetch</command> is the main worker command for
+        &hpodder;.  It is simply equivolent to <command>hpodder
+        update</command> followed by <command>hpodder
+        download</command>.  That is, it will scan all podcasts for
+        new episodes, then download any pending episodes.
+      </para>
+      <para>
+        This command is the default command if no command is given on
+        the &hpodder; command line.
+      </para>
+      <para>
+        As a special feature, the first time that
+        <command>fetch</command> is invoked, it will execute the new
+        user setup procedure.
+      </para>
+      <variablelist>&var.castid;</variablelist>
+    </refsect2>
+
   </refsect1>
 
   <refsect1 id="hpodder.castids">
