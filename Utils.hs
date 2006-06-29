@@ -86,4 +86,10 @@ getSelectedPodcasts dbh [] = getSelectedPodcasts dbh ["all"]
 getSelectedPodcasts dbh ["all"] = getPodcasts dbh
 getSelectedPodcasts dbh podcastlist =
     do r <- mapM (getPodcast dbh) (map read podcastlist)
-       return $ concat r
+       return $ uniq $ concat r
+
+-- FIXME: remove after the release of MissingH 0.14.5
+uniq :: Eq a => [a] -> [a]
+uniq [] = []
+uniq (x:xs) = x : filter (/= x) (uniq xs)
+
