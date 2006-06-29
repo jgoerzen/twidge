@@ -55,7 +55,8 @@ getCurlConfig =
 
 getURL :: String -> FilePath -> IO Result
 getURL url fp =
-    do ec <- rawSystem curl (curlopts ++ [url, "-o", fp])
+    do curlrc <- getCurlConfig
+       ec <- rawSystem curl (curlopts ++ ["-K", curlrc, url, "-o", fp])
        return $ case ec of
                   ExitSuccess -> Success
                   ExitFailure i ->
