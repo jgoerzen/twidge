@@ -36,6 +36,7 @@ import Data.List
 import MissingH.Str
 import System.Directory
 
+d = debugM "import-ipodder"
 i = infoM "import-ipodder"
 w = warningM "import-ipodder"
 
@@ -70,12 +71,16 @@ cmd_worker _ _ =
 prochistory _ [] _ = return ()
 prochistory gi (pc:xs) history =
     do episodes <- getEpisodes (gdbh gi) pc
+       -- Force episodes to be consumed before proceeding
+       d $ printf "Considering %d episode(s) for podcast %d" (length episodes)
+          (castid pc)
        mapM_ procep episodes
        prochistory gi xs history
     where procep ep = 
               if (snd . splitFileName . epurl $ ep) `elem` history
                  && (epstatus ep) `elem` [Pending, Error]
-                 then do updateEpisode (gdbh gi) (ep {epstatus = Skipped})
+                 then do d $ printf "Adjusting episode %d" (epid ep)
+                         updateEpisode (gdbh gi) (ep {epstatus = Skipped})
                          return ()
                  else return ()
 

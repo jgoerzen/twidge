@@ -35,7 +35,6 @@ import Text.XML.HaXml
 import Text.XML.HaXml.Parse
 import Utils
 import MissingH.Maybe
-import MissingH.Wash.Utility.RFC2279
 import Data.Char
 
 data Item = Item {itemtitle :: String,
@@ -66,10 +65,8 @@ parse fp name =
                            (Feed {channeltitle = title, items = feeditems})
        where getContent (Document _ _ e _) = CElem e
 
-unifrob = 
-    encode . (\x -> if ord (head x) >= 60000 
-                       then tail x
-                       else x) . decode
+unifrob ('\xef':'\xbb':'\xbf':x) = x -- Strip off unicode BOM
+unifrob x = x
 
 unesc = xmlUnEscape stdXmlEscaper
 
