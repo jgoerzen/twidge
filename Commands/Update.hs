@@ -28,6 +28,7 @@ import Config
 import Database.HDBC
 import Control.Monad
 import Utils
+import MissingH.Str
 
 i = infoM "update"
 w = warningM "update"

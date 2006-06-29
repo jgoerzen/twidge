@@ -56,6 +56,7 @@ cmd_worker gi (args, []) =
 
        i "Loading new feeds..."
        Commands.Update.cmd_worker gi ([], map (show . castid) pc)
+       commit (gdbh gi)
        
        i "Now importing iPodder history..."
        history <- loadhistory ipodderpath
