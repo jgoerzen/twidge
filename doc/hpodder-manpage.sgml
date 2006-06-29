@@ -448,125 +448,399 @@
         &var.castid;
       </variablelist>
     </refsect2>
-              
 
+    <refsect2 id="hpodder.commands.update">
+      <title>update</title>
+      <cmdsynopsis><command>hpodder update</command>&arg.castid;</>
+      <para>
+        The update command will cause &hpodder; to look at each
+        podcast feed.  It will download the latest copy of the feed
+        and compare the episodes mentioned in the feed to its internal
+        database of episodes.  For any episode mentioned in the feed
+        that is not already in the internal database of episodes,
+        &hpodder; will add it to its database and set its status to
+        Pending.
+      </para>
+      <variablelist>&var.castid;</variablelist>
+    </refsect2>
+        
   </refsect1>
+
+  
 
   <refsect1 id="hpodder.castids">
     <title>Specifying podcast IDs</title>
     <para>
-      FIXME: write
+      Each podcast in &hpodder; gets a numeric ID.  This ID is
+      automatically assigned by &hpodder; and is not changable.  The
+      ID is given out when a podcast is added with the
+      <command>add</command> command, or with the
+      <command>lscasts</command> or <command>lsepisodes</command>
+      commands.
+    </para>
+    <para>
+      The ID is designed as a constant way to refer to a particular
+      podcast.  A podcast's title may change, or even its feed URL,
+      but the ID of a podcast will never change.  It also is short and
+      easy to type on the command line.
+    </para>
+    <para>
+      Several commands can take a list of podcast IDs.  If no IDs are
+      given, the commands will default to operating on all podcasts.
+      One or more IDs can be given, separated by spaces.  If IDs are
+      given, then the commands will operate only on the podcasts with
+      the given IDs.
+    </para>
+    <para>
+      The special keyword <option>all</option> may be given, which
+      tells the system to operate on all podcasts.  This yields the
+      same result as giving no IDs at all.
     </para>
   </refsect1>
 
   <refsect1 id="hpodder.statuses">
-    <title>Statuses in hpodder</title>
+    <title>Status Flags in hpodder</title>
     <para>
-      FIXME: write
+      Several places in this manual, you've seen &hpodder; statuses
+      mentioned.  Each episode in &hpodder; has an associated status.
+      The statuses are:
+    </para>
+    <variablelist>
+      <varlistentry><term>Pending</term>
+        <listitem><para>The given episode is ready to
+        download</para></listitem>
+      </varlistentry>
+      <varlistentry><term>Downloaded</term>
+        <listitem><para>The given episode has already been
+        downloaded by &hpodder;</para></listitem>
+      </varlistentry>
+      <varlistentry><term>Error</term>
+        <listitem><para>An error occured while downloading this
+        episode.  It will not be downloaded again unless the flag is
+        set back to Pending.</para></listitem>
+      </varlistentry>
+      <varlistentry><term>Skipped</term>
+        <listitem><para>The user has requested that this episode not
+        be downloaded.  Commands such as <command>catchup</command> or
+            <command>import-ipodder</command> could cause this.
+          </para></listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1 id="hpodder.config">
+    <title>hpodder Configuration File</title>
+    <para>
+      &hpodder; has a configuration file in which you can set various
+      options.  This file normally lives under
+      <filename>~/.hpodder/hpodder.conf</filename>.
+    </para>
+    <para>
+      The configuration file has multiple sections.  Each section has
+      a name and is introduced with the name in brackets.  Each
+      section has one or more options.
+    </para>
+    <para>
+      The section named DEFAULT is special in that it provides
+      defaults that will be used whenever an option can't be found
+      under a different section.
+    </para>
+    <para>
+      Let's start by looking at an example file, and then proceed to
+      examine all the options that are available.
+    </para>
+    <programlisting><![CDATA[
+[DEFAULT]
+
+; Most podcasts are downloaded to here
+downloaddir = /home/jgoerzen/podcasts
+
+namingpatt = %(safecasttitle)s/%(safefilename)s
+
+[general]
+
+; The following line tells hpodder that
+; you have already gone through the intro.
+showintro = no
+
+[31]
+; Store this particular podcast somewhere else
+downloaddir = /nfs/remote/podcasts
+]]></programlisting>
+    <para>
+      In this example, you saw one "general" option --
+      <option>showintro</option>.  There are two other sections
+      represented: <option>31</option> and <option>DEFAULT</option>.
+    </para>
+    <para>
+      Whenever &hpodder; looks for information about a particular
+      podcast, it first checks to see if it can find that option in a
+      section for that podcast.  If not, it checks the
+      <option>DEFAULT</option> section.  If it still doesn't find an
+      answer, it consults its built-in defaults.
+    </para>
+    <para>
+      In this example, all podcasts share the same naming scheme.  All
+      podcasts except podcast 31 are downloaded to the same place.
+      That podcast goes elsewhere because its
+      <option>downloaddir</option> overrides the default.
+    </para>
+    <para>
+      The only <option>general</option> option is
+      <option>showintro</option>.  The first time you run
+      <command>fetch</command>, &hpodder; automatically writes a
+      configuration file for you that sets this option to
+      <option>no</option>.  This prevents you from having to do the
+      new-user intro more than once.
+    </para>
+    <refsect2 id="hpodder.config.podcast">
+      <title>Per-Podcast Options</title>
+      <para>
+        These options may be specified in <option>DEFAULT</option> or
+        in a per-podcast section.
+      </para>
+      <variablelist>
+        <varlistentry><term>downloaddir</term>
+          <listitem><para>The main directory into which all podcasts
+              should be stored.  It will be created by &hpodder; when
+              necessary if it does not already exist.  The default is
+            <filename>~/podcasts</filename></para></listitem>
+        </varlistentry>
+        <varlistentry><term>namingpatt</term>
+          <listitem><para>How to name downloaded files.  This pattern
+          is relative to the <option>downloaddir</option>.  The
+          default is
+          <filename>%(safecasttitle)s/%(safefilename)s</filename>
+            </para>
+            <para>
+              This option will be provided with several replaceable
+              tokens.  Tokens have the form
+              <option>%(<replaceable>tokname</replaceable>)s</option>.
+              That is, the percent sign, the token name in
+              perenthesis, and then an "s" character.  The tokens made
+              available for this option are:
+            </para>
+            <variablelist>
+              <varlistentry><term>castid</term>
+                <listitem><para>The numeric ID for this
+                podcast</para>
+                </listitem></varlistentry>
+              
+              <varlistentry><term>epid</term>
+                <listitem><para>The numeric ID for this
+                episode
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry><term>safecasttitle</term>
+                <listitem><para>The title of the podcast, as specified
+                in the feed.  Special characters, such as spaces or
+                exclamation marks, are converted to
+                underscores.</para></listitem>
+              </varlistentry>
+
+              <varlistentry><term>safeeptitle</term>
+                <listitem><para>The title of this episode, as
+                specified in the podcast's feed, with special
+                characters converted to underscores.
+                  </para></listitem></varlistentry>
+
+              <varlistentry><term>safefilename</term>
+                <listitem><para>The component from the URL for this
+                episode after the last slash in the URL, with special
+                characters converted to underscores.
+                  </para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+            </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+  </refsect1>
+              
+  <refsect1 id="hpodder.curl.config">
+    <title>Curl Configuration File</title>
+    <para>
+      Internally, &hpodder; uses the Curl application to perform
+      downloads across the Internet.  Curl is a remarkably flexible
+      application, and &hpodder; takes advantage of that to provide
+      you with quite a few options.
+    </para>
+    <para>
+      You can customize Curl as much as you like by creating a Curl
+      configuration file in <filename>~/.hpodder/curlrc</filename>.
+      Please see <application>curl</application>(1) for more details
+      on the content of that file.
+    </para>
+    <para>Some things you can do with this file include restricting
+    the maximum download rate, suppressing or adjusting the progress
+    meter, configuring proxies, etc.
     </para>
   </refsect1>
 
-  <refsect1 id="dfsbuild.man.options">
-    <title>Options</title>
+  <refsect1 id="hpodder.tips">
+    <title>Tips & Hints</title>
     <para>
-      These are the command-line options for dfsbuild;.  Please
-      note that you must always specify at least <option>-c</option>
-      and <option>-w</option>.
+      Here are a few tips and hints to make &hpodder; more pleasant
+      for you.
     </para>
-    <variablelist>
-      <varlistentry><term>-a <replaceable>architecture</replaceable></term>
-        <listitem><para>Specify the Debian architecture of the
-            destination image.  Normally, this defaults to the
-            architecture of the host system.  This option may be useful
-            to, for instance, build an i386 image from your amd64 host.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry><term>-c <replaceable>configfile</replaceable></term>
-        <listitem><para>Specifies the path for the configuration
-            file to use.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry><term>-R</term>
-        <listitem><para>Resume an existing build.  If your build
-            failed, you may be able to restart it from where it left off
-            by using this option.  Resuming is not supported from every
-            point, so do not be surprised if this option doesn't work
-            for you everywhere.  This option is still experimental and
-            may disappear in future versions of dfsbuild.</para>
-        </listitem>
-      </varlistentry>
+    <refsect2 id="hpodder.tips.proxy">
+      <title>Going Through a Proxy</title>
+      <para>
+        If your connections must go through a proxy, you have two
+        options: set an environment varilable or configure the proxy
+        in your <filename>~/.hpodder/curlrc</filename>.  If you use an
+        environment variable, your settings will also impact other
+        applications -- and that's probably what you want.  See the
+        Environment section later for tips on doing that.
+      </para>
+    </refsect2>
 
-      <varlistentry><term>-v</term>
-        <listitem><para>Enable verbose mode for dfsbuild messages only.</para>
-        </listitem>
-      </varlistentry>
+    <refsect2 id="hpodder.tips.ratelimit">
+      <title>Limiting Your Download Speed</title>
+      <para>
+        Sometimes, you may not want &hpodder; to use all of your
+        available bandwidth.  Perhaps you don't want it to slow down
+        other activities too much.  To do this, just create a
+        <filename>~/.hpodder/curlrc</filename> file.  Put in it
+        something like this:
+      </para>
+      <programlisting>limit-rate=20k</programlisting>
+      <para>
+        This will limit the download rate to 20 KB/sec.
+      </para>
+      <para>
+        This rate limitation is imperfect and may not do well during
+        <command>update</command>, but it should do exactly what you
+        want during <command>download</command>.
+      </para>
+    </refsect2>
+  </refsect1>
 
-      <varlistentry><term>-V</term>
-        <listitem><para>Enable verbose mode for both dfsbuild
-            messages and messages from external programs when possible.</para>
-        </listitem>
-      </varlistentry>
-      
-      <varlistentry><term>-w <replaceable>directory</replaceable></term>
-        <listitem><para>Specifies a directory for dfsbuild to use as
-            its "work" directory.  It will create its temporary files,
-            and place the resulting ISO9660 image, in this
-            directory.</para>
-          <para>It is an error if this directory already exists,
-            unless <option>-R</option> is given, in which case it is
-            an error if this directory does not exist.
-          </para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
+  <refsect1 id="hpodder.environment">
+    <title>Environment</title>
+    <para>
+      &hpodder; does not process any environment variables directly.
+      However, it does pass on the environment unmodified to the
+      programs it calls, such as Curl.  This can be useful for
+      specifying proxies.  Please see
+      <application>curl</application>(1) for more details.
+    </para>
+  </refsect1>
+
+  <refsect1 id="hpodder.conforming">
+    <title>Conforming To</title>
+    <itemizedlist>
+      <listitem><para>The <ulink
+      url="http://www.w3.org/XML/">Extensible Markup Language
+            (XML)</ulink> standard (W3C)</para></listitem>
+      <listitem><para><ulink
+      url="http://blogs.law.harvard.edu/tech/rss">RSS 2.0</ulink>
+      (Harvard Law)</para></listitem>
+      <listitem><para>HTTP 1.1, FTP, plus SSL/TLS and any other
+      protocols supported by Curl</para></listitem>
+      <listitem><para>ID3 v1 and v2</para></listitem>
+      </itemizedlist>
+  </refsect1>
+
+  <refsect1 id="hpodder.copyright">
+    <title>Copyright</title>
+    <para>
+      &hpodder;, all code, documentation, files, and build scripts are
+      Copyright &copy; 2006 John Goerzen.  All code, documentation,
+      sripts, and files are under the following license unless
+      otherwise noted:
+    </para>
+    <para>
+      This program is free software; you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation; either version 2 of the License, or
+      (at your option) any later version.
+    </para>
     
-    <refsect1 id="dfsbuild.copyright">
-      <title>Copyright</title>
-      <para>
-        dfsbuild, all associated scripts and programs, this manual,
-        and all build scripts are Copyright &copy; 2004-2006 John Goerzen.
-      </para>
-      <para>
-        This program is free software; you can redistribute it and/or modify
-        it under the terms of the GNU General Public License as published by
-        the Free Software Foundation; either version 2 of the License, or
-        (at your option) any later version.
-      </para>
+    <para>
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
+    </para>
+    
+    <para>
+      You should have received a copy of the GNU General Public License
+      along with this program; if not, write to the Free Software
+      Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    </para>
+    <para>
+      The GNU General Public License is available in the file COPYING
+      in the source distribution.  Debian GNU/Linux users may find this in
+      /usr/share/common-licenses/GPL-2.
+    </para>
+    <para>
+      If the GPL is unacceptable for your uses, please e-mail me; alternative
+      terms can be negotiated for your project.
+    </para>
+    <refsect2 id="hpodder.copyright.included">
+      <title>Special Notes for Included Code</title>
+      <refsect3 id="hpodder.copyright.haxml">
+        <title>HaXml</title>
+        <para>
+          The HaXml library and tools were written by and are copyright to
+          (c) copyright 1998-2005    Malcolm Wallace and Colin Runciman
+        </para>
+        <para>
+          The library incorporates the module Text.ParserCombinators.HuttonMeijerWallace
+          (c) copyright 1996         Graham Hutton and Erik Meijer
+with modifications
+    (c) copyright 1998-2000    Malcolm Wallace
+and may also use or incorporate the module Text.PrettyPrint.HughesPJ
+    (c) copyright 1996-1997    John Hughes and Simon Peyton Jones
+          </para>
+        <para>
+          The HaXml library is licensed under the terms of the GNU Lesser
+          General Public Licence (LGPL), which can be found in the file called
+          LICENCE-LGPL, with the following special exception:
+        </para>
+        <para>
+          As a relaxation of clause 6 of the LGPL, the copyright holders of this
+          library give permission to use, copy, link, modify, and distribute,
+          binary-only object-code versions of an executable linked with the
+          Library, without requiring the supply of any mechanism to modify or
+          replace the Library and relink (clauses 6a, 6b, 6c, 6d, 6e), provided
+          that all the other terms of clause 6 are complied with.
+        </para>
+        <para>
+          The LGPL can be found in the file 3rdparty-licenses/COPYING.HaXmL in
+          the source distribution.  Debian users can find it in
+          /usr/share/common-licenses/LGPL-2.1.
+        </para>
+      </refsect3>
+    </refsect2>
+  </refsect1>
+  
+  <refsect1 id="hpodder.author">
+    <title>Author</title>
+    <para>
+      &hpodder;, its modules, documentation, executables, and all
+      included files, except where noted, was written by
+      John Goerzen <email>jgoerzen@complete.org</email> and
+      copyright is held as stated in the COPYRIGHT section.
+    </para>
+  </refsect1>
 
-      <para>
-        This program is distributed in the hope that it will be useful,
-        but WITHOUT ANY WARRANTY; without even the implied warranty of
-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-        GNU General Public License for more details.
-      </para>
-      
-      <para>
-        You should have received a copy of the GNU General Public License
-        along with this program; if not, write to the Free Software
-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-      </para>
-    </refsect1>
-
-    <refsect1 id="dfs.author">
-      <title>Author</title>
-      <para>
-        dfsbuild;, its modules, documentation, executables, and all
-        included files, except where noted, was written by
-        John Goerzen <email>jgoerzen@complete.org</email> and
-        copyright is held as stated in the COPYRIGHT section.
-      </para>
-    </refsect1>
-
-    <refsect1 id="dfs.seealso">
-      <title>See Also</title>
-      <para>Other related references include:
-        DFS Manual at <filename>/usr/share/doc/dfsbuild</filename>,
-        <application>mkisofs</application>(1),
-        <application>cdebootstrap</application>(1).  Pre-build DFS
-        ISOs for various architectures are available from John
-        Goerzen's DFS page at <ulink
-          url="http://people.debian.org/~jgoerzen/dfs/"></ulink>.
-      </para>
-    </refsect1>
-
+  <refsect1 id="dfs.seealso">
+    <title>See Also</title>
+    <para>
+      <application>curl</application>(1),
+      <application>id3v2</application>(1)
+    </para>
+    <para>
+      The &hpodder; homepage at <ulink
+      url="http://quux.org/devel/hpodder"></>,
+      a general description of podcasting at
+      <ulink url="http://en.wikipedia.org/wiki/Podcast"></>
+    </para>
+  </refsect1>
+  
   </refentry>

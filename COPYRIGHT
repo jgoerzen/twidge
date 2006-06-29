@@ -1,7 +1,8 @@
 hspod
 Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
 
-All code is under the following license unless otherwise noted:
+All code, documentation, and build scripts are under the following
+license unless otherwise noted:
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
