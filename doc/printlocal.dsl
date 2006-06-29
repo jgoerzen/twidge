@@ -11,8 +11,6 @@
 (define %two-side% #t)
 (define %footnote-ulinks% #t)
 
-(define %generate-reference-toc% #t)
-
 ;    (declare-characteristic heading-level
 ;          "UNREGISTERED::James Clark//Characteristic::heading-level" 4)
 

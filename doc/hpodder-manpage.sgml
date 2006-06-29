@@ -34,6 +34,8 @@
 
   <refsect1 id="hpodder.description">
     <title>Description</title>
+    <indexterm><primary>Podcasts</primary></indexterm>
+    <indexterm><primary>Podcatcher</primary></indexterm>
     <para>
       Podcasting
       is a method of publishing radio-like programs on the
@@ -236,6 +238,7 @@
   </refsect1>
 
   <refsect1 id="hpodder.options">
+    <indexterm><primary>Options (command-line)</primary></indexterm>
     <title>Options</title>
     <para>
       &hpodder; always is invoked with the name of a specific
@@ -260,6 +263,7 @@
   </refsect1>
 
   <refsect1 id="hpodder.commands">
+    <indexterm><primary>Commands</primary></indexterm>
     <title>Commands in hpodder</title>
     <para>
       &hpodder; has many different commands.  If you do not specify a
@@ -275,7 +279,10 @@
       its options.  Since all commands support this, it won't be
       explicitly listed for each command below.
     </para>
+
     <refsect2 id="hpodder.commands.add">
+      <indexterm><primary>Commands</primary><secondary>add</></>
+      <indexterm><primary>Podcasts</><secondary>Adding to hpodder</></>
       <title>add</title>
       <cmdsynopsis>
         <command>hpodder add</command>
@@ -296,6 +303,8 @@
     </refsect2>
     
     <refsect2 id="hpodder.commands.catchup">
+      <indexterm><primary>Commands</><secondary>catchup</></>
+      <indexterm><primary>Episodes</><secondary>Skipping</></>
       <title>catchup</title>
       <cmdsynopsis>
         <command>hpodder catchup</command>
@@ -326,6 +335,8 @@
     </refsect2>
 
     <refsect2 id="hpodder.commands.download">
+      <indexterm><primary>Commands</><secondary>download</></>
+      <indexterm><primary>Episodes</><secondary>Downloading</></>
       <title>download</title>
       <cmdsynopsis>
         <command>hpodder download</command>
@@ -343,6 +354,9 @@
     </refsect2>
 
     <refsect2 id="hpodder.commands.fetch">
+      <indexterm><primary>Commands</><secondary>fetch</></>
+      <indexterm><primary>Podcasts</><secondary>Updating</></>
+      <indexterm><primary>Episodes</><secondary>Downloading</></>
       <title>fetch</title>
       <cmdsynopsis><command>hpodder fetch</command>&arg.castid;</cmdsynopsis>
       <para>
@@ -365,6 +379,8 @@
     </refsect2>
 
     <refsect2 id="hpodder.commands.import-ipodder">
+      <indexterm><primary>Commands</><secondary>import-ipodder</></>
+      <indexterm><primary>ipodder</><secondary>Converting From</></>
       <title>import-ipodder</title>
       <cmdsynopsis><command>hpodder import-ipodder</command>
         <arg
@@ -391,6 +407,8 @@
     </refsect2>
 
     <refsect2 id="hpodder.commands.lscasts">
+      <indexterm><primary>Commands</><secondary>lscasts</></>
+      <indexterm><primary>Podcasts</><secondary>Listing</></>
       <title>lscasts</title>
       <cmdsynopsis><command>hpodder lscasts</command>
         <arg choice="opt">-l</arg></cmdsynopsis>
@@ -412,6 +430,7 @@
     </refsect2>
 
     <refsect2 id="hpodder.commands.lscommands">
+      <indexterm><primary>Commands</><secondary>lscommands</></>
       <title>lscommands</title>
       <cmdsynopsis><command>hpodder lscommands</command></cmdsynopsis>
       <para>
@@ -421,6 +440,9 @@
     </refsect2>
 
     <refsect2 id="hpodder.commands.lsepisodes">
+      <indexterm><primary>Commands</><secondary>lsepisodes</></>
+      <indexterm><primary>Commands</><secondary>lseps</></>
+      <indexterm><primary>Episodes</><secondary>Listing</></>
       <title>lsepisodes / lseps</title>
       <cmdsynopsis><command>hpodder lsepisodes</command>
         <arg choice="opt">-l</arg>&arg.castid;
@@ -450,6 +472,8 @@
     </refsect2>
 
     <refsect2 id="hpodder.commands.update">
+      <indexterm><primary>Commands</><secondary>update</></>
+      <indexterm><primary>Podcasts</><secondary>Updating</></>
       <title>update</title>
       <cmdsynopsis><command>hpodder update</command>&arg.castid;</>
       <para>
@@ -467,9 +491,9 @@
   </refsect1>
 
   
-
   <refsect1 id="hpodder.castids">
     <title>Specifying podcast IDs</title>
+    <indexterm><primary>Podcasts</><secondary>IDs</></>
     <para>
       Each podcast in &hpodder; gets a numeric ID.  This ID is
       automatically assigned by &hpodder; and is not changable.  The
@@ -499,6 +523,7 @@
   </refsect1>
 
   <refsect1 id="hpodder.statuses">
+    <indexterm><primary>Episodes</><secondary>Status Flags</></>
     <title>Status Flags in hpodder</title>
     <para>
       Several places in this manual, you've seen &hpodder; statuses
@@ -529,6 +554,7 @@
   </refsect1>
 
   <refsect1 id="hpodder.config">
+    <indexterm><primary>Configuration File</><secondary>hpodder</></>
     <title>hpodder Configuration File</title>
     <para>
       &hpodder; has a configuration file in which you can set various
@@ -661,6 +687,7 @@ downloaddir = /nfs/remote/podcasts
   </refsect1>
               
   <refsect1 id="hpodder.curl.config">
+    <indexterm><primary>Configuration File</><secondary>Curl</></>
     <title>Curl Configuration File</title>
     <para>
       Internally, &hpodder; uses the Curl application to perform
@@ -688,6 +715,7 @@ downloaddir = /nfs/remote/podcasts
     </para>
     <refsect2 id="hpodder.tips.proxy">
       <title>Going Through a Proxy</title>
+      <indexterm><primary>Proxy</><secondary>Using with hpodder</></>
       <para>
         If your connections must go through a proxy, you have two
         options: set an environment varilable or configure the proxy
@@ -700,6 +728,7 @@ downloaddir = /nfs/remote/podcasts
 
     <refsect2 id="hpodder.tips.ratelimit">
       <title>Limiting Your Download Speed</title>
+      <indexterm><primary>Download Rate</><secondary>Limiting</></>
       <para>
         Sometimes, you may not want &hpodder; to use all of your
         available bandwidth.  Perhaps you don't want it to slow down
@@ -721,6 +750,7 @@ downloaddir = /nfs/remote/podcasts
 
   <refsect1 id="hpodder.environment">
     <title>Environment</title>
+    <indexterm><primary>Environment Variables</></>
     <para>
       &hpodder; does not process any environment variables directly.
       However, it does pass on the environment unmodified to the
@@ -747,6 +777,7 @@ downloaddir = /nfs/remote/podcasts
 
   <refsect1 id="hpodder.copyright">
     <title>Copyright</title>
+    <indexterm><primary>Copyright</></>
     <para>
       &hpodder;, all code, documentation, files, and build scripts are
       Copyright &copy; 2006 John Goerzen.  All code, documentation,
