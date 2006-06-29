@@ -37,8 +37,20 @@ data Result = Success | TempFail | PermFail
             deriving (Eq, Show, Read)
 
 curl = "curl"
-curlopts = ["-A", "hpodder v0.1.0; Haskell; GHC", "-s", "-L", 
-                "-y", "60", "-Y", "1", "--retry", "2", "-f", "-C", "-"]
+curlopts = ["-A", "hpodder v0.1.0; Haskell; GHC", -- Set User-Agent
+--            "-s",               -- Silent mode
+            "-#",               -- Progress bar
+            "-L",               -- Follow redirects
+            "-y", "60", "-Y", "1", -- Timeouts
+            "--retry", "2",     -- Retry twice
+            "-f",               -- Fail on server errors
+            "-C", "-"           -- Continue partial downloads
+           ]
+
+getCurlConfig :: IO String
+getCurlConfig =
+    do ad <- getAppDir
+       return ad ++ "/curlrc"
 
 getURL :: String -> FilePath -> IO Result
 getURL url fp =
