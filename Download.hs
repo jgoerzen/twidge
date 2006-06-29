@@ -32,6 +32,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 module Download(getURL, Result(..)) where
 import System.Cmd
 import System.Exit
+import Config
 
 data Result = Success | TempFail | PermFail
             deriving (Eq, Show, Read)
@@ -50,7 +51,7 @@ curlopts = ["-A", "hpodder v0.1.0; Haskell; GHC", -- Set User-Agent
 getCurlConfig :: IO String
 getCurlConfig =
     do ad <- getAppDir
-       return ad ++ "/curlrc"
+       return $ ad ++ "/curlrc"
 
 getURL :: String -> FilePath -> IO Result
 getURL url fp =
