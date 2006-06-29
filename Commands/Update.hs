@@ -58,7 +58,10 @@ updateFeed gi pcorig f =
     do count <- foldM (updateEnc gi pc) 0 (items f)
        i $ printf "   %d new episodes" count
        return pc
-    where pc = pcorig {castname = sanitize_basic (channeltitle f)}
+    where pc = pcorig {castname = newname}
+          newname = if (castname pcorig) == ""
+                       then strip . sanitize_basic $ channeltitle f
+                       else (castname pcorig)
 
 updateEnc gi pc count item = 
     do newc <- addEpisode (gdbh gi) (item2ep pc item)

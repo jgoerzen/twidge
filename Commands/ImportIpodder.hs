@@ -87,7 +87,7 @@ newpodcasts id gi =
        let urlstoadd = filter (\newurl -> not (newurl `elem` existingurls))
                        newurls
        let podcaststoadd = map (\url -> Podcast {castid = 0, 
-                                                 castname = "NEWLY-CREATED PODCAST",
+                                                 castname = "",
                                                  feedurl = url}) urlstoadd
                            
        newpcs <- mapM (addPodcast (gdbh gi)) podcaststoadd
