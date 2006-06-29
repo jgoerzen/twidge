@@ -1,72 +1,130 @@
 <!DOCTYPE reference PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
-<!ENTITY dfsbuild "<application>dfsbuild</application>">
-<!ENTITY man.dfsbuild SYSTEM "dfsbuild.sgml">
+<!ENTITY hpodder "<application>dfsbuild</application>">
     ]>
 
     <reference>
   <title>dfsbuild Manual</title>
 
   <refentry id="dfs.man.dfsbuild">
-    <indexterm><primary>dfsbuild</><secondary>Reference For</></>
+    <indexterm><primary>hpodder</><secondary>Reference For</></>
     <refentryinfo>
       <address><email>jgoerzen@complete.org</email></address>
       <author><firstname>John</firstname><surname>Goerzen</surname></author>
     </refentryinfo>
 
     <refmeta>
-      <refentrytitle>dfsbuild</refentrytitle>
+      <refentrytitle>hpodder</refentrytitle>
       <manvolnum>1</manvolnum>
       <refmiscinfo>John Goerzen</refmiscinfo>
     </refmeta>
 
     <refnamediv>
-      <refname>dfsbuild</refname>
-      <refpurpose>Generate custom Debian From Scratch CD
-        images</refpurpose>
+      <refname>hpodder</refname>
+      <refpurpose>Scan and download podcasts</refpurpose>
     </refnamediv>
 
     <refsynopsisdiv>
       <cmdsynopsis>
-        <command>dfsbuild</command>
+        <command>hpodder</command>
+        <arg choide="opt">-d</arg>
+        <arg choice="opt"><replaceable>command</replaceable></arg>
+        <arg choice="opt"><replaceable>command_args</replaceable></arg>
+<!--
         <arg choice="opt">-a <replaceable>arch</replaceable></arg>
         <arg choice="opt">-R</arg>
         <arg choice="opt">-v | -V</arg>
         <arg choice="plain">-c <replaceable>config_file</replaceable></arg>
         <arg choice="plain">-w <replaceable>working_dir</replaceable></arg>
+-->
       </cmdsynopsis>
     </refsynopsisdiv>
 
-    <refsect1 id="dfsbuild.description">
+    <refsect1 id="hpodder.description">
       <title>Description</title>
       <para>
-        &dfsbuild; is a program to generate Debian From Scratch (DFS)
-        CD images.  It is highly configurable and can generate images
-        far different from the standard DFS image.
+        &hpodder is a program to download 
+        <ulink url="http://en.wikipedia.org/wiki/Podcast">podcast</ulink>
+        episodes from the Internet.  As soch, &hpodder; is known as a
+        podcatcher.
+      </para>
+
+      <refsect2 id="hpodder.features">
+        <title>Feature List</title>
+        <para>
+          You get many unique features with &hpodder;.  Here are a
+          few:
+        </para>
+        <itemizedlist>
+          <listitem><para>Convenient, easy to learn, and fast command-line
+              interface (it's simple to do simple things, and
+              advanced things are possible)</para>
+          </listitem>
+
+          <listitem><para>Automatic discovery of feed metadata such as title</para>
+          </listitem>
+
+          <listitem><para>Full history database for accurate
+          prevention of duplicate downloads and tracking of new episodes</para>
+          </listitem>
+
+          <listitem><para>Conversion tools to convert your existing
+              feed list and history from other applications to
+              &hpodder;.  Supported applications and formats include:
+              castpodder and ipodder.
+            </para>
+          </listitem>
+
+          <listitem><para>Most operations can work fully automatically
+          across your entire podcast database, or they can work
+          manually as well.</para>
+          </listitem>
+        </itemizedlist>
+      </refsect2>
+    </refsect1>
+
+    <refsect1 id="hpodder.quickstart">
+      <title>Quick Start</title>
+      <para>
+        This section will describe how a first-time &hpodder; user can
+        get up and running quickly.  It assumes you already have
+        &hpodder; compiled or installed on your system.  If not,
+        please follow the instructions in the
+        <filename>INSTALL</filename>
+        file in the
+        source distribution.
       </para>
       <para>
-        The output from &dfsbuild; is an ISO image that is bootable on
-        i386 and amd64, powerpc, or alpha systems. 
-        It uses Grub for the bootloader (on i386/amd64), and
-        in the default configuration, generates DFS ISOs that are
-        bootable and can be used to repair a Linux system or install a
-        new one.
+        To get started, simply run <command>hpodder</command> at your
+        shell prompt.  &hpodder; will lead you through the first-time
+        configuration -- which is only two questions and completely
+        self-explanatory!
       </para>
       <para>
-        &dfsbuild; requires about twice the eventual size of the ISO
-        image to run.  That is, if you are building a 600MB ISO image,
-        you will need approximately 1.2GB free on the disk that holds
-        <replaceable>working_dir</replaceable>.
+        After this, whenever you want to download the latest episodes
+        for your podcast, just run <command>hpodder</command> again.
       </para>
       <para>
-        Configuration is accomplished through the config file given
-        with <option>-c</option>.  An example is available in
-        <filename>/etc/dfsbuild/dfs.cfg</filename>.  That example is
-        commented and shows all the available options.
+        At some point, you'll want to add more podcasts to &hpodder;.
+        To do that, just run a command such as:
+      </para>
+      <para><command>hpodder add
+      <replaceable>http://www.example.com/feed.xml</replaceable></command></para>
+      <para>
+        Just replace the example.com URL here with the real URL of the
+        feed you want to add.  Then run <command>ipodder
+        update</command>.  If the podcast you've just added has a
+        whole bunch of episodes, you may not want to download them
+        all.  In that case, run <command>ipodder catchup
+        <replaceable>id</replaceable></command>, where
+        <replaceable>id</replaceable> is the podcast number that
+        ipodder gave your new podcast when you added it.
       </para>
       <para>
-        dfsbuild must be run as root.
+        Again, from here on, you can just run
+        <command>ipodder</command> to download all your new episodes.
       </para>
     </refsect1>
+
 
     <refsect1 id="dfsbuild.man.options">
       <title>Options</title>
