@@ -1,5 +1,6 @@
 <!DOCTYPE reference PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
-<!ENTITY hpodder "<application>dfsbuild</application>">
+<!ENTITY hpodder "<application>hpodder</application>">
+<!ENTITY dfsbuild "<application>dfsbuild</application>">
     ]>
 
     <reference>
@@ -42,18 +43,29 @@
     <refsect1 id="hpodder.description">
       <title>Description</title>
       <para>
-        &hpodder is a program to download 
-        <ulink url="http://en.wikipedia.org/wiki/Podcast">podcast</ulink>
-        episodes from the Internet.  As soch, &hpodder; is known as a
-        podcatcher.
+        <ulink
+        url="http://en.wikipedia.org/wiki/Podcast">Podcasting</ulink>
+        is a method of publishing radio-like programs on the
+        Internet.  Through podcasting, almost anyone can produce their
+        own audio program, and publish episodes of it as often or as
+        rarely as they like.
+      </para>
+
+      <para>
+        To listen to podcasts, you need a program to download the
+        podcast's episodes from the Internet.  Such a program is
+        called a podcatcher (or sometimes a podcast aggregator).
+        &hpodder; is this program.
+      </para>
+
+      <para>
+        If you'd like to get going RIGHT NOW, skip on down to the
+        Quick Start section.  Otherwise, let's take a look at the
+        features of &hpodder;.
       </para>
 
       <refsect2 id="hpodder.features">
         <title>Feature List</title>
-        <para>
-          You get many unique features with &hpodder;.  Here are a
-          few:
-        </para>
         <itemizedlist>
           <listitem><para>Convenient, easy to learn, and fast command-line
               interface (it's simple to do simple things, and
@@ -78,8 +90,115 @@
           across your entire podcast database, or they can work
           manually as well.</para>
           </listitem>
+
+          <listitem><para>Automatic updating of ID3 (v1 and v2) tags
+          based on metadata in the podcast itself.  This important
+          feature is available through iTunes but is often missed by
+          other podcatchers.</para>
+          </listitem>
+
+          <listitem><para>&hpodder; operations can be easily scripted
+          or scheduled using regular operating system tools.</para>
+          </listitem>
+
+          <listitem><para>Fully customizable naming scheme for
+          downloaded episodes, including a name collision detection
+          and workaround algorithm.</para>
+          </listitem>
+
+          <listitem><para>Automatic support for appending .mp3
+          extensions to MP3 files that lack it.</para>
+          </listitem>
+
+          <listitem><para>Numerous database and history inquiry tools</para>
+          </listitem>
+
+          <listitem><para>Small, minimalist footprint</para>
+          </listitem>
+
+          <listitem><para>Power users and developers can interact
+          directly with the embedded Sqlite3 database used by
+          &hpodder;.  The database has a simple schema that is
+          developer-friendly.</para>
+          </listitem>
+
+          <listitem><para>Support for resuming interrupted downloads
+          of podcasts</para>
+          </listitem>
+
+          <listitem><para>&hpodder; is SAFE and is designed with data
+          integrity in mind from the beginning.  It should be
+          exceedingly difficult to lose a podcast episode, even in the
+          event of a power failure.
+            </para>
+          </listitem>
+
         </itemizedlist>
       </refsect2>
+
+      <refsect2 id="hpodder.mo">
+        <title>Method of Operation</title>
+        <para>
+          The basic pattern of operation with &hpodder; is to set up
+          each podcast you want to receive.  Each day (or hour, or
+          whatever), &hpodder; will go out and update its database by
+          pulling in the latest episode lists from the podcast feed.
+          Then, &hpodder; will proceed to download any episodes that
+          you haven't already downloaded.  After each episode is
+          downloaded, &hpodder; will note that fact so it isn't ever
+          downloaded again.
+        </para>
+        <para>
+          Let's look at this in a bit more detail.
+        </para>
+        <para>
+          &hpodder; maintains two tables in a database.  One table
+          lists all the podcasts you know about, as well as where the
+          podcast's feed is to be downloaded from.  The feed is a file
+          that the podcast's author publishes.  It lists all the
+          current episodes of the podcast, and some information about
+          them.  Data is added to this table with the <command>hpodder
+          add</command> command.
+        </para>
+        <para>
+          The second table lists each episode for a given podcast,
+          along with the location from which the episode can be
+          downloaded and some other information about the episode
+          (such as its title).  Information in this table is added by
+          <command>ipodder update</command> and updated by
+          <command>ipodder download</command> or 
+          <command>ipodder catchup</command>.
+        </para>
+        <para>
+          When you first fire up &hpodder;, it will read its
+          configuration file from
+          <filename>~/.hpodder/hpodder.conf</filename>.
+          What happens next depends on the command.
+        </para>
+        <para>
+          For <command>hpodder update</command>, the program will read
+          information about all your podcasts.  It will download each
+          feed.  Once it has the feed, it will look at each episode
+          and compare them to the database.  If a given episode is
+          already in the database, it is ignored.  Any new episodes
+          are recorded in the database, and set to Pending so they
+          will be downloaded on the next download run.
+        </para>
+        <para>
+          For <command>hpodder download</command>, the program will
+          read information about all your episodes.  For each episode
+          marked Pending, the program will download the episode.  It
+          will then update the episode's ID3 tags based on the podcast
+          feed.  Finally, it will move the episode in-place
+          atomically.  Only after all that has been done will
+          &hpodder; mark the episode as Downloaded in the database.
+          In this way, no episode is visible to outside tools until it
+          is completely downloaded in its final form, so you can
+          safely play any visible program in your download directory
+          even as downloads are happening.
+        </para>
+      </refsect2>
+
     </refsect1>
 
     <refsect1 id="hpodder.quickstart">

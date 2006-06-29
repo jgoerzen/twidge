@@ -1,0 +1,9 @@
+Move episode in-place atomically:
+
+  First, move to temporary name, but in dest dir
+
+  Then, set id3 tags
+
+  Then rename to final name
+
+
