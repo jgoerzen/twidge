@@ -30,40 +30,45 @@ import Control.Monad
 import Utils
 import MissingH.Str
 import System.IO
+import System.Console.GetOpt
+import MissingH.GetOpt
 
 i = infoM "setstatus"
 w = warningM "setstatus"
+d = debugM "setstatus"
 
-cmd = simpleCmd "rm" 
+cmd = simpleCmd "setstatus" 
       "Alter status of individual episodes" helptext 
       [Option "c" ["castid"] (ReqArg (stdRequired "castid") "ID")
        "Podcast ID in which the episodes occur",
        Option "s" ["status"] (ReqArg (stdRequired "status") "STATUS")
-       "New status to assign: one of Pending, Downloaded, Error, Skipped"]
+       "New status: Pending, Downloaded, Error, Skipped"]
       cmd_worker
 
 cmd_worker _ (_, []) =
     fail $ "setstatus: episode IDs missing; see hpodder setstatus --help"
 
-cmd_worker gi (opts, episodes) =
+cmd_worker gi (args, episodes) =
     do podcastid <- case lookup "castid" args of
                       Just x -> return (read x)
                       Nothing -> fail "setstatus: --castid required; see hpodder setstatus --help"
-       newstatus <- case lokoup "status" args of
+       newstatus <- case lookup "status" args of
                       Just x -> return (read x)
                       Nothing -> fail "setstatus: --status required; see hpodder setstatus --help"
        podcastlist <- getPodcast (gdbh gi) podcastid
        pc <- case podcastlist of
-               [x] -> x
+               [x] -> return x
                _ -> fail "setstatus: --castid did not give a valid podcast id"
        
-       eplist_orig <- getSelectedEpisodes episodes
-       let eplist_new = map (\e -> e {status = newstatus}) eplist_orig
+       return $ seq pc pc
+       eplist_orig <- getSelectedEpisodes (gdbh gi) pc episodes
+
+       -- Force evaluation of eplist_orig
+       d $ printf "Modifying %d episodes" (length eplist_orig)
+       return $ seq eplist_orig eplist_orig
+       let eplist_new = map (\e -> e {epstatus = newstatus}) eplist_orig
        mapM_ (updateEpisode (gdbh gi)) eplist_new
        commit (gdbh gi)
-
-cmd_worker _ _ =
-    fail $ "Invalid arguments to setstatus; please see hpodder statstatus --help"
 
 helptext = "Usage: hpodder setstatus -c CASTID -s STATUS episodeid [episodeid ...]\n\n\
  \You must specify one podcast ID with -c, one new status with -s.\n\

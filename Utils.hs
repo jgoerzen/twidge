@@ -37,6 +37,7 @@ import System.Exit
 import Config
 import System.Directory
 import DB
+import Database.HDBC
 
 simpleCmd :: String -> String -> String -> [OptDescr (String, String)] 
           -> (GlobalInfo -> ([(String, String)], [String]) -> IO ()) 
@@ -89,13 +90,12 @@ getSelectedPodcasts dbh podcastlist =
        return $ uniq $ concat r
 
 getSelectedEpisodes :: Connection -> Podcast -> [String] -> IO [Episode]
-getSelectedEpisodes _ _ [] = []
+getSelectedEpisodes _ _ [] = return []
 getSelectedEpisodes dbh pc ["all"] = getEpisodes dbh pc
 getSelectedEpisodes dbh pc episodelist =
     do eps <- getEpisodes dbh pc
-       return $ uniq . filter (\e -> (epid e `elem` episodelist) . 
-                               concat $ eplist
-    eplist = map read episodelist
+       return $ uniq . filter (\e -> (epid e `elem` eplist)) $ eps
+    where eplist = map read episodelist
 
 -- FIXME: remove after the release of MissingH 0.14.5
 uniq :: Eq a => [a] -> [a]
