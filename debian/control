@@ -26,7 +26,7 @@ Description: Tool to scan and download podcasts (podcatcher)
  Automatic discovery of feed metadata
  .
  Full history database for accurate prevention of duplicate
- downlaods and tracking of new episodes
+ downloads and tracking of new episodes
  .
  Conversion tools to convert your existing feed list and history from
  other applications to hpodder.  Supported applications and formats
