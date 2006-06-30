@@ -35,6 +35,8 @@ build-stamp: configure-stamp
 
 	# Add here commands to compile the package.
 	$(MAKE)
+	cd doc && scons pdf
+	cd doc && scons manpages
 	#docbook-to-man debian/hpodder.sgml > hpodder.1
 
 	touch $@
@@ -81,7 +83,7 @@ binary-arch: build install
 #	dh_installinit
 #	dh_installcron
 #	dh_installinfo
-	dh_installman
+	dh_installman 
 	dh_link
 	dh_strip
 	dh_compress
