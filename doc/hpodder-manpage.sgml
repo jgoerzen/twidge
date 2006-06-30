@@ -492,6 +492,32 @@
       </para>
     </refsect2>
 
+    <refsect2 id="hpodder.commands.setstatus">
+      <indexterm><primary>Commands</><secondary>setstatus</></>
+      <indexterm><primary>Episodes</><secondary>Status Flags</><tertiary>Updating</></>
+      <title>setstatus</title>
+      <cmdsynopsis><command>hpodder setstatus</command>
+        <arg choice="plain">--castid=<replaceable>ID</replaceable></arg>
+        <arg choice="plain">--status=<replaceable>STATUS</replaceable></arg>
+        <arg choice="plain" rep="repeat">epid</arg></cmdsynopsis>
+      <para>
+        The <command>setstatus</command> command is used to manually
+        adjust the status flags on individual episodes.  You can use
+        it to flag individual episodes for downloading (or not).
+      </para>
+      <para>
+        You must specify at least one episode ID.  <emphasis>Note that
+        the plain IDs given to this command are episode IDs</emphasis>, and not
+        podcast IDs like other commands.
+      </para>
+      <para>
+        Statuses are case-sensitive and must be given with a leading
+        uppercase letter and trailing lowercase letters.  Available
+        status are given later in this manual.
+      </para>
+        
+    </refsect2>
+
     <refsect2 id="hpodder.commands.update">
       <indexterm><primary>Commands</><secondary>update</></>
       <indexterm><primary>Podcasts</><secondary>Updating</></>
