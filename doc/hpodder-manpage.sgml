@@ -470,6 +470,27 @@
         &var.castid;
       </variablelist>
     </refsect2>
+    
+    <refsect2 id="hpodder.commands.rm">
+      <indexterm><primary>Commands</><secondary>rm</></>
+      <indexterm><primary>Podcasts</><secondary>Removing</></>
+      <title>rm</title>
+      <cmdsynopsis><command>hpodder rm</command>
+        <arg choice="plain" rep="repeat">castid</>
+      </cmdsynopsis>
+      <para>
+        This command will remove all knowledge about a given podcast
+        from hpodder, including all entries about that podcast in the
+        episode database.
+      </para>
+      <para>
+        One or more podcast IDs are required; see the section below on
+        specifying podcast IDs for more details.  Unlike all the other
+        &hpodder; commands that accept an empty podcast ID list to
+        mean all podcasts, <command>rm</command> does not because of
+        the destructive potential of such a request.
+      </para>
+    </refsect2>
 
     <refsect2 id="hpodder.commands.update">
       <indexterm><primary>Commands</><secondary>update</></>

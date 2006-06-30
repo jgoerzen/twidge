@@ -107,6 +107,13 @@ updatePodcast dbh podcast =
         [toSql (castname podcast), toSql (feedurl podcast),
          toSql (castid podcast)] >> return ()
 
+{- | Remove a podcast. -}
+removePodcast :: Connection -> Podcast -> IO ()
+removePodcast dbh podcast =
+    do run dbh "DELETE FROM episodes WHERE castid = ?" [toSql (castid podcast)]
+       run dbh "DELETE FROM podcasts WHERE castid = ?" [toSql (castid podcast)]
+       return ()
+
 getPodcasts :: Connection -> IO [Podcast]
 getPodcasts dbh =
     do res <- quickQuery dbh "SELECT castid, castname, feedurl FROM podcasts ORDER BY castid" []
