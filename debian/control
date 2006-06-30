@@ -1,0 +1,12 @@
+Source: hpodder
+Section: unknown
+Priority: optional
+Maintainer: John Goerzen <jgoerzen@complete.org>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: hpodder
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
