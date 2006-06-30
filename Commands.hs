@@ -46,6 +46,7 @@ import qualified Commands.Setup
 import qualified Commands.Catchup
 import qualified Commands.ImportIpodder
 import qualified Commands.Rm
+import qualified Commands.SetStatus
 
 allCommands :: [(String, Command)]
 allCommands = 
@@ -59,6 +60,7 @@ allCommands =
      Commands.Ls.lsepisodes,
      Commands.Ls.lseps,
      Commands.Rm.cmd,
+     Commands.SetStatus.cmd,
      Commands.Update.cmd]
 
 lscommands = 

@@ -88,6 +88,15 @@ getSelectedPodcasts dbh podcastlist =
     do r <- mapM (getPodcast dbh) (map read podcastlist)
        return $ uniq $ concat r
 
+getSelectedEpisodes :: Connection -> Podcast -> [String] -> IO [Episode]
+getSelectedEpisodes _ _ [] = []
+getSelectedEpisodes dbh pc ["all"] = getEpisodes dbh pc
+getSelectedEpisodes dbh pc episodelist =
+    do eps <- getEpisodes dbh pc
+       return $ uniq . filter (\e -> (epid e `elem` episodelist) . 
+                               concat $ eplist
+    eplist = map read episodelist
+
 -- FIXME: remove after the release of MissingH 0.14.5
 uniq :: Eq a => [a] -> [a]
 uniq [] = []

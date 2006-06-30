@@ -33,7 +33,7 @@ import qualified Commands.Ls
 import System.IO
 
 i = infoM "rm"
-w = warningM "update"
+w = warningM "rm"
 
 cmd = simpleCmd "rm" 
       "Remove podcast(s) from hpodder" helptext 
@@ -61,8 +61,5 @@ cmd_worker gi ([], casts) =
 cmd_worker _ _ =
     fail $ "Invalid arguments to rm; please see hpodder rm --help"
 
-helptext = "Usage: hpodder update [castid [castid...]]\n\n" ++ genericIdHelp ++
- "\nRunning update will cause hpodder to look at each requested podcast.  It\n\
- \will download the feed for each one and update its database of available\n\
- \episodes.  It will not actually download any episodes; see the download\n\
- \command for that."
+helptext = "Usage: hpodder rm castid [castid...]\n\n" ++ 
+ "\nRemoves the specified podcast(s) entirely from hpodder\n"
