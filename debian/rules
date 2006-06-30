@@ -56,8 +56,8 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/hpodder.
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/hpodder
-
+	#$(MAKE) install DESTDIR=$(CURDIR)/debian/hpodder
+	cp dist/build/hpodder debian/hpodder/usr/bin/
 
 # Build architecture-independent files here.
 binary-indep: build install
