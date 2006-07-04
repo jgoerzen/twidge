@@ -61,7 +61,7 @@ getCurlConfig =
     do ad <- getAppDir
        return $ ad ++ "/curlrc"
 
-getURL :: String -> FilePath -> IO Result
+getURL :: String -> FilePath -> IO (Result, ProcessStatus)
 getURL url fp =
     do curlrc <- getCurlConfig
        startsize <- getsize

@@ -73,7 +73,7 @@ updateEnc gi pc count item =
 getFeed pc =
     do result <- getURL (feedurl pc) "feed.xml"
        case result of
-         Success -> 
+         (Success, _) -> 
              do feed <- parse "feed.xml" (feedurl pc)
                 case feed of
                   Right f -> return $ Just (f {items = reverse (items f)})
