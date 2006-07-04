@@ -113,7 +113,8 @@ getCP ep idstr fnpart =
 
 movefile old new =
     do realnew <- findNonExisting new
-       copyFile old realnew
+       copyFile old (realnew ++ ".partial")
+       renameFile (realnew ++ ".partial") realnew
        removeFile old
        return new
 
