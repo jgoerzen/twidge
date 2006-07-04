@@ -66,8 +66,8 @@ getURL url fp =
        ec <- posixRawSystem curl (curlopts ++ ["-K", curlrc, url, "-o", fp])
        newsize <- getsize
        let r = case ec of
-                  Exited 0 -> Success
-                  Exited i ->
+                  Exited ExitSuccess -> Success
+                  Exited (ExitFailure i) ->
                       case i of
                         5 -> TempFail -- error resolving proxy
                         6 -> TempFail -- error resolving host

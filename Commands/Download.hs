@@ -86,8 +86,8 @@ procSuccess gi ep tmpfp =
 --                                 "--WXXX", feedurl . podcast $ ep,
                                  finalfn]
        case res of
-         Exited 0 -> return ()
-         Exited y -> w $ "   id3v2 returned: " ++ show y
+         Exited (ExitSuccess) -> d $ "   id3v2 was successful."
+         Exited (ExitFailure y) -> w $ "   id3v2 returned: " ++ show y
          Terminated y -> w $ "   id3v2 terminated by signal %d" y
          _ -> fail "Stopped unexpected"
        updateEpisode (gdbh gi) (ep {epstatus = Downloaded})
