@@ -97,8 +97,3 @@ getSelectedEpisodes dbh pc episodelist =
        return $ uniq . filter (\e -> (epid e `elem` eplist)) $ eps
     where eplist = map read episodelist
 
--- FIXME: remove after the release of MissingH 0.14.5
-uniq :: Eq a => [a] -> [a]
-uniq [] = []
-uniq (x:xs) = x : filter (/= x) (uniq xs)
-
