@@ -98,9 +98,9 @@ getURL url fp =
                      then do i $ "Attempt to resume download failed; re-downloading from start"
                              removeFile fp
                              getURL url fp
-                     else return r
+                     else return (r, ec)
           else do d $ "curl returned error; new size is " ++ (show newsize)
-                  return r
+                  return (r, ec)
 
     where getsize = catch (getFileStatus fp >>= (return . Just . fileSize))
                           (\_ -> return Nothing)

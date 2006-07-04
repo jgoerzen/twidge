@@ -66,7 +66,11 @@ downloadEpisode gi ep =
        let tmpfp = feeddir ++ "/" ++ md5s (Str (show (ep {epstatus = Pending})))
        r <- getURL (epurl ep) tmpfp
        case r of
-         Success -> procSuccess gi ep tmpfp
+         (Success, _) -> procSuccess gi ep tmpfp
+         (TempFail, Terminated sigINT) -> 
+             do i "Ctrl-C hit; aborting!"
+                exitFailure
+         (TempFail, _) -> i "    Temporary failure; will retry later"
          _ -> do updateEpisode (gdbh gi) (ep {epstatus = Error})
                  commit (gdbh gi)
                  w "   Error downloading"

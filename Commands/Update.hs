@@ -29,6 +29,8 @@ import Database.HDBC
 import Control.Monad
 import Utils
 import MissingH.Str
+import System.Exit
+import System.Posix.Process
 
 i = infoM "update"
 w = warningM "update"
@@ -77,7 +79,9 @@ getFeed pc =
                   Right f -> return $ Just (f {items = reverse (items f)})
                   Left x -> do w $ "   Failure parsing feed: " ++ x
                                return Nothing
-         _ -> do w "   Failure downloading feed"
+         (TempFail, Terminated sigINT) -> do w "   Ctrl-C hit; aborting!"
+                                             exitFailure
+         _ -> do w "   Failure downloading feed; will attempt again on next update"
                  return Nothing
 
 helptext = "Usage: hpodder update [castid [castid...]]\n\n" ++ genericIdHelp ++
