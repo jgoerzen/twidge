@@ -32,8 +32,8 @@ import MissingH.Checksum.MD5
 import MissingH.Path.FilePath
 import System.IO
 import System.Directory
-import System.Cmd
-import System.Exit
+import MissingH.Cmd
+import System.Posix.Process
 import MissingH.ConfigParser
 import MissingH.Str
 import MissingH.Either
@@ -80,14 +80,16 @@ procSuccess gi ep tmpfp =
                   then movefile tmpfp (newfn ++ ".mp3")
                   else movefile tmpfp newfn
        d "   Setting ID3 tags..."
-       res <- rawSystem "id3v2" ["-A", castname . podcast $ ep,
+       res <- posixRawSystem "id3v2" ["-A", castname . podcast $ ep,
                                  "-t", eptitle ep,
                                  "--WOAS", epurl ep,
 --                                 "--WXXX", feedurl . podcast $ ep,
                                  finalfn]
        case res of
-         ExitSuccess -> return ()
-         ExitFailure y -> w $ "   id3v2 returned: " ++ show y
+         Exited 0 -> return ()
+         Exited y -> w $ "   id3v2 returned: " ++ show y
+         Terminated y -> w $ "   id3v2 terminated by signal %d" y
+         _ -> fail "Stopped unexpected"
        updateEpisode (gdbh gi) (ep {epstatus = Downloaded})
        commit (gdbh gi)
        
