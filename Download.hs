@@ -30,12 +30,15 @@ Written by John Goerzen, jgoerzen\@complete.org
 -}
 
 module Download(getURL, Result(..)) where
-import System.Cmd
-import System.Exit
+import MissingH.Cmd
+import System.Posix.Process
 import Config
+import MissingH.Logging.Logger
 
 data Result = Success | TempFail | PermFail
             deriving (Eq, Show, Read)
+
+d = debugM "download"
 
 curl = "curl"
 curlopts = ["-A", "hpodder v0.1.0; Haskell; GHC", -- Set User-Agent
@@ -56,10 +59,15 @@ getCurlConfig =
 getURL :: String -> FilePath -> IO Result
 getURL url fp =
     do curlrc <- getCurlConfig
-       ec <- rawSystem curl (curlopts ++ ["-K", curlrc, url, "-o", fp])
-       return $ case ec of
-                  ExitSuccess -> Success
-                  ExitFailure i ->
+       startsize <- getsize
+       case startsize of 
+         Just x -> d $ printf "Resuming download of %s at %d" fp x
+         Nothing -> d $ printf "Beginning download of %s" fp x
+       ec <- posixRawSystem curl (curlopts ++ ["-K", curlrc, url, "-o", fp])
+       newsize <- getsize
+       let r = case ec of
+                  Exited 0 -> Success
+                  Exited i ->
                       case i of
                         5 -> TempFail -- error resolving proxy
                         6 -> TempFail -- error resolving host
@@ -75,3 +83,18 @@ getURL url fp =
                         37 -> TempFail -- permissions
                         52 -> TempFail -- no reply
                         _ -> PermFail
+                  Terminated _ -> TempFail
+                  Stopped _ -> TempFail
+       if r == Success
+          then do d $ "curl returned successfully; new size is " ++
+                        (show newsize)
+                  if (startsize /= Nothing) && (newsize == startsize)
+                     -- compensate for resumes that failed
+                     then do i $ "Attempt to resume download failed; re-downloading from start"
+                             removeFile fp
+                             getURL url fp
+                     else return ()
+          else do d $ "curl returned error; new size is " ++ (show newsize)
+
+    where getsize = catch (getFileStatus fd >>= (return . Just))
+                          (\_ -> return Nothing)
