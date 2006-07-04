@@ -38,6 +38,7 @@ import MissingH.ConfigParser
 import MissingH.Str
 import MissingH.Either
 import Data.List
+import System.Exit
 
 d = debugM "download"
 i = infoM "download"
@@ -88,7 +89,7 @@ procSuccess gi ep tmpfp =
        case res of
          Exited (ExitSuccess) -> d $ "   id3v2 was successful."
          Exited (ExitFailure y) -> w $ "   id3v2 returned: " ++ show y
-         Terminated y -> w $ "   id3v2 terminated by signal %d" y
+         Terminated y -> w $ "   id3v2 terminated by signal " ++ show y
          _ -> fail "Stopped unexpected"
        updateEpisode (gdbh gi) (ep {epstatus = Downloaded})
        commit (gdbh gi)

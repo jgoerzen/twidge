@@ -38,6 +38,7 @@ import Config
 import System.Directory
 import DB
 import Database.HDBC
+import MissingH.List
 
 simpleCmd :: String -> String -> String -> [OptDescr (String, String)] 
           -> (GlobalInfo -> ([(String, String)], [String]) -> IO ()) 
@@ -69,9 +70,9 @@ initDirs =
        mapM_ mkdir [appdir, appdir ++ "/feedxfer", appdir ++ "/enclosurexfer"]
        where mkdir = createDirectoryIfMissing True
 
-sanitize_basic =
-    case filter (\c -> not (c `elem` "\n\r\t\0")) of
-      ('-':x) -> '_':x          -- Strip leading hyphen
+sanitize_basic inp =
+    case filter (\c -> not (c `elem` "\n\r\t\0")) inp of
+      ('-':x) -> ('_':x)          -- Strip leading hyphen
       x -> x
 
 sanitize_fn =
