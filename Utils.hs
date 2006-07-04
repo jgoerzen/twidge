@@ -70,7 +70,9 @@ initDirs =
        where mkdir = createDirectoryIfMissing True
 
 sanitize_basic =
-    filter (\c -> not (c `elem` "\n\r\t\0"))
+    case filter (\c -> not (c `elem` "\n\r\t\0")) of
+      ('-':x) -> '_':x          -- Strip leading hyphen
+      x -> x
 
 sanitize_fn =
     map worker . sanitize_basic
