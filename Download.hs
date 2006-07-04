@@ -34,11 +34,16 @@ import MissingH.Cmd
 import System.Posix.Process
 import Config
 import MissingH.Logging.Logger
+import Text.Printf
+import System.Exit
+import System.Directory
+import System.Posix.Files
 
 data Result = Success | TempFail | PermFail
             deriving (Eq, Show, Read)
 
 d = debugM "download"
+i = infoM "download"
 
 curl = "curl"
 curlopts = ["-A", "hpodder v0.1.0; Haskell; GHC", -- Set User-Agent
@@ -61,8 +66,8 @@ getURL url fp =
     do curlrc <- getCurlConfig
        startsize <- getsize
        case startsize of 
-         Just x -> d $ printf "Resuming download of %s at %d" fp x
-         Nothing -> d $ printf "Beginning download of %s" fp x
+         Just x -> d $ printf "Resuming download of %s at %s" fp (show x)
+         Nothing -> d $ printf "Beginning download of %s" fp
        ec <- posixRawSystem curl (curlopts ++ ["-K", curlrc, url, "-o", fp])
        newsize <- getsize
        let r = case ec of
@@ -93,8 +98,9 @@ getURL url fp =
                      then do i $ "Attempt to resume download failed; re-downloading from start"
                              removeFile fp
                              getURL url fp
-                     else return ()
+                     else return r
           else do d $ "curl returned error; new size is " ++ (show newsize)
+                  return r
 
-    where getsize = catch (getFileStatus fd >>= (return . Just))
+    where getsize = catch (getFileStatus fp >>= (return . Just . fileSize))
                           (\_ -> return Nothing)
