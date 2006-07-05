@@ -2,10 +2,10 @@ catchup -- what if some are already pending?
 
 document sqlite3 stuff
 
-fix name collisions
-
-mv
-
 settitle
 
 OPML import
+
+nicer display
+  -- libcurl?
+
