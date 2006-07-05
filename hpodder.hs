@@ -44,7 +44,7 @@ import Utils
 import Database.HDBC
 
 main = 
-    do updateGlobalLogger "" (setLevel DEBUG)
+    do updateGlobalLogger "" (setLevel INFO)
        argv <- getArgs
        let (optargs, commandargs) = span (isPrefixOf "-") argv
        case getOpt RequireOrder options optargs of
@@ -56,6 +56,7 @@ options = [Option "d" ["debug"] (NoArg ("d", "")) "Enable debugging",
 
 worker args n commandargs =
     do when (lookup "help" args == Just "") $ usageerror ""
+       when (lookup "d" args == Just "") $ updateGlobalLogger "" (setLevel DEBUG)
        initDirs
        let commandname = head cmdargs
        case lookup commandname allCommands of
