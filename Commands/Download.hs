@@ -128,7 +128,7 @@ findNonExisting template =
        if (not dfe)
           then return template
           else do let (dirname, fn) = splitFileName template
-                  (fp, h) <- openTempFile dirname ("XXXXXX-" ++ fn)
+                  (fp, h) <- openTempFile dirname fn
                   hClose h
                   return fp
 
