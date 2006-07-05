@@ -84,17 +84,18 @@ procSuccess gi ep tmpfp =
                      not (isSuffixOf ".mp3" newfn)
                   then movefile tmpfp (newfn ++ ".mp3")
                   else movefile tmpfp newfn
-       d "   Setting ID3 tags..."
-       res <- posixRawSystem "id3v2" ["-A", castname . podcast $ ep,
+       when (isSuffixOf ".mp3" finalfn) $ 
+            do d "   Setting ID3 tags..."
+               res <- posixRawSystem "id3v2" ["-A", castname . podcast $ ep,
                                  "-t", eptitle ep,
                                  "--WOAS", epurl ep,
 --                                 "--WXXX", feedurl . podcast $ ep,
                                  finalfn]
-       case res of
-         Exited (ExitSuccess) -> d $ "   id3v2 was successful."
-         Exited (ExitFailure y) -> w $ "   id3v2 returned: " ++ show y
-         Terminated y -> w $ "   id3v2 terminated by signal " ++ show y
-         _ -> fail "Stopped unexpected"
+               case res of
+                 Exited (ExitSuccess) -> d $ "   id3v2 was successful."
+                 Exited (ExitFailure y) -> w $ "   id3v2 returned: " ++ show y
+                 Terminated y -> w $ "   id3v2 terminated by signal " ++ show y
+                 _ -> fail "Stopped unexpected"
        updateEpisode (gdbh gi) (ep {epstatus = Downloaded})
        commit (gdbh gi)
        
