@@ -32,6 +32,7 @@ import MissingH.Str
 import System.IO
 import System.Console.GetOpt
 import MissingH.GetOpt
+import Control.Exception
 
 i = infoM "setstatus"
 w = warningM "setstatus"
@@ -64,6 +65,7 @@ cmd_worker gi (args, episodes) =
        eplist_orig <- getSelectedEpisodes (gdbh gi) pc episodes
 
        -- Force evaluation of eplist_orig
+       evaluate (length eplist_orig)
        d $ printf "Modifying %d episodes" (length eplist_orig)
        return $ seq eplist_orig eplist_orig
        let eplist_new = map (\e -> e {epstatus = newstatus}) eplist_orig

@@ -35,6 +35,7 @@ import MissingH.Path.FilePath
 import Data.List
 import MissingH.Str
 import System.Directory
+import Control.Exception
 
 d = debugM "import-ipodder"
 i = infoM "import-ipodder"
@@ -72,6 +73,7 @@ prochistory _ [] _ = return ()
 prochistory gi (pc:xs) history =
     do episodes <- getEpisodes (gdbh gi) pc
        -- Force episodes to be consumed before proceeding
+       evaluate (length episodes)
        d $ printf "Considering %d episode(s) for podcast %d" (length episodes)
           (castid pc)
        mapM_ procep episodes

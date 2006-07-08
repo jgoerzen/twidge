@@ -39,6 +39,7 @@ import MissingH.Str
 import MissingH.Either
 import Data.List
 import System.Exit
+import Control.Exception
 
 d = debugM "download"
 i = infoM "download"
@@ -52,6 +53,7 @@ cmd_worker gi ([], casts) =
     do podcastlist <- getSelectedPodcasts (gdbh gi) casts
        episodelist <- mapM (getEpisodes (gdbh gi)) podcastlist
        let episodes = filter (\x -> epstatus x == Pending) . concat $ episodelist
+       evaluate (length episodes)
        i $ printf "%d episode(s) to consider from %d podcast(s)"
          (length episodes) (length podcastlist)
        mapM_ (downloadEpisode gi) episodes
