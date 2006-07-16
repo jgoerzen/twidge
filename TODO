@@ -10,3 +10,7 @@ nicer display
   -- libcurl?
 
 set id3 before rename
+
+Need to handle curl exiting successfully without creating the file
+
+don't have blank titles in downloaded files
