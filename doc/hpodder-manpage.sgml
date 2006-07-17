@@ -518,6 +518,29 @@
         
     </refsect2>
 
+    <refsect2 id="hpodder.commands.settitle">
+      <indexterm><primary>Commands</><secondary>settitle</></>
+      <indexterm><primary>Podcasts</><secondary>Title</></>
+      <title>settitle</title>
+      <cmdsynopsis><command>hpodder settitle</command>
+        <arg choice="plain">--castid=<replaceable>ID</replaceable></arg>
+        <arg choice="plain">--title=<replaceable>TITLE</replaceable></arg>
+      </cmdsynopsis>
+      <para>
+        The <command>settitle</command> is used to manually set the
+        title of a given podcast.  Normally, &hpodder; will
+        automatically get the title from the podcast's XML feed.
+        Sometimes the XML feed for the podcast may not provide a
+        useful title.  In those situations, you can use
+        <command>settitle</command> to manually override the title.
+      </para>
+      <para>
+        Please note that if you want to set the title to a name that
+        contains spaces, you will need to quote it for the shell.
+      </para>
+    </refsect2>
+
+
     <refsect2 id="hpodder.commands.update">
       <indexterm><primary>Commands</><secondary>update</></>
       <indexterm><primary>Podcasts</><secondary>Updating</></>
