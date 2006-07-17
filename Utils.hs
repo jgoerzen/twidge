@@ -75,8 +75,10 @@ sanitize_basic inp =
       ('-':x) -> ('_':x)          -- Strip leading hyphen
       x -> x
 
-sanitize_fn =
-    map worker . sanitize_basic
+sanitize_fn inp =
+    case map worker . sanitize_basic $ inp of
+      [] -> "UNKNOWN"
+      x -> x
     where worker x = if x `elem` ";/|!`~ *?%^&(){}[]\\'\"<>:" 
                          then '_'
                          else x
