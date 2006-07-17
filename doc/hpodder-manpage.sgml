@@ -158,9 +158,9 @@
         along with the location from which the episode can be
         downloaded and some other information about the episode
         (such as its title).  Information in this table is added by
-        <command>ipodder update</command> and updated by
-        <command>ipodder download</command> or 
-        <command>ipodder catchup</command>.
+        <command>hpodder update</command> and updated by
+        <command>hpodder download</command> or 
+        <command>hpodder catchup</command>.
       </para>
       <para>
         When you first fire up &hpodder;, it will read its
@@ -223,17 +223,17 @@
         <replaceable>http://www.example.com/feed.xml</replaceable></command></para>
     <para>
       Just replace the example.com URL here with the real URL of the
-      feed you want to add.  Then run <command>ipodder
+      feed you want to add.  Then run <command>hpodder
         update</command>.  If the podcast you've just added has a
       whole bunch of episodes, you may not want to download them
-      all.  In that case, run <command>ipodder catchup
+      all.  In that case, run <command>hpodder catchup
         <replaceable>id</replaceable></command>, where
       <replaceable>id</replaceable> is the podcast number that
-      ipodder gave your new podcast when you added it.
+      &hpodder; gave your new podcast when you added it.
     </para>
     <para>
       Again, from here on, you can just run
-      <command>ipodder</command> to download all your new episodes.
+      <command>hpodder</command> to download all your new episodes.
     </para>
   </refsect1>
 
