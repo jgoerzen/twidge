@@ -98,7 +98,11 @@ getURL url fp =
                      then do i $ "Attempt to resume download failed; re-downloading from start"
                              removeFile fp
                              getURL url fp
-                     else return (r, ec)
+                     else if newsize == Nothing
+                             -- Sometimes Curl returns success but doesn't 
+                             -- actually download anything
+                             then return (TempFail, Exited ExitSuccess)
+                             else return (r, ec)
           else do d $ "curl returned error; new size is " ++ (show newsize)
                   return (r, ec)
 
