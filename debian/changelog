@@ -1,3 +1,9 @@
+hpodder (0.6.0) unstable; urgency=low
+
+  * Fixed some silly brainos in docs.  Closes: #378287.
+
+ -- John Goerzen <jgoerzen@complete.org>  Mon, 17 Jul 2006 06:14:36 -0500
+
 hpodder (0.5.1) unstable; urgency=low
 
   * More debug message on calls to external programs
