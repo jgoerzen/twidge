@@ -1,4 +1,4 @@
-hpodder (0.6.0) unstable; urgency=low
+hpodder (0.5.2) unstable; urgency=low
 
   * Fixed some silly brainos in docs.  Closes: #378287.
 

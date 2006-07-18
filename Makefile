@@ -15,13 +15,16 @@ hugsbuild: setup
 setup: Setup.lhs hpodder.cabal
 	ghc -package Cabal Setup.lhs -o setup
 
-clean:
+clean: clean-code clean-doc
+
+clean-code:
 	-./setup clean
 	-cd libsrc && ../setup clean
 	-rm -rf dist libsrc/dist *.ho *.hi *.o *.a setup *~
+	-rm -f `find . -name "*~"` `find . -name "*.o"`
+	-rm -f `find . -name "*.cm*"`
+
+clean-doc:
 	-cd doc && scons -c && scons -c html pdf text ps
 	-rm -rf doc/.sconsign .depend test
-	-rm -f `find . -name "*.cm*"` doc/manpage* doc/*.1
-	-rm -f `find . -name "*~"` `find . -name "*.o"`
-
-
+	-rm -f doc/manpage* doc/*.1
