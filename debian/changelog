@@ -1,6 +1,11 @@
 hpodder (0.5.2) unstable; urgency=low
 
   * Fixed some silly brainos in docs.  Closes: #378287.
+  * Cleaned up clean targets a bit.
+  * New command "settitle"
+  * No longer permit blank titles in generated filenames
+  * Gracefully handle curl returning success but not actually
+    downloading anything.
 
  -- John Goerzen <jgoerzen@complete.org>  Mon, 17 Jul 2006 06:14:36 -0500
 
