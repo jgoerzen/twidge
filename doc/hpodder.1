@@ -3,7 +3,7 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "HPODDER" "1" "29 June 2006" "John Goerzen" "hpodder Manual"
+.TH "HPODDER" "1" "17 July 2006" "John Goerzen" "hpodder Manual"
 
 .SH NAME
 hpodder \- Scan and download podcasts
@@ -118,9 +118,9 @@ The second table lists each episode for a given podcast,
 along with the location from which the episode can be
 downloaded and some other information about the episode
 (such as its title).  Information in this table is added by
-\fBipodder update\fR and updated by
-\fBipodder download\fR or 
-\fBipodder catchup\fR\&.
+\fBhpodder update\fR and updated by
+\fBhpodder download\fR or 
+\fBhpodder catchup\fR\&.
 .PP
 When you first fire up \fBhpodder\fR, it will read its
 configuration file from
@@ -171,16 +171,16 @@ To do that, just run a command such as:
 \fIhttp://www.example.com/feed.xml\fB\fR
 .PP
 Just replace the example.com URL here with the real URL of the
-feed you want to add.  Then run \fBipodder
+feed you want to add.  Then run \fBhpodder
 update\fR\&.  If the podcast you've just added has a
 whole bunch of episodes, you may not want to download them
-all.  In that case, run \fBipodder catchup
+all.  In that case, run \fBhpodder catchup
 \fIid\fB\fR, where
 \fIid\fR is the podcast number that
-ipodder gave your new podcast when you added it.
+\fBhpodder\fR gave your new podcast when you added it.
 .PP
 Again, from here on, you can just run
-\fBipodder\fR to download all your new episodes.
+\fBhpodder\fR to download all your new episodes.
 .SH "OPTIONS"
 .PP
 \fBhpodder\fR always is invoked with the name of a specific
@@ -376,6 +376,20 @@ podcast IDs like other commands.
 Statuses are case-sensitive and must be given with a leading
 uppercase letter and trailing lowercase letters.  Available
 status are given later in this manual.
+.SS "SETTITLE"
+
+\fBhpodder settitle\fR \fB--castid=\fIID\fB\fR \fB--title=\fITITLE\fB\fR
+
+.PP
+The \fBsettitle\fR is used to manually set the
+title of a given podcast.  Normally, \fBhpodder\fR will
+automatically get the title from the podcast's XML feed.
+Sometimes the XML feed for the podcast may not provide a
+useful title.  In those situations, you can use
+\fBsettitle\fR to manually override the title.
+.PP
+Please note that if you want to set the title to a name that
+contains spaces, you will need to quote it for the shell.
 .SS "UPDATE"
 
 \fBhpodder update\fR [ \fB\fIcastid\fB\fR\fI ...\fR ]
