@@ -54,7 +54,9 @@ cmd_worker gi (args, []) =
                       Just x -> return (read x)
                       Nothing -> fail "settitle: --title required; see hpodder settitle --help"
        pc <- getPodcast (gdbh gi) podcastid
-       updatePodcast (gdbh gi) (pc {castname = newtitle})
+       case pc of
+          [x] -> updatePodcast (gdbh gi) (x {castname = newtitle})
+          _ -> fail $ "Invalid podcast ID given"
        commit (gdbh gi)
 
 cmd_worker gi (_, _) =
