@@ -105,3 +105,5 @@ getSelectedEpisodes dbh pc episodelist =
 now :: IO Integer
 now = do ct <- getClockTime
          return (clockTimeToEpoch ct)
+
+filter_disabled = filter pcenabled

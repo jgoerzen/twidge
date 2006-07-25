@@ -50,7 +50,8 @@ cmd = simpleCmd "download"
       [] cmd_worker
 
 cmd_worker gi ([], casts) =
-    do podcastlist <- getSelectedPodcasts (gdbh gi) casts
+    do podcastlist_raw <- getSelectedPodcasts (gdbh gi) casts
+       let podcastlist = filter_disabled podcastlist_raw
        episodelist <- mapM (getEpisodes (gdbh gi)) podcastlist
        let episodes = filter (\x -> epstatus x == Pending) . concat $ episodelist
        evaluate (length episodes)
