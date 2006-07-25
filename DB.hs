@@ -37,12 +37,14 @@ import Database.HDBC.Sqlite3
 import MissingH.Logging.Logger
 import Control.Monad
 import Control.Exception
+d = debugM "DB"
 
 connect :: IO Connection
 connect = handleSqlError $
     do fp <- getDBName
        dbh <- connectSqlite3 fp
        prepDB dbh
+       d $ "DB preparation complete"
        return dbh
 
 prepDB dbh =
@@ -58,24 +60,28 @@ prepSchema dbh tables =
                case r of
                  [[x]] -> return (fromSql x)
                  x -> fail $ "Unexpected result in prepSchema: " ++ show x
-       else do run dbh "CREATE TABLE schemaver (version INTEGER)" []
+       else do d "Initializing schemaver to 0"
+               run dbh "CREATE TABLE schemaver (version INTEGER)" []
                run dbh "INSERT INTO schemaver VALUES (0)" []
                commit dbh
                return 0
 
 upgradeSchema dbh 2 _ = return ()
 upgradeSchema dbh 1 tables = 
-    do debugM "DB" "Upgrading schema 1 -> 2"
+    do d "Upgrading schema 1 -> 2"
+       d "Adding pcenabled column"
        run dbh "ALTER TABLE podcasts ADD pcenabled INTEGER NOT NULL DEFAULT 1" []
+       d "Adding lastupdate column"
        run dbh "ALTER TABLE podcasts ADD lastupdate INTEGER" []
        setSchemaVer dbh 2
        commit dbh
+       d "Vacuuming"
        run dbh "VACUUM" []
        commit dbh
        upgradeSchema dbh 2 tables
        
 upgradeSchema dbh 0 tables =
-    do debugM "DB" "Upgrading schema 0 -> 1"
+    do d "Upgrading schema 0 -> 1"
        unless ("podcasts" `elem` tables)
               (run dbh "CREATE TABLE podcasts(\
                        \castid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\
@@ -97,7 +103,8 @@ upgradeSchema dbh 0 tables =
 
 setSchemaVer :: Connection -> Integer -> IO ()
 setSchemaVer dbh sv =
-    do run dbh "DELETE FROM schemaver" []
+    do d $ "Setting schema version to " ++ show sv
+       run dbh "DELETE FROM schemaver" []
        run dbh "INSERT INTO schemaver VALUES(?)" [toSql sv]
        return ()
 
