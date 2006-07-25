@@ -48,12 +48,15 @@ import qualified Commands.ImportIpodder
 import qualified Commands.Rm
 import qualified Commands.SetStatus
 import qualified Commands.SetTitle
+import qualified Commands.EnableDisable
 
 allCommands :: [(String, Command)]
 allCommands = 
     [Commands.Add.cmd,
      Commands.Catchup.cmd,
+     Commands.EnableDisable.cmd_disable,
      Commands.Download.cmd,
+     Commands.EnableDisable.cmd_enable,
      fetch,
      Commands.ImportIpodder.cmd,
      Commands.Ls.lscasts,
