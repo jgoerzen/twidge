@@ -334,6 +334,38 @@
       </variablelist>
     </refsect2>
 
+    <refsect2 id="hpodder.commands.disable">
+      <indexterm><primary>Commands</><secondary>disable</></>
+      <title>disable</title>
+      <cmdsynopsis>
+        <command>hpodder disable</command>
+        <arg choice="plain" rep="repeat">castid</>
+      </cmdsynopsis>
+      <para>
+        This command will flag podcasts as disabled.  Podcasts flagged
+        disabled will be skipped during an <command>update</command>,
+        <command>download</command>, or <command>fetch</command>.
+        They will still participate with all other commands.
+        <command>hpodder ls</command> will notify you of which
+        podcasts are disabled.
+      </para>
+      <para>
+        This can be useful if you want to stop following a podcast for
+        awhile, but think you may want to come back to it in the
+        future.  The podcast URL and your download history will remain
+        in the &hpodder; database, unlike with <command>hpodder
+        rm</command>.
+      </para>
+      <para>
+        Disabled podcasts can be re-enabled with <command>hpodder
+        enable</command>.
+      </para>
+      <para>
+        One or more podcast IDs are required; see the section below on
+        specifying podcast IDs for more details.
+      </para>
+    </refsect2>
+
     <refsect2 id="hpodder.commands.download">
       <indexterm><primary>Commands</><secondary>download</></>
       <indexterm><primary>Episodes</><secondary>Downloading</></>
@@ -351,6 +383,25 @@
         podcasts will be downloaded.
       </para>
       <variablelist>&var.castid;</variablelist>
+    </refsect2>
+
+    <refsect2 id="hpodder.commands.enable">
+      <indexterm><primary>Commands</><secondary>enable</></>
+      <title>enable</title>
+      <cmdsynopsis>
+        <command>hpodder enable</command>
+        <arg choice="plain" rep="repeat">castid</>
+      </cmdsynopsis>
+      <para>
+        This command will flag podcasts as enabled.  This is the
+        default state.  See <command>hpodder disable</command> for
+        information on manually disabling podcasts and what it means
+        to be disabled.
+      </para>
+      <para>
+        One or more podcast IDs are required; see the section below on
+        specifying podcast IDs for more details.
+      </para>
     </refsect2>
 
     <refsect2 id="hpodder.commands.fetch">
@@ -485,7 +536,7 @@
       </para>
       <para>
         One or more podcast IDs are required; see the section below on
-        specifying podcast IDs for more details.  Unlike all the other
+        specifying podcast IDs for more details.  Unlike most other
         &hpodder; commands that accept an empty podcast ID list to
         mean all podcasts, <command>rm</command> does not because of
         the destructive potential of such a request.
