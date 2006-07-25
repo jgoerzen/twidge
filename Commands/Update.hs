@@ -40,9 +40,10 @@ cmd = simpleCmd "update"
       [] cmd_worker
 
 cmd_worker gi ([], casts) =
-    do podcastlist <- getSelectedPodcasts (gdbh gi) casts
+    do podcastlist' <- getSelectedPodcasts (gdbh gi) casts
+       let podcastlist = filter_disabled podcastlist'
        i $ printf "%d podcast(s) to consider\n" (length podcastlist)
-       mapM_ (updateThePodcast gi) (filter_disabled podcastlist)
+       mapM_ (updateThePodcast gi) podcastlist
 
 cmd_worker _ _ =
     fail $ "Invalid arguments to update; please see hpodder update --help"

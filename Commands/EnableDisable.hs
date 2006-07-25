@@ -26,6 +26,7 @@ import Types
 import Text.Printf
 import Config
 import Database.HDBC
+import Control.Exception(evaluate)
 import Control.Monad
 import Utils
 import MissingH.Str
@@ -49,6 +50,7 @@ cmd_worker cmd _ gi ([], []) =
 
 cmd_worker cmd newstat gi ([], casts) =
     do podcastlist <- getSelectedPodcasts (gdbh gi) casts
+       evaluate (length podcastlist)
        d $ "Setting " ++ (show . length $ podcastlist) ++ " podcasts to " ++
          show (newstat)
        mapM_ (\x -> updatePodcast (gdbh gi) (x {pcenabled = newstat})) 
