@@ -61,5 +61,5 @@ cmd_worker gi ([], casts) =
 cmd_worker _ _ =
     fail $ "Invalid arguments to rm; please see hpodder rm --help"
 
-helptext = "Usage: hpodder rm castid [castid...]\n\n" ++ 
+helptext = "Usage: hpodder rm castid [castid...]\n\n" ++
  "\nRemoves the specified podcast(s) entirely from hpodder\n"
