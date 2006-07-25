@@ -54,8 +54,11 @@ lscasts_worker gi (opts, casts) =
                                                     (fromSql x, fromSql y)
                                                 _ -> error "Bad count result"
                           printf "%-4d %3d/%3d %s\n" (castid pc) 
-                                     (npend::Int) (ntot::Int) (castname pc)
+                                     (npend::Int) (ntot::Int) title
                           when (islong) (printf "     %s\n" (feedurl pc))
+              where title = if pcenabled pc
+                               then castname pc
+                               else "[disabled] " ++ castname pc
 
 lscasts_help =
  "Usage: hpodder lscasts [-l] [castid [castid...]]\n\n" ++ genericIdHelp ++
