@@ -123,8 +123,8 @@ updatePodcast dbh podcast =
     run dbh "UPDATE podcasts SET castname = ?, feedurl = ?, pcenabled = ?, \
             \lastupdate = ? WHERE castid = ?"
         [toSql (castname podcast), toSql (feedurl podcast),
-         toSql (castid podcast), toSql (fromEnum (pcenabled podcast)),
-         toSql (lastupdate podcast)] >> return ()
+         toSql (fromEnum (pcenabled podcast)),
+         toSql (lastupdate podcast), toSql (castid podcast)] >> return ()
 
 {- | Remove a podcast. -}
 removePodcast :: Connection -> Podcast -> IO ()

@@ -31,8 +31,9 @@ import Utils
 import MissingH.Str
 import System.IO
 
-i = infoM "enable"
-w = warningM "enable"
+i = infoM "enable/disable"
+w = warningM "enable/disable"
+d = debugM "enable/disable"
 
 cmd_enable = simpleCmd "enable" 
              "Enable a podcast that was previously disabled" helptext 
@@ -48,6 +49,8 @@ cmd_worker cmd _ gi ([], []) =
 
 cmd_worker cmd newstat gi ([], casts) =
     do podcastlist <- getSelectedPodcasts (gdbh gi) casts
+       d $ "Setting " ++ (show . length $ podcastlist) ++ " podcasts to " ++
+         show (newstat)
        mapM_ (\x -> updatePodcast (gdbh gi) (x {pcenabled = newstat})) 
              podcastlist
        commit (gdbh gi)
