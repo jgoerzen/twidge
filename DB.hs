@@ -36,6 +36,7 @@ import Database.HDBC
 import Database.HDBC.Sqlite3
 import MissingH.Logging.Logger
 import Control.Monad
+import Control.Exception
 
 connect :: IO Connection
 connect = handleSqlError $
