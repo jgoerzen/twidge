@@ -110,8 +110,10 @@ addPodcast dbh podcast =
     do handleSql 
         (\e -> fail $ "Error adding podcast; perhaps this URL already exists\n"
                ++ show e) $
-               run dbh "INSERT INTO podcasts (castname, feedurl) VALUES (?, ?)"
-                         [toSql (castname podcast), toSql (feedurl podcast)]
+               run dbh "INSERT INTO podcasts (castname, feedurl, pcenabled, lastupdate) VALUES (?, ?, ", ")"
+                         [toSql (castname podcast), toSql (feedurl podcast),
+                          toSql (fromEnum (pcenabled podcast)),
+                          toSql (lastupdate podcast)]
        r <- quickQuery dbh "SELECT castid FROM podcasts WHERE feedurl = ?"
             [toSql (feedurl podcast)]
        case r of

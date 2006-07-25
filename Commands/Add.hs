@@ -33,7 +33,9 @@ cmd = simpleCmd "add"
 cmd_worker gi (_, [url]) =
     do pc <- addPodcast (gdbh gi) (Podcast {castid = 0,
                                             castname = "",
-                                            feedurl = url})
+                                            feedurl = url,
+                                            lastupdate = Nothing,
+                                            pcenabled = True})
        commit (gdbh gi)
        printf "Podcast added:\n    URL: %s\n    ID: %d\n" url (castid pc)
 
