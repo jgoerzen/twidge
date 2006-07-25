@@ -53,7 +53,9 @@ updateThePodcast gi pc =
        case feed of
          Nothing -> return ()
          Just f -> do newpc <- updateFeed gi pc f
-                      updatePodcast (gdbh gi) newpc
+                      curtime <- now
+                      updatePodcast (gdbh gi) 
+                                    (newpc {lastupdate = Just curtime})
                       i $ "   Podcast Title: " ++ (castname newpc)
        commit (gdbh gi)
 

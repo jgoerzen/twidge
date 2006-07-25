@@ -102,3 +102,6 @@ getSelectedEpisodes dbh pc episodelist =
        return $ uniq . filter (\e -> (epid e `elem` eplist)) $ eps
     where eplist = map read episodelist
 
+now :: IO Integer
+now = do ct <- getClockTime
+         return (clockTimeToEpoch ct)

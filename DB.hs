@@ -62,7 +62,15 @@ prepSchema dbh tables =
                commit dbh
                return 0
 
-upgradeSchema _ 1 _ = return ()
+upgradeSchema _ 2 _ = return ()
+upgradeSchema dbh 1 = 
+    do debugM "DB" "Upgrading schema 1 -> 2"
+       run dbh "ALTER TABLE podcasts ADD pcenabled (INTEGER NOT NULL DEFAULT 1)" []
+       run dbh "ALTER TABLE podcasts ADD lastupdate (INTEGER)" []
+       setSchemaVer 2
+       commit dbh
+       run dbh "VACUUM" []
+       
 upgradeSchema dbh 0 tables =
     do debugM "DB" "Upgrading schema 0 -> 1"
        unless ("podcasts" `elem` tables)
@@ -80,9 +88,14 @@ upgradeSchema dbh 0 tables =
                        \status TEXT NOT NULL,\
                        \UNIQUE(castid, epurl),\
                        \UNIQUE(castid, episodeid))" [] >> return ())
-       run dbh "DELETE FROM schemaver" []
-       run dbh "INSERT INTO schemaver VALUES (1)" []
+       setSchemaVer 1
        commit dbh
+
+setSchameVer :: Connection -> Integer -> IO ()
+setSchemaVer dbh sv =
+    do run dbh "DELETE FROM schemaver" []
+       run dbh "INSERT INTO schemaver VALUES(?)" [toSql sv]
+       return ()
 
 {- | Adds a new podcast to the database.  Ignores the castid on the incoming
 podcast, and returns a new object with the castid populated.
@@ -103,9 +116,11 @@ addPodcast dbh podcast =
 
 updatePodcast :: Connection -> Podcast -> IO ()
 updatePodcast dbh podcast = 
-    run dbh "UPDATE podcasts SET castname = ?, feedurl = ? WHERE castid = ?"
+    run dbh "UPDATE podcasts SET castname = ?, feedurl = ?, pcenabled = ?, \
+            \lastupdate = ? WHERE castid = ?"
         [toSql (castname podcast), toSql (feedurl podcast),
-         toSql (castid podcast)] >> return ()
+         toSql (castid podcast), toSql (fromEnum (pcenabled podcast)),
+         toSql (lastupdate podcast)] >> return ()
 
 {- | Remove a podcast. -}
 removePodcast :: Connection -> Podcast -> IO ()
@@ -116,12 +131,12 @@ removePodcast dbh podcast =
 
 getPodcasts :: Connection -> IO [Podcast]
 getPodcasts dbh =
-    do res <- quickQuery dbh "SELECT castid, castname, feedurl FROM podcasts ORDER BY castid" []
+    do res <- quickQuery dbh "SELECT castid, castname, feedurl, pcenabled, lastupdate FROM podcasts ORDER BY castid" []
        return $ map podcast_convrow res
 
 getPodcast :: Connection -> Integer -> IO [Podcast]
 getPodcast dbh wantedid =
-    do res <- quickQuery dbh "SELECT castid, castname, feedurl FROM podcasts WHERE castid = ? ORDER BY castid" [toSql wantedid]
+    do res <- quickQuery dbh "SELECT castid, castname, feedurl, pcenabled, lastupdate FROM podcasts WHERE castid = ? ORDER BY castid" [toSql wantedid]
        return $ map podcast_convrow res
 
 getEpisodes :: Connection -> Podcast -> IO [Episode]
@@ -137,9 +152,10 @@ getEpisodes dbh pc =
                        epstatus = read (fromSql sstatus)}
           toItem x = error $ "Unexpected result in getEpisodes: " ++ show x
 
-podcast_convrow [svid, svname, svurl] =
+podcast_convrow [svid, svname, svurl, isenabled, lupdate] =
     Podcast {castid = fromSql svid, castname = fromSql svname,
-             feedurl = fromSql svurl}
+             feedurl = fromSql svurl, pcenabled = toEnum . fromSql $ isenabled,
+             lastupdate = fromSql lupdate}
 
 {- | Add a new episode.  If the episode already exists, ignore the add request
 and preserve the existing record. -}

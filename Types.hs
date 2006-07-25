@@ -43,7 +43,9 @@ data EpisodeStatus = Pending -- ^ Ready to download
 
 data Podcast = Podcast {castid :: Integer,
                         castname :: String,
-                        feedurl :: String}
+                        feedurl :: String,
+                        pcenabled :: Bool,
+                        lastupdate :: Maybe Integer}
              deriving (Eq, Show, Read)
 
 instance Ord Podcast where
