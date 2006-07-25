@@ -1,3 +1,10 @@
+hpodder (0.5.3) unstable; urgency=low
+
+  * New commands: enable and disable
+  * New DB columns: pcenabled and lastupdate
+
+ -- John Goerzen <jgoerzen@complete.org>  Mon, 24 Jul 2006 06:22:25 -0500
+
 hpodder (0.5.2) unstable; urgency=low
 
   * Fixed some silly brainos in docs.  Closes: #378287.
