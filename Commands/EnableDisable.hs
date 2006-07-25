@@ -40,7 +40,7 @@ cmd_enable = simpleCmd "enable"
 
 cmd_disable = simpleCmd "disable"
               "Stop updating and downloading given podcasts" helptext_disable
-              [] (cmd_worker "disable" True)
+              [] (cmd_worker "disable" False)
 
 cmd_worker cmd _ gi ([], []) =
     fail $ cmd ++ " requires a podcast ID to remove; please see hpodder "
@@ -55,10 +55,9 @@ cmd_worker cmd newstat gi ([], casts) =
 cmd_worker cmd _ _ _ =
     fail $ "Invalid arguments to enable; please see hpodder " ++ cmd ++ " --help"
 
-helptext = "Usage: hpodder enable castid [castid...]\n\n" ++ genericIdHelp ++
+helptext = "Usage: hpodder enable castid [castid...]\n\n" ++ 
  "\nEnables selected podcasts for downloading and updating\n"
 
 helptext_disable = "Usage: hpodder disable castid [castid...]\n\n" ++
- genericIdHelp ++
  "\nDisables selected podcasts -- they will no longer be downloaded or\n\
  \updated until re-enabled.\n"
