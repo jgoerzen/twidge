@@ -63,13 +63,14 @@ prepSchema dbh tables =
                return 0
 
 upgradeSchema _ 2 _ = return ()
-upgradeSchema dbh 1 = 
+upgradeSchema dbh 1 _ = 
     do debugM "DB" "Upgrading schema 1 -> 2"
        run dbh "ALTER TABLE podcasts ADD pcenabled (INTEGER NOT NULL DEFAULT 1)" []
        run dbh "ALTER TABLE podcasts ADD lastupdate (INTEGER)" []
-       setSchemaVer 2
+       setSchemaVer dbh 2
        commit dbh
        run dbh "VACUUM" []
+       return ()
        
 upgradeSchema dbh 0 tables =
     do debugM "DB" "Upgrading schema 0 -> 1"
@@ -88,10 +89,10 @@ upgradeSchema dbh 0 tables =
                        \status TEXT NOT NULL,\
                        \UNIQUE(castid, epurl),\
                        \UNIQUE(castid, episodeid))" [] >> return ())
-       setSchemaVer 1
+       setSchemaVer dbh 1
        commit dbh
 
-setSchameVer :: Connection -> Integer -> IO ()
+setSchemaVer :: Connection -> Integer -> IO ()
 setSchemaVer dbh sv =
     do run dbh "DELETE FROM schemaver" []
        run dbh "INSERT INTO schemaver VALUES(?)" [toSql sv]

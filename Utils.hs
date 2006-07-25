@@ -39,6 +39,8 @@ import System.Directory
 import DB
 import Database.HDBC
 import MissingH.List
+import System.Time
+import MissingH.Time
 
 simpleCmd :: String -> String -> String -> [OptDescr (String, String)] 
           -> (GlobalInfo -> ([(String, String)], [String]) -> IO ()) 
