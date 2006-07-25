@@ -75,9 +75,8 @@ upgradeSchema dbh 1 tables =
        run dbh "ALTER TABLE podcasts ADD lastupdate INTEGER" []
        setSchemaVer dbh 2
        commit dbh
-       dbdebug "Vacuuming"
-       run dbh "VACUUM" []
-       commit dbh
+       -- dbdebug "Vacuuming"
+       -- run dbh "VACUUM" []
        upgradeSchema dbh 2 tables
        
 upgradeSchema dbh 0 tables =
