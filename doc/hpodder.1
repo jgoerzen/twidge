@@ -3,7 +3,7 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "HPODDER" "1" "17 July 2006" "John Goerzen" "hpodder Manual"
+.TH "HPODDER" "1" "24 July 2006" "John Goerzen" "hpodder Manual"
 
 .SH NAME
 hpodder \- Scan and download podcasts
@@ -248,6 +248,29 @@ episodes to remain downloadable.
 .TP
 \fB\fIcastid ...\fB\fR
 By default, this command will operate on all podcasts.  You can limit the podcasts on which it operates with this option.  See specifying podcast IDs later in this manual for more information.
+.SS "DISABLE"
+
+\fBhpodder disable\fR \fBcastid\fR\fI ...\fR
+
+.PP
+This command will flag podcasts as disabled.  Podcasts flagged
+disabled will be skipped during an \fBupdate\fR,
+\fBdownload\fR, or \fBfetch\fR\&.
+They will still participate with all other commands.
+\fBhpodder ls\fR will notify you of which
+podcasts are disabled.
+.PP
+This can be useful if you want to stop following a podcast for
+awhile, but think you may want to come back to it in the
+future.  The podcast URL and your download history will remain
+in the \fBhpodder\fR database, unlike with \fBhpodder
+rm\fR\&.
+.PP
+Disabled podcasts can be re-enabled with \fBhpodder
+enable\fR\&.
+.PP
+One or more podcast IDs are required; see the section below on
+specifying podcast IDs for more details.
 .SS "DOWNLOAD"
 
 \fBhpodder download\fR [ \fB\fIcastid\fB\fR\fI ...\fR ]
@@ -262,6 +285,18 @@ podcasts will be downloaded.
 .TP
 \fB\fIcastid ...\fB\fR
 By default, this command will operate on all podcasts.  You can limit the podcasts on which it operates with this option.  See specifying podcast IDs later in this manual for more information.
+.SS "ENABLE"
+
+\fBhpodder enable\fR \fBcastid\fR\fI ...\fR
+
+.PP
+This command will flag podcasts as enabled.  This is the
+default state.  See \fBhpodder disable\fR for
+information on manually disabling podcasts and what it means
+to be disabled.
+.PP
+One or more podcast IDs are required; see the section below on
+specifying podcast IDs for more details.
 .SS "FETCH"
 
 \fBhpodder fetch\fR [ \fB\fIcastid\fB\fR\fI ...\fR ]
@@ -356,7 +391,7 @@ from hpodder, including all entries about that podcast in the
 episode database.
 .PP
 One or more podcast IDs are required; see the section below on
-specifying podcast IDs for more details.  Unlike all the other
+specifying podcast IDs for more details.  Unlike most other
 \fBhpodder\fR commands that accept an empty podcast ID list to
 mean all podcasts, \fBrm\fR does not because of
 the destructive potential of such a request.
