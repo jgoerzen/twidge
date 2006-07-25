@@ -40,15 +40,13 @@ import Control.Monad
 connect :: IO Connection
 connect = handleSqlError $
     do fp <- getDBName
-       connectSqlite3 fp
-       dbh' <- connectSqlite3 fp
-       prepDB dbh'
-       disconnect dbh'
        dbh <- connectSqlite3 fp
+       prepDB dbh
        return dbh
 
 prepDB dbh =
     do tables <- getTables dbh
+       evaluate (length tables)
        schemaver <- prepSchema dbh tables
        upgradeSchema dbh schemaver tables
 
@@ -64,7 +62,7 @@ prepSchema dbh tables =
                commit dbh
                return 0
 
-upgradeSchema _ 2 _ = return ()
+upgradeSchema dbh 2 _ = return ()
 upgradeSchema dbh 1 _ = 
     do debugM "DB" "Upgrading schema 1 -> 2"
        run dbh "ALTER TABLE podcasts ADD pcenabled INTEGER NOT NULL DEFAULT 1" []
@@ -72,6 +70,7 @@ upgradeSchema dbh 1 _ =
        setSchemaVer dbh 2
        commit dbh
        run dbh "VACUUM" []
+       commit dbh
        return ()
        
 upgradeSchema dbh 0 tables =
@@ -93,6 +92,7 @@ upgradeSchema dbh 0 tables =
                        \UNIQUE(castid, episodeid))" [] >> return ())
        setSchemaVer dbh 1
        commit dbh
+       return ()
 
 setSchemaVer :: Connection -> Integer -> IO ()
 setSchemaVer dbh sv =
