@@ -65,6 +65,7 @@ worker args n commandargs =
                 dbh <- connect
                 handleSqlError $ execcmd command (tail cmdargs) 
                                    (GlobalInfo {gcp = cp, gdbh = dbh})
+                disconnect dbh
          Nothing -> usageerror ("Invalid command name " ++ commandname)
        where cmdargs = case commandargs of
                          [] -> ["fetch"]

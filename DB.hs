@@ -41,8 +41,10 @@ connect :: IO Connection
 connect = handleSqlError $
     do fp <- getDBName
        connectSqlite3 fp
+       dbh' <- connectSqlite3 fp
+       prepDB dbh'
+       disconnect dbh'
        dbh <- connectSqlite3 fp
-       prepDB dbh
        return dbh
 
 prepDB dbh =
@@ -65,8 +67,8 @@ prepSchema dbh tables =
 upgradeSchema _ 2 _ = return ()
 upgradeSchema dbh 1 _ = 
     do debugM "DB" "Upgrading schema 1 -> 2"
-       run dbh "ALTER TABLE podcasts ADD pcenabled (INTEGER NOT NULL DEFAULT 1)" []
-       run dbh "ALTER TABLE podcasts ADD lastupdate (INTEGER)" []
+       run dbh "ALTER TABLE podcasts ADD pcenabled INTEGER NOT NULL DEFAULT 1" []
+       run dbh "ALTER TABLE podcasts ADD lastupdate INTEGER" []
        setSchemaVer dbh 2
        commit dbh
        run dbh "VACUUM" []
