@@ -83,7 +83,7 @@ procSuccess gi ep tmpfp =
        let newfn = (strip . forceEither $ (get cp idstr "downloaddir")) ++ "/" ++
                    (strip . forceEither $ (get cp idstr "namingpatt"))
        createDirectoryIfMissing True (fst . splitFileName $ newfn)
-       finalfn <- if (eptype ep) == "audio/mpeg" && 
+       finalfn <- if ((eptype ep) `elem` ["audio/mpeg", "audio/mp3"]) && 
                      not (isSuffixOf ".mp3" newfn)
                   then movefile tmpfp (newfn ++ ".mp3")
                   else movefile tmpfp newfn
