@@ -100,6 +100,10 @@ upgradeSchema dbh 0 tables =
        commit dbh
        upgradeSchema dbh 1 tables
 
+upgradeSchema dbh sv _ = 
+    fail $ "Unrecognized DB schema version " ++ (show sv) ++ 
+         "; you probably need a newer hpodder to read this database."
+
 setSchemaVer :: Connection -> Integer -> IO ()
 setSchemaVer dbh sv =
     do dbdebug $ "Setting schema version to " ++ show sv
