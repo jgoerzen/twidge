@@ -1,3 +1,11 @@
+hpodder (0.5.4) unstable; urgency=low
+
+  * Only pass -K to curl when ~/.hpodder/curlrc exists.  Closes: #382865.
+  * Now detect of the DB uses a newer schema version than we know how to
+    work with and abort.
+
+ -- John Goerzen <jgoerzen@complete.org>  Mon, 21 Aug 2006 07:03:17 -0500
+
 hpodder (0.5.3) unstable; urgency=low
 
   * New commands: enable and disable
