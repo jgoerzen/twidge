@@ -64,11 +64,13 @@ getCurlConfig =
 getURL :: String -> FilePath -> IO (Result, ProcessStatus)
 getURL url fp =
     do curlrc <- getCurlConfig
+       havecurlrc <- doesFileExists curlrc
+       let curlrcopts = if havecurlrc then ["-K", curlrc] else []
        startsize <- getsize
        case startsize of 
          Just x -> d $ printf "Resuming download of %s at %s" fp (show x)
          Nothing -> d $ printf "Beginning download of %s" fp
-       ec <- posixRawSystem curl (curlopts ++ ["-K", curlrc, url, "-o", fp])
+       ec <- posixRawSystem curl (curlopts ++ [curlrcopts, url, "-o", fp])
        newsize <- getsize
        let r = case ec of
                   Exited ExitSuccess -> Success
