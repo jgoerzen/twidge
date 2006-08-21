@@ -70,7 +70,7 @@ getURL url fp =
        case startsize of 
          Just x -> d $ printf "Resuming download of %s at %s" fp (show x)
          Nothing -> d $ printf "Beginning download of %s" fp
-       ec <- posixRawSystem curl (curlopts ++ [curlrcopts, url, "-o", fp])
+       ec <- posixRawSystem curl (curlopts ++ curlrcopts ++ [url, "-o", fp])
        newsize <- getsize
        let r = case ec of
                   Exited ExitSuccess -> Success
