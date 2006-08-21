@@ -64,7 +64,7 @@ getCurlConfig =
 getURL :: String -> FilePath -> IO (Result, ProcessStatus)
 getURL url fp =
     do curlrc <- getCurlConfig
-       havecurlrc <- doesFileExists curlrc
+       havecurlrc <- doesFileExist curlrc
        let curlrcopts = if havecurlrc then ["-K", curlrc] else []
        startsize <- getsize
        case startsize of 
