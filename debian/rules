@@ -85,7 +85,7 @@ binary-arch: build install
 #	dh_installinit
 #	dh_installcron
 #	dh_installinfo
-	dh_installman doc/hpodder.1
+	dh_installman debian/tmp-doc/hpodder.1
 	dh_link
 	dh_strip
 	dh_compress
