@@ -1,3 +1,9 @@
+hpodder (0.5.5) unstable; urgency=low
+
+  * Fix some doc-building bugs.
+
+ -- John Goerzen <jgoerzen@complete.org>  Mon, 21 Aug 2006 07:28:04 -0500
+
 hpodder (0.5.4) unstable; urgency=low
 
   * Only pass -K to curl when ~/.hpodder/curlrc exists.  Closes: #382865.
