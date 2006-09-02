@@ -36,6 +36,8 @@ import Text.XML.HaXml.Parse
 import Utils
 import MissingH.Maybe
 import Data.Char
+import MissingH.Either
+import Data.List
 
 data Item = Item {itemtitle :: String,
                   enclosureurl :: String,
@@ -70,12 +72,14 @@ unifrob x = x
 
 unesc = xmlUnEscape stdXmlEscaper
 
-getTitle doc = strofm "title" (channel doc)
+getTitle doc = forceEither $ strofm "title" (channel doc)
 
 getEnclosures doc =
     concat . map procitem $ item doc
     where procitem i = map (procenclosure title) enclosure
-              where title = strofm "title" [i]
+              where title = case strofm "title" [i] of
+                              Left x -> "Untitled"
+                              Right x -> x
                     enclosure = tag "enclosure" `o` children $ i
           procenclosure title e =
               Item {itemtitle = title,
@@ -118,10 +122,29 @@ tagof x = keep /> tag x -- /> txt
 
 -- Retruns the literal string that tagof would find
 strof :: String -> Content -> String
-strof x y = verbatim $ tag x /> txt $
-            case tagof x $ y of
-                [CElem elem] -> CElem (unesc elem)
-                z -> error $ "strof: expecting CElem in " ++ x ++ ", got "
-                     ++ verbatim z ++ " at " ++ verbatim y
+strof x y = forceEither $ strof_either x y
 
-strofm x y = concat . map (strof x) $ y
+strof_either :: String -> Content -> Either String String
+strof_either x y =
+    case tagof x $ y of
+      [CElem elem] -> Right $ verbatim $ tag x /> txt $ CElem (unesc elem)
+      z -> Left $ "strof: expecting CElem in " ++ x ++ ", got "
+           ++ verbatim z ++ " at " ++ verbatim y
+
+strofm x y = 
+    if length errors /= 0
+       then Left errors
+       else Right (concat plainlist)
+    where mapped = map (strof_either x) $ y
+          (errors, plainlist) = conveithers mapped
+          isright (Left _) = False
+          isright (Right _) = True
+
+conveithers :: [Either a b] -> ([a], [b])
+conveithers inp =  worker inp ([], [])
+    where worker [] y = y
+          worker (Left x:xs) (lefts, rights) =
+              worker xs (x:lefts, rights)
+          worker (Right x:xs) (lefts, rights) =
+              worker xs (lefts, x:rights)
+
