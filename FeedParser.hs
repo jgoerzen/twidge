@@ -121,6 +121,7 @@ strof :: String -> Content -> String
 strof x y = verbatim $ tag x /> txt $
             case tagof x $ y of
                 [CElem elem] -> CElem (unesc elem)
-                z -> error $ "strof: expecting CElem, got " ++ verbatim z
+                z -> error $ "strof: expecting CElem in " ++ x ++ ", got "
+                     ++ verbatim z ++ " at " ++ verbatim y
 
 strofm x y = concat . map (strof x) $ y
