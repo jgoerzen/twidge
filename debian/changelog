@@ -1,3 +1,9 @@
+hpodder (0.5.6) unstable; urgency=low
+
+  * Better handling for situations in which there is no title for an item.
+
+ -- John Goerzen <jgoerzen@complete.org>  Tue,  5 Sep 2006 05:42:00 -0500
+
 hpodder (0.5.5) unstable; urgency=low
 
   * Fix some doc-building bugs.
