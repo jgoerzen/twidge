@@ -89,8 +89,8 @@ procSuccess gi ep tmpfp =
                   else movefile tmpfp newfn
        when (isSuffixOf ".mp3" finalfn) $ 
             do d "   Setting ID3 tags..."
-               posixRawSystem "id3v2" ["-C", finalfn] >>= id3result
-               posixRawSystem "id3v2" ["-s", finalfn] >>= id3result
+               --posixRawSystem "id3v2" ["-C", finalfn] >>= id3result
+               --posixRawSystem "id3v2" ["-s", finalfn] >>= id3result
                posixRawSystem "id3v2" ["-A", castname . podcast $ ep,
                                        "-t", eptitle ep,
                                        "--WOAF", epurl ep,
@@ -129,7 +129,7 @@ movefile old new =
        copyFile old (realnew ++ ".partial")
        renameFile (realnew ++ ".partial") realnew
        removeFile old
-       return new
+       return realnew
 
 findNonExisting template =
     do dfe <- doesFileExist template
