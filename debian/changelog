@@ -1,3 +1,9 @@
+hpodder (0.5.7) unstable; urgency=medium
+
+  * Fix bug where id3 tags could occasionally be set on the wrong file.
+
+ -- John Goerzen <jgoerzen@complete.org>  Fri, 15 Sep 2006 10:12:53 -0500
+
 hpodder (0.5.6) unstable; urgency=low
 
   * Better handling for situations in which there is no title for an item.

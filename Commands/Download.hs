@@ -54,6 +54,8 @@ cmd_worker gi ([], casts) =
        let podcastlist = filter_disabled podcastlist_raw
        episodelist <- mapM (getEpisodes (gdbh gi)) podcastlist
        let episodes = filter (\x -> epstatus x == Pending) . concat $ episodelist
+
+       -- Now force the DB to be read so that we don't maintain a lock
        evaluate (length episodes)
        i $ printf "%d episode(s) to consider from %d podcast(s)"
          (length episodes) (length podcastlist)
