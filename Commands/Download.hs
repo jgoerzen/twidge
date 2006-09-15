@@ -89,21 +89,25 @@ procSuccess gi ep tmpfp =
                   else movefile tmpfp newfn
        when (isSuffixOf ".mp3" finalfn) $ 
             do d "   Setting ID3 tags..."
-               res <- posixRawSystem "id3v2" ["-A", castname . podcast $ ep,
-                                 "-t", eptitle ep,
-                                 "--WOAS", epurl ep,
---                                 "--WXXX", feedurl . podcast $ ep,
-                                 finalfn]
-               case res of
-                 Exited (ExitSuccess) -> d $ "   id3v2 was successful."
-                 Exited (ExitFailure y) -> w $ "   id3v2 returned: " ++ show y
-                 Terminated y -> w $ "   id3v2 terminated by signal " ++ show y
-                 _ -> fail "Stopped unexpected"
+               posixRawSystem "id3v2" ["-C", finalfn] >>= id3result
+               posixRawSystem "id3v2" ["-s", finalfn] >>= id3result
+               posixRawSystem "id3v2" ["-A", castname . podcast $ ep,
+                                       "-t", eptitle ep,
+                                       "--WOAF", epurl ep,
+                                       "--WOAS", feedurl . podcast $ ep,
+                                        -- "--WXXX", feedurl . podcast $ ep,
+                                       finalfn] >>= id3result
        updateEpisode (gdbh gi) (ep {epstatus = Downloaded})
        commit (gdbh gi)
        
     where idstr = show . castid . podcast $ ep
           fnpart = snd . splitFileName $ epurl ep
+          id3result res = 
+               case res of
+                 Exited (ExitSuccess) -> d $ "   id3v2 was successful."
+                 Exited (ExitFailure y) -> w $ "   id3v2 returned: " ++ show y
+                 Terminated y -> w $ "   id3v2 terminated by signal " ++ show y
+                 _ -> fail "Stopped unexpected"
 
 getCP :: Episode -> String -> String -> IO ConfigParser
 getCP ep idstr fnpart =
