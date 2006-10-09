@@ -26,24 +26,26 @@ import Types
 import Text.Printf
 import Config
 import Database.HDBC
-import Control.Monad
+import Control.Monad hiding (join)
 import Utils
 import MissingH.Str
 import System.IO
 import System.Console.GetOpt
 import MissingH.GetOpt
-import Control.Exception
+import qualified Control.Exception as E
 
 i = infoM "setstatus"
 w = warningM "setstatus"
 d = debugM "setstatus"
+
+possibleStatuses = join ", " . map show $ enumFrom Pending
 
 cmd = simpleCmd "setstatus" 
       "Alter status of individual episodes" helptext 
       [Option "c" ["castid"] (ReqArg (stdRequired "castid") "ID")
        "Podcast ID in which the episodes occur",
        Option "s" ["status"] (ReqArg (stdRequired "status") "STATUS")
-       "New status: Pending, Downloaded, Error, Skipped"]
+       ("Specify the new status.  Possible statuses are:\n" ++ possibleStatuses)]
       cmd_worker
 
 cmd_worker _ (_, []) =
@@ -54,7 +56,8 @@ cmd_worker gi (args, episodes) =
                       Just x -> return (read x)
                       Nothing -> fail "setstatus: --castid required; see hpodder setstatus --help"
        newstatus <- case lookup "status" args of
-                      Just x -> return (read x)
+                      Just x -> E.catch (E.evaluate (read x))
+                                  (\_ -> fail $ "Invalid status supplied; use one of: " ++ possibleStatuses)
                       Nothing -> fail "setstatus: --status required; see hpodder setstatus --help"
        podcastlist <- getPodcast (gdbh gi) podcastid
        pc <- case podcastlist of
@@ -65,7 +68,7 @@ cmd_worker gi (args, episodes) =
        eplist_orig <- getSelectedEpisodes (gdbh gi) pc episodes
 
        -- Force evaluation of eplist_orig
-       evaluate (length eplist_orig)
+       E.evaluate (length eplist_orig)
        d $ printf "Modifying %d episodes" (length eplist_orig)
        return $ seq eplist_orig eplist_orig
        let eplist_new = map (\e -> e {epstatus = newstatus}) eplist_orig
