@@ -4,8 +4,8 @@ License: GPL
 Maintainer: John Goerzen <jgoerzen@complete.org>
 Stability: Alpha
 Copyright: Copyright (c) 2006 John Goerzen
-Build-Depends: network, unix, parsec, MissingH>=0.14.5,
- HDBC>=0.99.2, HDBC-sqlite3>=0.99.2, mtl, base
+Build-Depends: haskell98, network, unix, parsec, MissingH>=0.14.5,
+ HDBC>=0.99.2, HDBC-sqlite3>=0.99.2, mtl, base, HaXml>=1.13.2
 
 Executable: hpodder
 Main-Is: hpodder.hs

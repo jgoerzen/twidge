@@ -10,5 +10,5 @@ PREREQUISITES:
  * HDBC             http://quux.org/devel/hdbc
  * Sqlite3          http://www.sqlite.org/
  * HDBC-sqlite3     http://quux.org/devel/hdbc
-
+ * HaXml>=1.13.2    http://www.cs.york.ac.uk/fp/HaXml/
 
