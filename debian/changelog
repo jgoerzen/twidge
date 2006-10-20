@@ -1,3 +1,9 @@
+hpodder (0.5.8) unstable; urgency=low
+
+  * Update for GHC 6.6.
+
+ -- John Goerzen <jgoerzen@complete.org>  Fri, 20 Oct 2006 10:52:56 -0500
+
 hpodder (0.5.7) unstable; urgency=medium
 
   * Fix bug where id3 tags could occasionally be set on the wrong file.
