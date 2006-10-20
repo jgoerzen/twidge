@@ -2,7 +2,7 @@ Source: hpodder
 Section: utils
 Priority: optional
 Maintainer: John Goerzen <jgoerzen@complete.org>
-Build-Depends: debhelper (>= 5), groff, docbook-utils, jade, lynx, scons, xpdf-utils, sgml2x, gtk-doc-tools, ghc6 (>= 6.4.1), haskell-devscripts (>= 0.5.6), cpphs, libghc6-missingh-dev (>= 0.14.5), libghc6-hdbc-dev (>= 0.99.2), libghc6-hdbc-sqlite3-dev (>= 0.99.2), libghc6-network-dev, libghc6-unix-dev, libghc6-mtl-dev
+Build-Depends: debhelper (>= 5), groff, docbook-utils, jade, lynx, scons, xpdf-utils, sgml2x, gtk-doc-tools, ghc6 (>= 6.4.1), haskell-devscripts (>= 0.5.6), cpphs, libghc6-missingh-dev (>= 0.14.5), libghc6-hdbc-dev (>= 0.99.2), libghc6-hdbc-sqlite3-dev (>= 0.99.2), libghc6-network-dev, libghc6-unix-dev, libghc6-mtl-dev, libghc6-haxml-dev (>= 1.13.2)
 Standards-Version: 3.7.2
 
 Package: hpodder
