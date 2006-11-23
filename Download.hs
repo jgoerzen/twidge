@@ -38,6 +38,7 @@ import Text.Printf
 import System.Exit
 import System.Directory
 import System.Posix.Files
+import MissingH.Checksum.MD5
 
 data Result = Success | TempFail | PermFail
             deriving (Eq, Show, Read)
@@ -46,14 +47,13 @@ d = debugM "download"
 i = infoM "download"
 
 curl = "curl"
-curlopts = ["-A", "hpodder v0.1.0; Haskell; GHC", -- Set User-Agent
---            "-s",               -- Silent mode
-            "-#",               -- Progress bar
+curlopts = ["-A", "hpodder v1.0.0; Haskell; GHC", -- Set User-Agent
+            "-s",               -- Silent mode
+            "-S",               -- Still show error messages
             "-L",               -- Follow redirects
             "-y", "60", "-Y", "1", -- Timeouts
             "--retry", "2",     -- Retry twice
             "-f",               -- Fail on server errors
-            "-C", "-"           -- Continue partial downloads
            ]
 
 getCurlConfig :: IO String
@@ -61,17 +61,33 @@ getCurlConfig =
     do ad <- getAppDir
        return $ ad ++ "/curlrc"
 
-getURL :: String -> FilePath -> IO (Result, ProcessStatus)
-getURL url fp =
+getsize fp = catch (getFileStatus fp >>= (return . Just . fileSize))
+             (\_ -> return Nothing)
+
+
+{- | Begin the download process on the given URL.
+
+Once it has finished, pass the returned token to finishGetURL. -}
+startGetURL :: String           -- ^ URL to download
+            -> FilePath         -- ^ Directory into which to put downloaded file
+            -> Bool             -- ^ Whether to allow resuming
+            -> IO (ProcessID, String, FilePath) -- ^ Result including path to which the file is being downloaded
+startGetURL url dirbase allowresume =
     do curlrc <- getCurlConfig
        havecurlrc <- doesFileExist curlrc
-       let curlrcopts = if havecurlrc then ["-K", curlrc] else []
-       startsize <- getsize
+       let curlrcopts = (if havecurlrc then ["-K", curlrc] else [])
+                        ++ (if allowresume then ["-C", "-"] else [])
+       let fp = dirbase ++ "/" ++ md5s url
+       startsize <- getsize fp
        case startsize of 
          Just x -> d $ printf "Resuming download of %s at %s" fp (show x)
          Nothing -> d $ printf "Beginning download of %s" fp
-       ec <- posixRawSystem curl (curlopts ++ curlrcopts ++ [url, "-o", fp])
-       newsize <- getsize
+       pid <- forkRawSystem curl (curlopts ++ curlrcopts ++ [url, "-o", fp])
+       return (pid, url, fp)
+
+finishGetURL :: (ProcessID, String, FilePath) -> ProcesSstatus -> IO Result
+finishGetURL (_, url, fp) ec =
+    do newsize <- getsize fp
        let r = case ec of
                   Exited ExitSuccess -> Success
                   Exited (ExitFailure i) ->
@@ -97,16 +113,15 @@ getURL url fp =
                         (show newsize)
                   if (startsize /= Nothing) && (newsize == startsize)
                      -- compensate for resumes that failed
-                     then do i $ "Attempt to resume download failed; re-downloading from start"
+                     then do i $ "Attempt to resume download failed; will re-try download on next run"
                              removeFile fp
-                             getURL url fp
+                             --getURL url fp
+                             return TempFail
                      else if newsize == Nothing
                              -- Sometimes Curl returns success but doesn't 
                              -- actually download anything
-                             then return (TempFail, Exited ExitSuccess)
-                             else return (r, ec)
+                             then return TempFail
+                             else return r
           else do d $ "curl returned error; new size is " ++ (show newsize)
-                  return (r, ec)
+                  return r
 
-    where getsize = catch (getFileStatus fp >>= (return . Just . fileSize))
-                          (\_ -> return Nothing)
