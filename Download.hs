@@ -29,7 +29,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 -}
 
-module Download(getURL, Result(..)) where
+module Download(getURL, Result(..), DownloadTok) where
 import MissingH.Cmd
 import System.Posix.Process
 import Config
@@ -42,6 +42,8 @@ import MissingH.Checksum.MD5
 
 data Result = Success | TempFail | PermFail
             deriving (Eq, Show, Read)
+
+type DownloadTok = (ProcessID, String, FilePath)
 
 d = debugM "download"
 i = infoM "download"
@@ -71,7 +73,7 @@ Once it has finished, pass the returned token to finishGetURL. -}
 startGetURL :: String           -- ^ URL to download
             -> FilePath         -- ^ Directory into which to put downloaded file
             -> Bool             -- ^ Whether to allow resuming
-            -> IO (ProcessID, String, FilePath) -- ^ Result including path to which the file is being downloaded
+            -> IO DownloadTok   -- ^ Result including path to which the file is being downloaded
 startGetURL url dirbase allowresume =
     do curlrc <- getCurlConfig
        havecurlrc <- doesFileExist curlrc
@@ -85,7 +87,13 @@ startGetURL url dirbase allowresume =
        pid <- forkRawSystem curl (curlopts ++ curlrcopts ++ [url, "-o", fp])
        return (pid, url, fp)
 
-finishGetURL :: (ProcessID, String, FilePath) -> ProcesSstatus -> IO Result
+{- | Checks to see how much has been downloaded on the given file.  Also works
+after download is complete to get the final size.  Returns Nothing if the
+file doesn't exist. -}
+checkDownloadSize :: DownloadTok -> IO (Maybe FileOffset)
+checkDownloadSize (_, _, fp) = getsize fp
+
+finishGetURL :: DownloadTok -> ProcesSstatus -> IO Result
 finishGetURL (_, url, fp) ec =
     do newsize <- getsize fp
        let r = case ec of
