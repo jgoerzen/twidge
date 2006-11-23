@@ -29,7 +29,8 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 -}
 
-module Download(getURL, Result(..), DownloadTok) where
+module Download(startGetURL, finishGetURL, checkDownloadSize, Result(..), 
+                DownloadTok) where
 import MissingH.Cmd
 import System.Posix.Process
 import Config
@@ -38,12 +39,14 @@ import Text.Printf
 import System.Exit
 import System.Directory
 import System.Posix.Files
+import System.Posix.Process
+import System.Posix.Types
 import MissingH.Checksum.MD5
 
 data Result = Success | TempFail | PermFail
             deriving (Eq, Show, Read)
 
-type DownloadTok = (ProcessID, String, FilePath) -- PID, url, downloadedpath
+type DownloadTok = (ProcessID, String, FilePath, Maybe FileOffset) -- PID, url, downloadedpath, startsize
 
 d = debugM "download"
 i = infoM "download"
@@ -55,7 +58,7 @@ curlopts = ["-A", "hpodder v1.0.0; Haskell; GHC", -- Set User-Agent
             "-L",               -- Follow redirects
             "-y", "60", "-Y", "1", -- Timeouts
             "--retry", "2",     -- Retry twice
-            "-f",               -- Fail on server errors
+            "-f"                -- Fail on server errors
            ]
 
 getCurlConfig :: IO String
@@ -79,22 +82,22 @@ startGetURL url dirbase allowresume =
        havecurlrc <- doesFileExist curlrc
        let curlrcopts = (if havecurlrc then ["-K", curlrc] else [])
                         ++ (if allowresume then ["-C", "-"] else [])
-       let fp = dirbase ++ "/" ++ md5s url
+       let fp = dirbase ++ "/" ++ md5s (Str url)
        startsize <- getsize fp
        case startsize of 
          Just x -> d $ printf "Resuming download of %s at %s" fp (show x)
          Nothing -> d $ printf "Beginning download of %s" fp
        pid <- forkRawSystem curl (curlopts ++ curlrcopts ++ [url, "-o", fp])
-       return (pid, url, fp)
+       return (pid, url, fp, startsize)
 
 {- | Checks to see how much has been downloaded on the given file.  Also works
 after download is complete to get the final size.  Returns Nothing if the
 file doesn't exist. -}
 checkDownloadSize :: DownloadTok -> IO (Maybe FileOffset)
-checkDownloadSize (_, _, fp) = getsize fp
+checkDownloadSize (_, _, fp, _) = getsize fp
 
-finishGetURL :: DownloadTok -> ProcesSstatus -> IO Result
-finishGetURL (_, url, fp) ec =
+finishGetURL :: DownloadTok -> ProcessStatus -> IO Result
+finishGetURL (_, url, fp, startsize) ec =
     do newsize <- getsize fp
        let r = case ec of
                   Exited ExitSuccess -> Success
