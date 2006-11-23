@@ -1,3 +1,6 @@
+New stuff:
+  -- Empty feedxfer dir after update rather than after each item
+
 catchup -- what if some are already pending?
 
 document sqlite3 stuff
