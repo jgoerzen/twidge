@@ -35,6 +35,7 @@ import MissingH.Str
 import System.Exit
 import System.Posix.Process
 import System.Directory
+import Data.List
 
 i = infoM "update"
 w = warningM "update"
@@ -48,16 +49,16 @@ cmd_worker gi ([], casts) =
        let podcastlist = filter_disabled podcastlist'
        i $ printf "%d podcast(s) to consider\n" (length podcastlist)
        updatePodcasts gi podcastlist
-       mapM_ (updateThePodcast gi) podcastlist
+       return ()
 
 cmd_worker _ _ =
     fail $ "Invalid arguments to update; please see hpodder update --help"
 
 updatePodcasts gi podcastlist =
-    do maxthreads <- getMaxThreads (gcp gi)
-       progressinterval <- getProgressInterval (gcp gi)
+    do maxthreads <- getMaxThreads
+       progressinterval <- getProgressInterval
        basedir <- getFeedTmp
-       pt <- newProgress "update" (length podcastlist)
+       pt <- newProgress "update" (genericLength podcastlist)
        meter <- simpleNewMeter pt
        autoDisplayMeter meter progressinterval displayMeter
        runDownloads (callback pt meter) basedir False 
@@ -70,11 +71,11 @@ updatePodcasts gi podcastlist =
                  writeMeterString meter $
                       "Get:" ++ show (castid . usertok $ dlentry) ++ " " ++
                       (take 65 . castname . usertok $ dlentry) ++ "\n"
-          callback pt meter dlentry (DLEnded (dltok, result)) =
+          callback pt meter dlentry (DLEnded (dltok, status, result)) =
               do incrP pt 1
-                 feed <- getFeed (usertok dlentry) result dltok
+                 feed <- getFeed (usertok dlentry) (result, status) dltok
                  updateThePodcast gi (usertok dlentry) feed
-                 removeFile ((\(_, _, fp) -> fp) dltok)
+                 removeFile ((\(_, _, fp, _) -> fp) dltok)
                  
 
 updateThePodcast gi pc feed =
@@ -100,7 +101,7 @@ updateEnc gi pc count item =
     do newc <- addEpisode (gdbh gi) (item2ep pc item)
        return $ count + newc
 
-getFeed pc result (_, _, dlfilename) =
+getFeed pc result (_, _, dlfilename, _) =
        case result of
          (Success, _) -> 
              do feed <- parse dlfilename (feedurl pc)

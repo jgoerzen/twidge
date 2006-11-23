@@ -87,10 +87,14 @@ writeCP cp =
     do cpname <- getCPName
        writeFile cpname (to_string cp)
 
-getMaxThreads :: ConfigParser -> Int
-getMaxThreads cp =
-    read . forceEither $ get cp "general" "maxthreads"
+-- FIXME: these may be inefficient [PERFORMANCE]
 
-getProgressInterval :: ConfigParser -> Int
-getProgressInterval cp =
-    read . forceEither $ get cp "general" "progressinterval"
+getMaxThreads :: IO Int
+getMaxThreads =
+    do cp <- loadCP
+       return $ read . forceEither $ get cp "general" "maxthreads"
+
+getProgressInterval :: IO Int
+getProgressInterval =
+    do cp <- loadCP
+       return $ read . forceEither $ get cp "general" "progressinterval"

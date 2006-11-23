@@ -69,7 +69,7 @@ data (Eq a, Ord a, Show a) => DownloadQueue a =
                    callbackFunc :: (DownloadEntry a -> DLAction -> IO ()),
                    completedDownloads :: [(DownloadEntry a, DownloadTok, Result)]}
 
-data DLAction = DLStarted DownloadTok | DLEnded (DownloadTok, Result)
+data DLAction = DLStarted DownloadTok | DLEnded (DownloadTok, ProcessStatus, Result)
               deriving (Eq, Show)
 
 groupByHost :: (Eq a, Show a, Ord a) => [DownloadEntry a] -> [(String, [DownloadEntry a])]
@@ -132,7 +132,7 @@ childthread dqmvar semaphore =
                  -- so it's within the lock.  Handy to prevent simultaneous
                  -- DB updates.
                  modifyMVar_ dqmvar $ \dq -> 
-                     do callback x (DLEnded (dltok, result))
+                     do callback x (DLEnded (dltok, (forceMaybe status), result))
                         return (dq {completedDownloads = 
                                         (x, dltok, result) :
                                         completedDownloads dq})
