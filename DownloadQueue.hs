@@ -96,13 +96,15 @@ runDownloads :: (DownloadEntry a -> DLAction -> IO ()) -> -- Callback when a dow
                   IO [(DownloadEntry a, DownloadTok, Result)] -- The completed DLs
 runDownloads callbackfunc basefp resumeOK delist maxthreads =
     do oldsigs <- blocksignals
+       --
+       print (map (\(h, el) -> (h, map dlurl el)) $ groupByHost delist)
        dqmvar <- newMVar $ DownloadQueue {pendingHosts = groupByHost delist,
                                           completedDownloads = [],
                                           basePath = basefp,
                                           allowResume = resumeOK,
                                           callbackFunc = callbackfunc}
        semaphore <- newQSem 0 -- Used by threads to signal they're done
-       mapM_ (\_ -> forkIO (childthread dqmvar semaphore)) [1..maxthreads]
+       mapM_ (\_ -> forkOS (childthread dqmvar semaphore)) [1..maxthreads]
        mapM_ (\_ -> waitQSem semaphore) [1..maxthreads]
        restoresignals oldsigs
        withMVar dqmvar (\dq -> return (completedDownloads dq))
