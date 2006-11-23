@@ -32,6 +32,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 module DownloadQueue where
 import Download
 import MissingH.Cmd
+import MissingH.Maybe
 import System.Posix.Process
 import Config
 import MissingH.Logging.Logger
@@ -57,7 +58,7 @@ data (Eq a, Ord a, Show a) => DownloadEntry a =
     deriving (Eq, Ord, Show)
 
 data (Eq a, Ord a, Show a) => DownloadQueue a =
-    DownloadQueue {pendingHosts :: [(String, DownloadEntry a)],
+    DownloadQueue {pendingHosts :: [(String, [DownloadEntry a])],
                    -- activeDownloads :: (DownloadEntry, DownloadTok),
                    basePath :: FilePath,
                    allowResume :: Bool,
@@ -67,7 +68,7 @@ data (Eq a, Ord a, Show a) => DownloadQueue a =
 data DLAction = DLStarted DownloadTok | DLEnded (DownloadTok, Result)
               deriving (Eq, Show)
 
-groupByHost :: (Eq a, Show a, Ord a) => [DownloadEntry a] -> [(String, DownloadEntry a)]
+groupByHost :: (Eq a, Show a, Ord a) => [DownloadEntry a] -> [(String, [DownloadEntry a])]
 groupByHost dllist =
     combineGroups .
     groupBy (\(host1, _) (host2, _) -> host1 == host2) . sort .
@@ -75,8 +76,10 @@ groupByHost dllist =
     map conv $ dllist
     where conv de = case parseURI (dlurl de) of
                       Nothing -> ("", de)
-                      Just x -> (x, de)
-          combineGroups :: [[(String, DownloadEntry)]] -> [(String, DownloadEntry)]
+                      Just x -> case uriAuthority x of
+                                  Nothing -> ("", de)
+                                  Just ua -> (uriRegName ua, de)
+          combineGroups :: [[(String, DownloadEntry a)]] -> [(String, [DownloadEntry a])]
           combineGroups [] = []
           combineGroups (x:xs) =
               (fst . head $ x, map snd x) : combineGroups xs
@@ -108,7 +111,7 @@ childthread dqmvar semaphore =
           else do processChildWorkData workdata
                   childthread dqmvar semaphore -- And look for more hosts
     where getworkdata = modifyMVar dqmvar $ \dq ->
-             do case pendingHosts dqmvar of
+             do case pendingHosts dq of
                   [] -> return (dq, [])
                   (x:xs) -> return (dq {pendingHosts = xs}, snd x)
           processChildWorkData [] = return []
@@ -118,8 +121,8 @@ childthread dqmvar semaphore =
                                             callbackFunc dq))
                  dltok <- startGetURL (dlurl x) basefp resumeOK
                  callback x (DLStarted dltok)
-                 status <- getProcessStatus ((\(p, _, _) -> p) dltok)
-                 result <- finishGetURL dltok status
+                 status <- getProcessStatus True False ((\(p, _, _, _) -> p) dltok)
+                 result <- finishGetURL dltok (forceMaybe status)
 
                  -- Add to the completed DLs list.  Also do callback here
                  -- so it's within the lock.  Handy to prevent simultaneous
