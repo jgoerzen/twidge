@@ -41,7 +41,7 @@ import System.Directory
 import System.Posix.Files
 import System.Posix.Signals
 import MissingH.Checksum.MD5
-import MissingH.Progress
+import MissingH.ProgressTracker
 import Network.URI
 
 d = debugM "downloadqueue"
