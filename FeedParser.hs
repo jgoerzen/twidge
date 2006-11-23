@@ -42,7 +42,7 @@ import Data.List
 data Item = Item {itemtitle :: String,
                   enclosureurl :: String,
                   enclosuretype :: String,
-                  enclosurelength :: Integer
+                  enclosurelength :: String
                   }
           deriving (Eq, Show, Read)
 
@@ -54,7 +54,8 @@ item2ep pc item =
     Episode {podcast = pc, epid = 0,
              eptitle = sanitize_basic (itemtitle item), 
              epurl = sanitize_basic (enclosureurl item),
-             eptype = sanitize_basic (enclosuretype item), epstatus = Pending}
+             eptype = sanitize_basic (enclosuretype item), epstatus = Pending,
+             eplength = read . sanitize_basic . enclosurelength $ item}
 
 parse :: FilePath -> String -> IO (Either String Feed)
 parse fp name = 
@@ -88,10 +89,11 @@ getEnclosures doc =
                     enclosureurl = head0 $ forceMaybe $ stratt "url" e,
                     enclosuretype = head0 $ case stratt "type" e of
                                               Nothing -> ["application/octet-stream"]
-                                              Just x -> x
-                    enclosurelength = head0 $ case stratt "length" e of
-                                                Nothing -> [0]
-                                                Just (x:_) -> [read x]
+                                              Just x -> x,
+                    enclosurelength = head $ case stratt "length" e of
+                                                Nothing -> ["0"]
+                                                Just [] -> ["0"]
+                                                Just x -> x
                                                 }
           head0 [] = ""
           head0 (x:xs) = x
