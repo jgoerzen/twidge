@@ -43,27 +43,31 @@ import System.Posix.Signals
 import MissingH.Checksum.MD5
 import MissingH.ProgressTracker
 import Network.URI
+import Data.List
+import Control.Concurrent.MVar
+import Control.Concurrent
+import Data.Char
 
 d = debugM "downloadqueue"
 i = infoM "downloadqueue"
 
-data Eq a, Ord a, Show a => DownloadEntry a = 
+data (Eq a, Ord a, Show a) => DownloadEntry a = 
     DownloadEntry {dlurl :: String,
                    usertok :: a}
     deriving (Eq, Ord, Show)
 
 data (Eq a, Ord a, Show a) => DownloadQueue a =
-    DownloadQueue {pendingHosts :: [(String, DownloadEntry)],
+    DownloadQueue {pendingHosts :: [(String, DownloadEntry a)],
                    -- activeDownloads :: (DownloadEntry, DownloadTok),
                    basePath :: FilePath,
                    allowResume :: Bool,
-                   callbackFunc :: (DownloadEntry a -> DLStatus -> IO ())}
-                   completedDownloads :: [(DownloadEntry, DownloadTok, Result)]}
+                   callbackFunc :: (DownloadEntry a -> DLAction -> IO ()),
+                   completedDownloads :: [(DownloadEntry a, DownloadTok, Result)]}
 
 data DLAction = DLStarted DownloadTok | DLEnded (DownloadTok, Result)
               deriving (Eq, Show)
 
-groupByHost :: [DownloadEntry] -> [(String, DownloadEntry)]
+groupByHost :: (Eq a, Show a, Ord a) => [DownloadEntry a] -> [(String, DownloadEntry a)]
 groupByHost dllist =
     combineGroups .
     groupBy (\(host1, _) (host2, _) -> host1 == host2) . sort .
@@ -77,17 +81,16 @@ groupByHost dllist =
           combineGroups (x:xs) =
               (fst . head $ x, map snd x) : combineGroups xs
 
-runDownloads :: Eq a, Ord a, HShow a => 
-                  (DownloadEntry a -> DLStatus -> IO ()) -> -- Callback when a download starts or stops
+runDownloads :: (Eq a, Ord a, Show a) => 
+                  (DownloadEntry a -> DLAction -> IO ()) -> -- Callback when a download starts or stops
                   FilePath ->   --  Base path
                   Bool ->       -- Whether or not to allow resume
                   [DownloadEntry a] -> --  Items to download
                   Int ->        --  Max number of download threads
-                  IO [(DownloadEntry, DownloadTok, Result)] -- The completed DLs
+                  IO [(DownloadEntry a, DownloadTok, Result)] -- The completed DLs
 runDownloads callbackfunc basefp resumeOK delist maxthreads =
     do oldsigs <- blocksignals
        dqmvar <- newMVar $ DownloadQueue {pendingHosts = groupByHost delist,
-                                          activeDownloads = [],
                                           completedDownloads = [],
                                           basePath = basefp,
                                           allowResume = resumeOK,
@@ -96,21 +99,21 @@ runDownloads callbackfunc basefp resumeOK delist maxthreads =
        mapM_ (\_ -> forkIO (childthread dqmvar semaphore)) [1..maxthreads]
        mapM_ (\_ -> waitQSem semaphore) [1..maxthreads]
        restoresignals oldsigs
-       withMVar dqmar (\dq -> return (completedDownloads dq))
+       withMVar dqmvar (\dq -> return (completedDownloads dq))
 
 childthread dqmvar semaphore =
     do workdata <- getworkdata
        if workdata == []
           then signalQSem semaphore        -- We're done!
           else do processChildWorkData workdata
-                  childtread dqmvar semaphore -- And look for more hosts
+                  childthread dqmvar semaphore -- And look for more hosts
     where getworkdata = modifyMVar dqmvar $ \dq ->
              do case pendingHosts dqmvar of
                   [] -> return (dq, [])
                   (x:xs) -> return (dq {pendingHosts = xs}, snd x)
           processChildWorkData [] = return []
           processChildWorkData (x:xs) = 
-              do (basefp, resumeOK, callback) <- withMvar dqmvar 
+              do (basefp, resumeOK, callback) <- withMVar dqmvar 
                              (\dq -> return (basePath dq, allowResume dq,
                                             callbackFunc dq))
                  dltok <- startGetURL (dlurl x) basefp resumeOK
@@ -128,10 +131,10 @@ childthread dqmvar semaphore =
                                         completedDownloads dq})
                  processChildWorkData xs     -- Do the next one
 
-blockSignals = 
+blocksignals = 
     do let sigset = addSignal sigCHLD emptySignalSet
-           oldset <- getSignalMask
-           blockSignals sigset
-           return oldset
+       oldset <- getSignalMask
+       blockSignals sigset
+       return oldset
 
-restoreSignals = setSignalMask
+restoresignals = setSignalMask
