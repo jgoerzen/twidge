@@ -34,6 +34,7 @@ import Utils
 import MissingH.Str
 import System.Exit
 import System.Posix.Process
+import System.Directory
 
 i = infoM "update"
 w = warningM "update"
@@ -59,7 +60,7 @@ updatePodcasts gi podcastlist =
        pt <- newProgress "update" (length podcastlist)
        meter <- simpleNewMeter pt
        autoDisplayMeter meter progressinterval displayMeter
-       results <- runDownloads (callback pt meter) basedir False 
+       runDownloads (callback pt meter) basedir False 
                   dlentries maxthreads
        
     where dlentries = map podcast2dlentry podcastlist
@@ -69,7 +70,7 @@ updatePodcasts gi podcastlist =
                  writeMeterString meter $
                       "Get:" ++ show (castid . usertok $ dlentry) ++ " " ++
                       (take 65 . castname . usertok $ dlentry) ++ "\n"
-          callback pt meter dlentry (DLEneded (dltok, result)) =
+          callback pt meter dlentry (DLEnded (dltok, result)) =
               do incrP pt 1
                  feed <- getFeed (usertok dlentry) result dltok
                  updateThePodcast gi (usertok dlentry) feed
@@ -84,8 +85,8 @@ updateThePodcast gi pc feed =
                       updatePodcast (gdbh gi) 
                                     (newpc {lastupdate = Just curtime})
                       --i $ "   Podcast Title: " ++ (castname newpc)
-       commit (gdbh gi)
-
+                      commit (gdbh gi)
+ 
 updateFeed gi pcorig f =
     do count <- foldM (updateEnc gi pc) 0 (items f)
        i $ printf "   %d new episodes" count

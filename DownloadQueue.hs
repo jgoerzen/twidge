@@ -29,7 +29,11 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 -}
 
-module DownloadQueue where
+module DownloadQueue(DownloadEntry(..),
+                     DownloadQueue(..),
+                     DLAction(..),
+                     runDownloads
+                    ) where
 import Download
 import MissingH.Cmd
 import MissingH.Maybe
