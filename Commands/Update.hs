@@ -73,7 +73,7 @@ updatePodcasts gi podcastlist =
               do incrP pt 1
                  feed <- getFeed (usertok dlentry) result dltok
                  updateThePodcast gi (usertok dlentry) feed
-                 
+                 removeFile ((\(_, _, fp) -> fp) dltok)
                  
 
 updateThePodcast gi pc feed =
