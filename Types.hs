@@ -56,7 +56,8 @@ data Episode = Episode {podcast :: Podcast,
                         eptitle :: String,
                         epurl :: String,
                         eptype :: String,
-                        epstatus :: EpisodeStatus}
+                        epstatus :: EpisodeStatus,
+                        eplength :: Integer}
              deriving (Eq, Show, Read)
 
 data Command = Command {cmdname :: String,

@@ -66,7 +66,16 @@ prepSchema dbh tables =
                commit dbh
                return 0
 
-upgradeSchema dbh 2 _ = return ()
+upgradeSchema dbh 3 _ = return ()
+
+upgradeSchema dbh 2 tables =
+    do dbdebug "Upgrading schema 2 -> 3"
+       dbdebug "Adding eplength column"
+       run dbh "ALTER TABLE episodes ADD eplength INTEGER NOT NULL DEFAULT 0" []
+       setSchemaVer dbh 3
+       commit dbh
+       upgradeSchema dbh 3 tables
+
 upgradeSchema dbh 1 tables = 
     do dbdebug "Upgrading schema 1 -> 2"
        dbdebug "Adding pcenabled column"
@@ -158,14 +167,15 @@ getPodcast dbh wantedid =
 getEpisodes :: Connection -> Podcast -> IO [Episode]
 getEpisodes dbh pc =
     do r <- quickQuery dbh "SELECT episodeid, title, epurl, enctype,\
-                            \status FROM episodes WHERE castid = ? ORDER BY \
+                            \status, eplength FROM episodes WHERE castid = ? ORDER BY \
                             \episodeid" [toSql (castid pc)]
        return $ map toItem r
-    where toItem [sepid, stitle, sepurl, senctype, sstatus] =
+    where toItem [sepid, stitle, sepurl, senctype, sstatus, slength] =
               Episode {podcast = pc, epid = fromSql sepid,
                        eptitle = fromSql stitle,
                        epurl = fromSql sepurl, eptype = fromSql senctype,
-                       epstatus = read (fromSql sstatus)}
+                       epstatus = read (fromSql sstatus),
+                       eplength = fromSql slength}
           toItem x = error $ "Unexpected result in getEpisodes: " ++ show x
 
 podcast_convrow [svid, svname, svurl, isenabled, lupdate] =
@@ -192,7 +202,8 @@ updateEpisode dbh ep = insertEpisode "INSERT OR REPLACE" dbh ep (epid ep)
 
 insertEpisode insertsql dbh episode newepid =
     run dbh (insertsql ++ " INTO episodes (castid, episodeid, title,\
-           \epurl, enctype, status) VALUES (?, ?, ?, ?, ?, ?)")
+           \epurl, enctype, status, eplength) VALUES (?, ?, ?, ?, ?, ?, ?)")
            [toSql (castid (podcast episode)), toSql newepid, 
             toSql (eptitle episode), toSql (epurl episode), 
-            toSql (eptype episode), toSql (show (epstatus episode))]
+            toSql (eptype episode), toSql (show (epstatus episode)),
+            toSql (eplength episode)]

@@ -41,7 +41,9 @@ import Data.List
 
 data Item = Item {itemtitle :: String,
                   enclosureurl :: String,
-                  enclosuretype :: String}
+                  enclosuretype :: String,
+                  enclosurelength :: Integer
+                  }
           deriving (Eq, Show, Read)
 
 data Feed = Feed {channeltitle :: String,
@@ -87,6 +89,9 @@ getEnclosures doc =
                     enclosuretype = head0 $ case stratt "type" e of
                                               Nothing -> ["application/octet-stream"]
                                               Just x -> x
+                    enclosurelength = head0 $ case stratt "length" e of
+                                                Nothing -> [0]
+                                                Just (x:_) -> [read x]
                                                 }
           head0 [] = ""
           head0 (x:xs) = x

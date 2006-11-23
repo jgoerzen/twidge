@@ -4,6 +4,8 @@ New stuff:
 
   -- Refactor spaghetti in Update.hs and Download*.hs
      + eliminate overuse of nested structures and/or tuples
+ 
+  -- Display issues with error messages -- put \n before all
 
 catchup -- what if some are already pending?
 
