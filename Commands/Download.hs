@@ -21,6 +21,7 @@ import Utils
 import MissingH.Logging.Logger
 import DB
 import Download
+import DownloadQueue
 import FeedParser
 import Types
 import Text.Printf
@@ -40,6 +41,10 @@ import MissingH.Either
 import Data.List
 import System.Exit
 import Control.Exception
+import MissingH.ProgressTracker
+import MissingH.ProgressMeter
+import Control.Concurrent.MVar
+import Control.Concurrent
 
 d = debugM "download"
 i = infoM "download"
@@ -49,9 +54,6 @@ cmd = simpleCmd "download"
       "Downloads all pending podcast episodes (run update first)" helptext 
       [] cmd_worker
 
-cmd_worker _ _ = fail "Disabled!"
-
-{-
 cmd_worker gi ([], casts) =
     do podcastlist_raw <- getSelectedPodcasts (gdbh gi) casts
        let podcastlist = filter_disabled podcastlist_raw
@@ -62,17 +64,68 @@ cmd_worker gi ([], casts) =
        evaluate (length episodes)
        i $ printf "%d episode(s) to consider from %d podcast(s)"
          (length episodes) (length podcastlist)
-       mapM_ (downloadEpisode gi) episodes
+       downloadEpisodes gi episodes
 
 cmd_worker _ _ =
     fail $ "Invalid arguments to download; please see hpodder download --help"
 
-downloadEpisode gi ep =
-    do i $ printf " * Downloading (%.30s) of (%.30s)" 
-         (eptitle ep) (castname . podcast $ ep)
-       feeddir <- getEnclTmp
-       let tmpfp = feeddir ++ "/" ++ md5s (Str (show (ep {epstatus = Pending})))
-       r <- getURL (epurl ep) tmpfp
+downloadEpisodes gi episodes =
+    do maxthreads <- getMaxThreads
+       progressinterval <- getProgressInterval
+       basedir <- getEnclTmp
+       pt <- newProgress "download" 0
+       meter <- simpleNewMeter pt
+       meterthread <- autoDisplayMeter meter progressinterval displayMeter
+       dlentries <- mapM (ep2dlentry pt) episodes
+
+       watchFiles <- newMVar []
+       wfthread <- forkIO (watchTheFiles progressinterval watchFiles)
+
+       runDownloads (callback watchFiles pt meter) basedir True dlentries maxthreads
+       killAutoDisplayMeter meter meterthread
+       finishP pt
+       displayMeter meter
+       putStrLn ""
+       
+    where ep2dlentry pt episode =
+              do cpt <- newProgress (show . epid $ episode) 
+                        (eplength episode)
+                 addParent cpt pt
+                 return $ DownloadEntry {dlurl = epurl episode,
+                                         usertok = (episode, cpt)}
+          callback watchFilesMV pt meter dlentry 
+                       (DLStarted dltok) = 
+              modifyMVar_ watchFilesMV $ \wf ->
+                  do addComponent meter (snd . usertok $ dlentry)
+                     writeMeterString meter $
+                      "Get:" ++ show (epid . fst . usertok $ dlentry) ++ " "
+                      ++ (take 65 . eptitle . fst . usertok $ dlentry) ++ "\n"
+                     return $ (dltok, snd . usertok $ dlentry) : wf
+          callback watchFilesMV pt meter dlentry 
+                       (DLEnded (dltok, status, result)) =
+              modifyMVar_ watchFilesMV $ \wf ->
+                  do size <- checkDownloadSize dltok
+                     setP (snd . usertok $ dlentry) 
+                           (case size of
+                             Nothing -> 0
+                             Just x -> toInteger x)
+                     finishP (snd . usertok $ dlentry)
+                     removeComponent meter (show . epid . fst . usertok $ dlentry)
+                     procEpisode gi dltok (fst . usertok $ dlentry) (result, status)
+                     return $ filter (\(x, _) -> x /= dltok) wf
+
+watchTheFiles progressinterval watchFilesMV = 
+    do withMVar watchFilesMV $ \wf -> mapM_ examineFile wf
+       threadDelay (progressinterval * 1000000)
+       watchTheFiles progressinterval watchFilesMV
+
+    where examineFile (dltok, cpt) =
+              do size <- checkDownloadSize dltok
+                 setP cpt (case size of
+                             Nothing -> 0
+                             Just x -> toInteger x)
+
+procEpisode gi (_, _, tmpfp, _) ep r =
        case r of
          (Success, _) -> procSuccess gi ep tmpfp
          (TempFail, Terminated sigINT) -> 
@@ -144,7 +197,6 @@ findNonExisting template =
                   (fp, h) <- openTempFile dirname fn
                   hClose h
                   return fp
--}
 
 helptext = "Usage: hpodder download [castid [castid...]]\n\n" ++ 
            genericIdHelp ++
