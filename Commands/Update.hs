@@ -58,23 +58,33 @@ updatePodcasts gi podcastlist =
     do maxthreads <- getMaxThreads
        progressinterval <- getProgressInterval
        basedir <- getFeedTmp
-       pt <- newProgress "update" (genericLength podcastlist)
+       pt <- newProgress "update" 0
        meter <- simpleNewMeter pt
-       autoDisplayMeter meter progressinterval displayMeter
+       meterthread <- autoDisplayMeter meter progressinterval displayMeter
+       dlentries <- mapM (podcast2dlentry pt) podcastlist
        runDownloads (callback pt meter) basedir False 
                   dlentries maxthreads
+       killAutoDisplayMeter meter meterthread
+       finishP pt
+       displayMeter meter
+       putStrLn ""
        
-    where dlentries = map podcast2dlentry podcastlist
-          podcast2dlentry podcast = DownloadEntry {dlurl = feedurl podcast,
-                                                   usertok = podcast}
+    where podcast2dlentry pt podcast = 
+              do cpt <- newProgress (show . castid $ podcast) 1
+                 addParent cpt pt
+                 return $ DownloadEntry {dlurl = feedurl podcast,
+                                         usertok = (podcast, cpt)}
           callback pt meter dlentry (DLStarted _) =
-                 writeMeterString meter $
-                      "Get:" ++ show (castid . usertok $ dlentry) ++ " " ++
-                      (take 65 . castname . usertok $ dlentry) ++ "\n"
+                 do addComponent meter (snd . usertok $ dlentry)
+                    writeMeterString meter $
+                      "Get:" ++ show (castid . fst . usertok $ dlentry) ++ " "
+                      ++ (take 65 . castname . fst . usertok $ dlentry) ++ "\n"
           callback pt meter dlentry (DLEnded (dltok, status, result)) =
-              do incrP pt 1
-                 feed <- getFeed (usertok dlentry) (result, status) dltok
-                 updateThePodcast gi (usertok dlentry) feed
+              do incrP (snd . usertok $ dlentry) 1
+                 finishP (snd . usertok $ dlentry)
+                 removeComponent meter (show . castid . fst . usertok $ dlentry)
+                 feed <- getFeed (fst . usertok $ dlentry) (result, status) dltok
+                 updateThePodcast gi (fst . usertok $ dlentry) feed
                  --removeFile ((\(_, _, fp, _) -> fp) dltok)
                  
 

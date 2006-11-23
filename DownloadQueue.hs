@@ -56,12 +56,11 @@ import Data.Char
 d = debugM "downloadqueue"
 i = infoM "downloadqueue"
 
-data (Eq a, Ord a, Show a) => DownloadEntry a = 
+data DownloadEntry a = 
     DownloadEntry {dlurl :: String,
                    usertok :: a}
-    deriving (Eq, Ord, Show)
 
-data (Eq a, Ord a, Show a) => DownloadQueue a =
+data DownloadQueue a =
     DownloadQueue {pendingHosts :: [(String, [DownloadEntry a])],
                    -- activeDownloads :: (DownloadEntry, DownloadTok),
                    basePath :: FilePath,
@@ -72,13 +71,14 @@ data (Eq a, Ord a, Show a) => DownloadQueue a =
 data DLAction = DLStarted DownloadTok | DLEnded (DownloadTok, ProcessStatus, Result)
               deriving (Eq, Show)
 
-groupByHost :: (Eq a, Show a, Ord a) => [DownloadEntry a] -> [(String, [DownloadEntry a])]
+groupByHost :: [DownloadEntry a] -> [(String, [DownloadEntry a])]
 groupByHost dllist =
     combineGroups .
-    groupBy (\(host1, _) (host2, _) -> host1 == host2) . sort .
+    groupBy (\(host1, _) (host2, _) -> host1 == host2) . sortBy sortfunc .
     map (\(x, y) -> (map toLower x, y)) . -- lowercase the hostnames
     map conv $ dllist
-    where conv de = case parseURI (dlurl de) of
+    where sortfunc (a, _) (b, _) = compare a b
+          conv de = case parseURI (dlurl de) of
                       Nothing -> ("", de)
                       Just x -> case uriAuthority x of
                                   Nothing -> ("", de)
@@ -88,8 +88,7 @@ groupByHost dllist =
           combineGroups (x:xs) =
               (fst . head $ x, map snd x) : combineGroups xs
 
-runDownloads :: (Eq a, Ord a, Show a) => 
-                  (DownloadEntry a -> DLAction -> IO ()) -> -- Callback when a download starts or stops
+runDownloads :: (DownloadEntry a -> DLAction -> IO ()) -> -- Callback when a download starts or stops
                   FilePath ->   --  Base path
                   Bool ->       -- Whether or not to allow resume
                   [DownloadEntry a] -> --  Items to download
@@ -108,9 +107,10 @@ runDownloads callbackfunc basefp resumeOK delist maxthreads =
        restoresignals oldsigs
        withMVar dqmvar (\dq -> return (completedDownloads dq))
 
+childthread :: MVar (DownloadQueue a) -> QSem -> IO ()
 childthread dqmvar semaphore =
     do workdata <- getworkdata
-       if workdata == []
+       if length(workdata) == 0
           then signalQSem semaphore        -- We're done!
           else do processChildWorkData workdata
                   childthread dqmvar semaphore -- And look for more hosts

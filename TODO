@@ -1,5 +1,9 @@
 New stuff:
   -- Empty feedxfer dir after update rather than after each item
+  -- Don't say B/s for feeds 
+
+  -- Refactor spaghetti in Update.hs and Download*.hs
+     + eliminate overuse of nested structures and/or tuples
 
 catchup -- what if some are already pending?
 
