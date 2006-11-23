@@ -75,7 +75,7 @@ updatePodcasts gi podcastlist =
               do incrP pt 1
                  feed <- getFeed (usertok dlentry) (result, status) dltok
                  updateThePodcast gi (usertok dlentry) feed
-                 removeFile ((\(_, _, fp, _) -> fp) dltok)
+                 --removeFile ((\(_, _, fp, _) -> fp) dltok)
                  
 
 updateThePodcast gi pc feed =
@@ -90,7 +90,7 @@ updateThePodcast gi pc feed =
  
 updateFeed gi pcorig f =
     do count <- foldM (updateEnc gi pc) 0 (items f)
-       i $ printf "   %d new episodes" count
+       --i $ printf "   %d new episodes" count
        return pc
     where pc = pcorig {castname = newname}
           newname = if (castname pcorig) == ""
