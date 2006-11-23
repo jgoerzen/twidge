@@ -39,6 +39,7 @@ import Text.Printf
 import System.Exit
 import System.Directory
 import System.Posix.Files
+import System.Posix.Signals
 import MissingH.Checksum.MD5
 import MissingH.Progress
 import Network.URI
@@ -57,7 +58,7 @@ data (Eq a, Ord a, Show a) => DownloadQueue a =
                    basePath :: FilePath,
                    allowResume :: Bool,
                    callbackFunc :: (DownloadEntry a -> DLStatus -> IO ())}
-                   --completedDownloads :: (DownloadEntry, DownloadTok, Result)}
+                   completedDownloads :: [(DownloadEntry, DownloadTok, Result)]}
 
 data DLAction = DLStarted DownloadTok | DLEnded (DownloadTok, Result)
               deriving (Eq, Show)
@@ -82,9 +83,10 @@ runDownloads :: Eq a, Ord a, HShow a =>
                   Bool ->       -- Whether or not to allow resume
                   [DownloadEntry a] -> --  Items to download
                   Int ->        --  Max number of download threads
-                  IO (MVar (DownloadQueue a))
+                  IO [(DownloadEntry, DownloadTok, Result)] -- The completed DLs
 runDownloads callbackfunc basefp resumeOK delist maxthreads =
-    do dqmvar <- newMVar $ DownloadQueue {pendingHosts = groupByHost delist,
+    do oldsigs <- blocksignals
+       dqmvar <- newMVar $ DownloadQueue {pendingHosts = groupByHost delist,
                                           activeDownloads = [],
                                           completedDownloads = [],
                                           basePath = basefp,
@@ -93,6 +95,8 @@ runDownloads callbackfunc basefp resumeOK delist maxthreads =
        semaphore <- newQSem 0 -- Used by threads to signal they're done
        mapM_ (\_ -> forkIO (childthread dqmvar semaphore)) [1..maxthreads]
        mapM_ (\_ -> waitQSem semaphore) [1..maxthreads]
+       restoresignals oldsigs
+       withMVar dqmar (\dq -> return (completedDownloads dq))
 
 childthread dqmvar semaphore =
     do workdata <- getworkdata
@@ -110,4 +114,22 @@ childthread dqmvar semaphore =
                              (\dq -> return (basePath dq, allowResume dq,
                                             callbackFunc dq))
                  dltok <- startGetURL (dlurl x) basefp resumeOK
-                 
+                 callback x (DLStarted dltok)
+                 status <- getProcessStatus ((\(p, _, _) -> p) dltok)
+                 result <- finishGetURL dltok status
+                 callback x (DLEnded (dltok, result))
+
+                 -- Add to the completed DLs list
+                 modifyMVar_ dqmvar $ 
+                     \dq -> return (dq {completedDownloads = 
+                                            (x, dltok, result) :
+                                                 completedDownloads dq})
+                 processChildWorkData xs     -- Do the next one
+
+blockSignals = 
+    do let sigset = addSignal sigCHLD emptySignalSet
+           oldset <- getSignalMask
+           blockSignals sigset
+           return oldset
+
+restoreSignals = setSignalMask
