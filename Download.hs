@@ -43,7 +43,7 @@ import MissingH.Checksum.MD5
 data Result = Success | TempFail | PermFail
             deriving (Eq, Show, Read)
 
-type DownloadTok = (ProcessID, String, FilePath)
+type DownloadTok = (ProcessID, String, FilePath) -- PID, url, downloadedpath
 
 d = debugM "download"
 i = infoM "download"
