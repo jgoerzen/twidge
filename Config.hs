@@ -64,6 +64,8 @@ getDefaultCP =
                  cp <- set cp "DEFAULT" "downloaddir" downloaddir
                  cp <- set cp "DEFAULT" "namingpatt" 
                        "%(safecasttitle)s/%(safefilename)s"
+                 cp <- set cp "DEFAULT" "maxthreads" "1"
+                 cp <- set cp "DEFAULT" "progressinterval" "5"
                  return cp
 
 startingcp = emptyCP {accessfunc = interpolatingAccess 10}
@@ -84,3 +86,11 @@ loadCP =
 writeCP cp =
     do cpname <- getCPName
        writeFile cpname (to_string cp)
+
+getMaxThreads :: ConfigParser -> Int
+getMaxThreads cp =
+    read . forceEither $ get cp "general" "maxthreads"
+
+getProgressInterval :: ConfigParser -> Int
+getProgressInterval cp =
+    read . forceEither $ get cp "general" "progressinterval"

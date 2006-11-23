@@ -21,6 +21,9 @@ import Utils
 import MissingH.Logging.Logger
 import DB
 import Download
+import DownloadQueue
+import MissingH.ProgressMeter
+import MissingH.ProgressTracker
 import FeedParser
 import Types
 import Text.Printf
@@ -43,21 +46,44 @@ cmd_worker gi ([], casts) =
     do podcastlist' <- getSelectedPodcasts (gdbh gi) casts
        let podcastlist = filter_disabled podcastlist'
        i $ printf "%d podcast(s) to consider\n" (length podcastlist)
+       updatePodcasts gi podcastlist
        mapM_ (updateThePodcast gi) podcastlist
 
 cmd_worker _ _ =
     fail $ "Invalid arguments to update; please see hpodder update --help"
 
-updateThePodcast gi pc =
-    do i $ printf " * Podcast %d: %s" (castid pc) (feedurl pc)
-       feed <- bracketFeedCWD (getFeed pc)
+updatePodcasts gi podcastlist =
+    do maxthreads <- getMaxThreads (gcp gi)
+       progressinterval <- getProgressInterval (gcp gi)
+       basedir <- getFeedTmp
+       pt <- newProgress "update" (length podcastlist)
+       meter <- simpleNewMeter pt
+       autoDisplayMeter meter progressinterval displayMeter
+       results <- runDownloads (callback pt meter) basedir False 
+                  dlentries maxthreads
+       
+    where dlentries = map podcast2dlentry podcastlist
+          podcast2dlentry podcast = DownloadEntry {dlurl = feedurl podcast,
+                                                   usertok = podcast}
+          callback pt meter dlentry (DLStarted _) =
+                 writeMeterString meter $
+                      "Get:" ++ show (castid . usertok $ dlentry) ++ " " ++
+                      (take 65 . castname . usertok $ dlentry) ++ "\n"
+          callback pt meter dlentry (DLEneded (dltok, result)) =
+              do incrP pt 1
+                 feed <- getFeed (usertok dlentry) result dltok
+                 updateThePodcast gi (usertok dlentry) feed
+                 
+                 
+
+updateThePodcast gi pc feed =
        case feed of
          Nothing -> return ()
          Just f -> do newpc <- updateFeed gi pc f
                       curtime <- now
                       updatePodcast (gdbh gi) 
                                     (newpc {lastupdate = Just curtime})
-                      i $ "   Podcast Title: " ++ (castname newpc)
+                      --i $ "   Podcast Title: " ++ (castname newpc)
        commit (gdbh gi)
 
 updateFeed gi pcorig f =
@@ -73,11 +99,10 @@ updateEnc gi pc count item =
     do newc <- addEpisode (gdbh gi) (item2ep pc item)
        return $ count + newc
 
-getFeed pc =
-    do result <- getURL (feedurl pc) "feed.xml"
+getFeed pc result (_, _, dlfilename) =
        case result of
          (Success, _) -> 
-             do feed <- parse "feed.xml" (feedurl pc)
+             do feed <- parse dlfilename (feedurl pc)
                 case feed of
                   Right f -> return $ Just (f {items = reverse (items f)})
                   Left x -> do w $ "   Failure parsing feed: " ++ x

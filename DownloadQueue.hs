@@ -117,13 +117,15 @@ childthread dqmvar semaphore =
                  callback x (DLStarted dltok)
                  status <- getProcessStatus ((\(p, _, _) -> p) dltok)
                  result <- finishGetURL dltok status
-                 callback x (DLEnded (dltok, result))
 
-                 -- Add to the completed DLs list
-                 modifyMVar_ dqmvar $ 
-                     \dq -> return (dq {completedDownloads = 
-                                            (x, dltok, result) :
-                                                 completedDownloads dq})
+                 -- Add to the completed DLs list.  Also do callback here
+                 -- so it's within the lock.  Handy to prevent simultaneous
+                 -- DB updates.
+                 modifyMVar_ dqmvar $ \dq -> 
+                     do callback x (DLEnded (dltok, result))
+                        return (dq {completedDownloads = 
+                                        (x, dltok, result) :
+                                        completedDownloads dq})
                  processChildWorkData xs     -- Do the next one
 
 blockSignals = 
