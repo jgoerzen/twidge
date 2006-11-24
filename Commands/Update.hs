@@ -55,40 +55,30 @@ cmd_worker _ _ =
     fail $ "Invalid arguments to update; please see hpodder update --help"
 
 updatePodcasts gi podcastlist =
-    do maxthreads <- getMaxThreads
-       progressinterval <- getProgressInterval
-       basedir <- getFeedTmp
-       pt <- newProgress "update" 0
-       meter <- simpleNewMeter pt
-       meterthread <- autoDisplayMeter meter progressinterval displayMeter
-       dlentries <- mapM (podcast2dlentry pt) podcastlist
-       runDownloads (callback pt meter) basedir False 
-                  dlentries maxthreads
-       killAutoDisplayMeter meter meterthread
-       finishP pt
-       displayMeter meter
-       putStrLn ""
-       
+    do easyDownloads "update" getFeedTmp allowresume 
+                     (\pt -> mapM (podcast2dlentry pt) podcastlist)
+                     procStart
+                     (updateThePodcast gi)
     where podcast2dlentry pt podcast = 
               do cpt <- newProgress (show . castid $ podcast) 1
                  addParent cpt pt
                  return $ DownloadEntry {dlurl = feedurl podcast,
-                                         usertok = (podcast, cpt)}
-          callback pt meter dlentry (DLStarted _) =
-                 do addComponent meter (snd . usertok $ dlentry)
-                    writeMeterString meter $
-                      "Get:" ++ show (castid . fst . usertok $ dlentry) ++ " "
-                      ++ (take 65 . castname . fst . usertok $ dlentry) ++ "\n"
-          callback pt meter dlentry (DLEnded (dltok, status, result)) =
-              do incrP (snd . usertok $ dlentry) 1
-                 finishP (snd . usertok $ dlentry)
-                 removeComponent meter (show . castid . fst . usertok $ dlentry)
-                 feed <- getFeed (fst . usertok $ dlentry) (result, status) dltok
-                 updateThePodcast gi (fst . usertok $ dlentry) feed
-                 --removeFile ((\(_, _, fp, _) -> fp) dltok)
-                 
+                                         usertok = podcast
+                                         dlname = (show . castid $ podcast),
+                                         dlprogress = cpt}
 
-updateThePodcast gi pc feed =
+                 --removeFile ((\(_, _, fp, _) -> fp) dltok)
+          procStart pt meter dlentry dltok =
+              writeMeterString meter $
+                 "Get:" ++ show (castid . usertok $ dlentry) ++ " "
+                 ++ (take 65 . castname . usertok $ dlentry) ++ "\n"
+                  
+
+updateThePodcast gi pt meter dlentry dltok status result =
+    do incrP (snd . usertok $ dlentry) 1
+       finishP (snd . usertok $ dlentry)
+       let pc = fst . usertok $ dlentry
+       feed <- getFeed pc (result, status) dltok
        case feed of
          Nothing -> return ()
          Just f -> do newpc <- updateFeed gi pc f

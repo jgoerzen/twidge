@@ -58,7 +58,9 @@ i = infoM "downloadqueue"
 
 data DownloadEntry a = 
     DownloadEntry {dlurl :: String,
-                   usertok :: a}
+                   dlname :: String,
+                   usertok :: a,
+                   dlprogress :: Progress}
 
 data DownloadQueue a =
     DownloadQueue {pendingHosts :: [(String, [DownloadEntry a])],
@@ -92,6 +94,7 @@ easyDownloads :: String         -- ^ Name for tracker
               -> IO FilePath    -- ^ Function to get base dir
               -> Bool           -- ^ Allow resuming
               -> (Progress -> IO [DownloadEntry]) -- ^ Function to get DLentries
+              -> (Progress -> ProgressMeter -> DownloadEntry -> DownloadTok -> IO ()) -- ^ Callback when downloads starts
               -> (Progress -> ProgressMeter -> DownloadEntry -> DownloadTok -> ProcessStatus -> Result -> IO ()) -- ^ Callback that gets called after the download is complete
                  
 easyDownloads ptname bdfunc allowresume getentryfunc procFinish =
@@ -113,19 +116,13 @@ easyDownloads ptname bdfunc allowresume getentryfunc procFinish =
        displayMeter meter
        putStrLn ""
 
-    where callback pt meter dlentry (DLStarted _) =
-                 do addComponent meter (snd . usertok $ dlentry)
-                    writeMeterString meter $
-                      "Get:" ++ show (castid . fst . usertok $ dlentry) ++ " "
-                      ++ (take 65 . castname . fst . usertok $ dlentry) ++ "\n"
+    where callback pt meter dlentry (DLStarted dltok) =
+                 do addComponent meter (dlprogress dlentry)
+                    procStart pt meter dlentry dltok
           callback pt meter dlentry (DLEnded (dltok, status, result)) =
-              do procFinish pt meter dlentry dltok status result
-                 incrP (snd . usertok $ dlentry) 1
-                 finishP (snd . usertok $ dlentry)
-                 removeComponent meter (show . castid . fst . usertok $ dlentry)
-                 feed <- getFeed (fst . usertok $ dlentry) (result, status) dltok
-
-       
+              do removeComponent meter (dlname dlentry)
+                 procFinish pt meter dlentry dltok status result
+                 finishP (dlprogress dltok)
 
 runDownloads :: (DownloadEntry a -> DLAction -> IO ()) -> -- Callback when a download starts or stops
                   FilePath ->   --  Base path
