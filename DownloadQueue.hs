@@ -127,8 +127,8 @@ easyDownloads ptname bdfunc allowresume getentryfunc procStart procFinish =
               do removeComponent meter (dlname dlentry)
                  when (msg /= "")
                       (writeMeterString meter $
-                       " *** Message on " ++ tokurl dltok ++ ":\n" ++
-                       msg ++ "\n ***\n")
+                       " *** " ++ dlname dlentry ++ ": Message on " ++ 
+                       tokurl dltok ++ ":\n" ++ msg ++ "\n ***\n")
                  procFinish pt meter dlentry dltok status result
                  finishP (dlprogress dlentry)
 
