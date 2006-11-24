@@ -88,6 +88,45 @@ groupByHost dllist =
           combineGroups (x:xs) =
               (fst . head $ x, map snd x) : combineGroups xs
 
+easyDownloads :: String         -- ^ Name for tracker
+              -> IO FilePath    -- ^ Function to get base dir
+              -> Bool           -- ^ Allow resuming
+              -> (Progress -> IO [DownloadEntry]) -- ^ Function to get DLentries
+              -> (Progress -> ProgressMeter -> DownloadEntry -> DownloadTok -> ProcessStatus -> Result -> IO ()) -- ^ Callback that gets called after the download is complete
+                 
+easyDownloads ptname bdfunc allowresume getentryfunc procFinish =
+    do maxthreads <- getMaxThreads
+       progressinterval <- getProgressInterval
+       basedir <- bdfunc
+
+       pt <- newProgress ptname 0
+       meter <- simpleNewMeter pt
+       meterthread <- autoDisplayMeter meter progressinterval displayMeter
+
+       dlentries <- getentryfunc pt
+
+       runDownloads (callback pt meter) basedir allowresume dlentries 
+                    maxthreads
+
+       killAutoDisplayMeter meter meterthread
+       finishP pt
+       displayMeter meter
+       putStrLn ""
+
+    where callback pt meter dlentry (DLStarted _) =
+                 do addComponent meter (snd . usertok $ dlentry)
+                    writeMeterString meter $
+                      "Get:" ++ show (castid . fst . usertok $ dlentry) ++ " "
+                      ++ (take 65 . castname . fst . usertok $ dlentry) ++ "\n"
+          callback pt meter dlentry (DLEnded (dltok, status, result)) =
+              do procFinish pt meter dlentry dltok status result
+                 incrP (snd . usertok $ dlentry) 1
+                 finishP (snd . usertok $ dlentry)
+                 removeComponent meter (show . castid . fst . usertok $ dlentry)
+                 feed <- getFeed (fst . usertok $ dlentry) (result, status) dltok
+
+       
+
 runDownloads :: (DownloadEntry a -> DLAction -> IO ()) -> -- Callback when a download starts or stops
                   FilePath ->   --  Base path
                   Bool ->       -- Whether or not to allow resume
@@ -120,6 +159,7 @@ childthread dqmvar semaphore =
              do case pendingHosts dq of
                   [] -> return (dq, [])
                   (x:xs) -> return (dq {pendingHosts = xs}, snd x)
+
           processChildWorkData [] = return []
           processChildWorkData (x:xs) = 
               do (basefp, resumeOK, callback) <- withMVar dqmvar 
@@ -127,7 +167,7 @@ childthread dqmvar semaphore =
                                             callbackFunc dq))
                  dltok <- startGetURL (dlurl x) basefp resumeOK
                  callback x (DLStarted dltok)
-                 status <- getProcessStatus True False ((\(p, _, _, _) -> p) dltok)
+                 status <- getProcessStatus True False (tokpid dltok)
                  result <- finishGetURL dltok (forceMaybe status)
 
                  -- Add to the completed DLs list.  Also do callback here

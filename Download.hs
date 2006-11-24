@@ -30,7 +30,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 -}
 
 module Download(startGetURL, finishGetURL, checkDownloadSize, Result(..), 
-                DownloadTok) where
+                DownloadTok(..)) where
 import MissingH.Cmd
 import System.Posix.Process
 import Config
@@ -46,7 +46,12 @@ import MissingH.Checksum.MD5
 data Result = Success | TempFail | PermFail
             deriving (Eq, Show, Read)
 
-type DownloadTok = (ProcessID, String, FilePath, Maybe FileOffset) -- PID, url, downloadedpath, startsize
+data DownloadTok = 
+                 DownloadTok {tokpid :: ProcessID,
+                              tokurl :: String,
+                              tokpath :: FilePath,
+                              tokstartsize :: Maybe FileOffset}
+                 deriving (Eq, Show, Ord)
 
 d = debugM "download"
 i = infoM "download"
@@ -69,7 +74,6 @@ getCurlConfig =
 getsize fp = catch (getFileStatus fp >>= (return . Just . fileSize))
              (\_ -> return Nothing)
 
-
 {- | Begin the download process on the given URL.
 
 Once it has finished, pass the returned token to finishGetURL. -}
@@ -88,17 +92,17 @@ startGetURL url dirbase allowresume =
          Just x -> d $ printf "Resuming download of %s at %s" fp (show x)
          Nothing -> d $ printf "Beginning download of %s" fp
        pid <- forkRawSystem curl (curlopts ++ curlrcopts ++ [url, "-o", fp])
-       return (pid, url, fp, startsize)
+       return $ DownloadTok pid url fp startsize
 
 {- | Checks to see how much has been downloaded on the given file.  Also works
 after download is complete to get the final size.  Returns Nothing if the
 file doesn't exist. -}
 checkDownloadSize :: DownloadTok -> IO (Maybe FileOffset)
-checkDownloadSize (_, _, fp, _) = getsize fp
+checkDownloadSize dltok = getsize (tokpath dltok)
 
 finishGetURL :: DownloadTok -> ProcessStatus -> IO Result
-finishGetURL (_, url, fp, startsize) ec =
-    do newsize <- getsize fp
+finishGetURL dltok ec =
+    do newsize <- getsize (tokpath dltok)
        let r = case ec of
                   Exited ExitSuccess -> Success
                   Exited (ExitFailure i) ->
@@ -122,10 +126,11 @@ finishGetURL (_, url, fp, startsize) ec =
        if r == Success
           then do d $ "curl returned successfully; new size is " ++
                         (show newsize)
-                  if (startsize /= Nothing) && (newsize == startsize)
+                  if (tokstartsize dltok /= Nothing) && 
+                         (newsize == tokstartsize dltok)
                      -- compensate for resumes that failed
                      then do i $ "Attempt to resume download failed; will re-try download on next run"
-                             removeFile fp
+                             removeFile (tokpath dltok)
                              --getURL url fp
                              return TempFail
                      else if newsize == Nothing
