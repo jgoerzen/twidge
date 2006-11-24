@@ -80,7 +80,7 @@ updatePodcasts gi podcastlist =
 updateThePodcast gi pt meter dlentry dltok status result =
     do incrP (dlprogress dlentry) 1
        let pc = usertok dlentry
-       feed <- getFeed pc (result, status) dltok
+       feed <- getFeed meter pc (result, status) dltok
        case feed of
          Nothing -> return ()
          Just f -> do newpc <- updateFeed gi pc f
@@ -103,17 +103,20 @@ updateEnc gi pc count item =
     do newc <- addEpisode (gdbh gi) (item2ep pc item)
        return $ count + newc
 
-getFeed pc (result, status) dltok =
+getFeed meter pc (result, status) dltok =
        case (result, status) of
          (Success, _) -> 
              do feed <- parse (tokpath dltok) (feedurl pc)
                 case feed of
                   Right f -> return $ Just (f {items = reverse (items f)})
-                  Left x -> do w $ "   Failure parsing feed: " ++ x
+                  Left x -> do writeMeterString meter $
+                                 " *** " ++ (show . castid $ pc) ++ 
+                                 ": Failure parsing feed: " ++ x ++ "\n"
                                return Nothing
-         (TempFail, Terminated sigINT) -> do w "   Ctrl-C hit; aborting!"
+         (TempFail, Terminated sigINT) -> do w "\n   Ctrl-C hit; aborting!"
                                              exitFailure
-         _ -> do w "   Failure downloading feed; will attempt again on next update"
+         _ -> do writeMeterString meter $
+                  " *** " ++ (show . castid $ pc) ++ ": Failure downloading feed; will attempt again on next update\n"
                  return Nothing
 
 helptext = "Usage: hpodder update [castid [castid...]]\n\n" ++ genericIdHelp ++

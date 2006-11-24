@@ -128,7 +128,7 @@ easyDownloads ptname bdfunc allowresume getentryfunc procStart procFinish =
                  when (msg /= "")
                       (writeMeterString meter $
                        " *** " ++ dlname dlentry ++ ": Message on " ++ 
-                       tokurl dltok ++ ":\n" ++ msg ++ "\n ***\n")
+                       tokurl dltok ++ ":\n" ++ msg ++ "\n")
                  procFinish pt meter dlentry dltok status result
                  finishP (dlprogress dlentry)
 
@@ -140,8 +140,7 @@ runDownloads :: (DownloadEntry a -> DLAction -> IO ()) -> -- Callback when a dow
                   IO [(DownloadEntry a, DownloadTok, Result)] -- The completed DLs
 runDownloads callbackfunc basefp resumeOK delist maxthreads =
     do oldsigs <- blocksignals
-       --
-       print (map (\(h, el) -> (h, map dlurl el)) $ groupByHost delist)
+       --print (map (\(h, el) -> (h, map dlurl el)) $ groupByHost delist)
        dqmvar <- newMVar $ DownloadQueue {pendingHosts = groupByHost delist,
                                           completedDownloads = [],
                                           basePath = basefp,
