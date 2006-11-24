@@ -55,7 +55,10 @@ item2ep pc item =
              eptitle = sanitize_basic (itemtitle item), 
              epurl = sanitize_basic (enclosureurl item),
              eptype = sanitize_basic (enclosuretype item), epstatus = Pending,
-             eplength = read . sanitize_basic . enclosurelength $ item}
+             eplength = case reads . sanitize_basic . enclosurelength $ item of
+                          [] -> 0,
+                          [(x, [])] -> x
+                          _ -> 0}
 
 parse :: FilePath -> String -> IO (Either String Feed)
 parse fp name = 
