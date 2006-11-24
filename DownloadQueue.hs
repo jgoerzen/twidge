@@ -32,6 +32,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 module DownloadQueue(DownloadEntry(..),
                      DownloadQueue(..),
                      DLAction(..),
+                     easyDownloads,
                      runDownloads
                     ) where
 import Download

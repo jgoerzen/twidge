@@ -55,7 +55,7 @@ cmd_worker _ _ =
     fail $ "Invalid arguments to update; please see hpodder update --help"
 
 updatePodcasts gi podcastlist =
-    do easyDownloads "update" getFeedTmp allowresume 
+    do easyDownloads "update" getFeedTmp False
                      (\pt -> mapM (podcast2dlentry pt) podcastlist)
                      procStart
                      (updateThePodcast gi)
@@ -63,7 +63,7 @@ updatePodcasts gi podcastlist =
               do cpt <- newProgress (show . castid $ podcast) 1
                  addParent cpt pt
                  return $ DownloadEntry {dlurl = feedurl podcast,
-                                         usertok = podcast
+                                         usertok = podcast,
                                          dlname = (show . castid $ podcast),
                                          dlprogress = cpt}
 
@@ -75,9 +75,8 @@ updatePodcasts gi podcastlist =
                   
 
 updateThePodcast gi pt meter dlentry dltok status result =
-    do incrP (snd . usertok $ dlentry) 1
-       finishP (snd . usertok $ dlentry)
-       let pc = fst . usertok $ dlentry
+    do incrP (dlprogress dlentry) 1
+       let pc = usertok dlentry
        feed <- getFeed pc (result, status) dltok
        case feed of
          Nothing -> return ()
@@ -101,10 +100,10 @@ updateEnc gi pc count item =
     do newc <- addEpisode (gdbh gi) (item2ep pc item)
        return $ count + newc
 
-getFeed pc result (_, _, dlfilename, _) =
-       case result of
+getFeed pc (result, status) dltok =
+       case (result, status) of
          (Success, _) -> 
-             do feed <- parse dlfilename (feedurl pc)
+             do feed <- parse (tokpath dltok) (feedurl pc)
                 case feed of
                   Right f -> return $ Just (f {items = reverse (items f)})
                   Left x -> do w $ "   Failure parsing feed: " ++ x
