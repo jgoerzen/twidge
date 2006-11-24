@@ -54,10 +54,6 @@ cmd = simpleCmd "download"
       "Downloads all pending podcast episodes (run update first)" helptext 
       [] cmd_worker
 
-cmd_worker _ _ = fail "foo"
-
-{-
-
 cmd_worker gi ([], casts) =
     do podcastlist_raw <- getSelectedPodcasts (gdbh gi) casts
        let podcastlist = filter_disabled podcastlist_raw
@@ -74,49 +70,44 @@ cmd_worker _ _ =
     fail $ "Invalid arguments to download; please see hpodder download --help"
 
 downloadEpisodes gi episodes =
-    do maxthreads <- getMaxThreads
-       progressinterval <- getProgressInterval
-       basedir <- getEnclTmp
-       pt <- newProgress "download" 0
-       meter <- simpleNewMeter pt
-       meterthread <- autoDisplayMeter meter progressinterval displayMeter
-       dlentries <- mapM (ep2dlentry pt) episodes
+    do progressinterval <- getProgressInterval
 
        watchFiles <- newMVar []
        wfthread <- forkIO (watchTheFiles progressinterval watchFiles)
 
-       runDownloads (callback watchFiles pt meter) basedir True dlentries maxthreads
-       killAutoDisplayMeter meter meterthread
-       finishP pt
-       displayMeter meter
-       putStrLn ""
-       
-    where ep2dlentry pt episode =
-              do cpt <- newProgress (show . epid $ episode) 
+       easyDownloads "download" getEnclTmp True
+                     (\pt -> mapM (ep2dlentry pt) episodes)
+                     procStart
+                     (callback watchFiles)
+
+    where nameofep e = printf "%d.%d" (castid . podcast $ e) (epid e)
+          ep2dlentry pt episode =
+              do cpt <- newProgress (nameofep episode)
                         (eplength episode)
                  addParent cpt pt
                  return $ DownloadEntry {dlurl = epurl episode,
-                                         usertok = (episode, cpt)}
-          callback watchFilesMV pt meter dlentry 
-                       (DLStarted dltok) = 
-              modifyMVar_ watchFilesMV $ \wf ->
-                  do addComponent meter (snd . usertok $ dlentry)
-                     writeMeterString meter $
-                      "Get:" ++ show (epid . fst . usertok $ dlentry) ++ " "
-                      ++ (take 65 . eptitle . fst . usertok $ dlentry) ++ "\n"
-                     return $ (dltok, snd . usertok $ dlentry) : wf
-          callback watchFilesMV pt meter dlentry 
-                       (DLEnded (dltok, status, result)) =
+                                         usertok = episode,
+                                         dlname = nameofep episode,
+                                         dlprogress = cpt}
+          procStart pt meter dlentry dltok =
+              do writeMeterString meter $
+                  "Get: " ++ nameofep (usertok dlentry) ++ " "
+                   ++ (take 60 . epname . usertok $ dlentry) ++ "\n"
+                 modifyMVar_ watchFilesMV $ \wf ->
+                     return $ (dltok, dlprogress dlentry) : wf
+
+          callback watchFilesMV pt meter dlentry dltok status result =
               modifyMVar_ watchFilesMV $ \wf ->
                   do size <- checkDownloadSize dltok
-                     setP (snd . usertok $ dlentry) 
-                           (case size of
-                             Nothing -> 0
-                             Just x -> toInteger x)
-                     finishP (snd . usertok $ dlentry)
-                     removeComponent meter (show . epid . fst . usertok $ dlentry)
-                     procEpisode gi dltok (fst . usertok $ dlentry) (result, status)
+                     setP (dlprogress dlentry) (case size of
+                                                  Nothing -> 0
+                                                  Just x -> toInteger x)
+                     procEpisode gi meter dltok 
+                                     (usertok dlentry) (dlname dlentry)
+                                     (result, status)
                      return $ filter (\(x, _) -> x /= dltok) wf
+
+-- FIXME: this never terminates, but at present, that may not hurt anything
 
 watchTheFiles progressinterval watchFilesMV = 
     do withMVar watchFilesMV $ \wf -> mapM_ examineFile wf
@@ -129,16 +120,17 @@ watchTheFiles progressinterval watchFilesMV =
                              Nothing -> 0
                              Just x -> toInteger x)
 
-procEpisode gi (_, _, tmpfp, _) ep r =
+procEpisode gi meter dltok ep name r =
        case r of
          (Success, _) -> procSuccess gi ep tmpfp
          (TempFail, Terminated sigINT) -> 
              do i "Ctrl-C hit; aborting!"
                 exitFailure
-         (TempFail, _) -> i "    Temporary failure; will retry later"
+         (TempFail, _) -> writeMeterString $ " *** " ++ name ++ 
+                          ": Temporary failure; will retry later"
          _ -> do updateEpisode (gdbh gi) (ep {epstatus = Error})
                  commit (gdbh gi)
-                 w "   Error downloading"
+                 writeMeterString $ " *** " ++ name ++ ": Error downloading"
 
 procSuccess gi ep tmpfp =
     do cp <- getCP ep idstr fnpart
@@ -167,8 +159,8 @@ procSuccess gi ep tmpfp =
           id3result res = 
                case res of
                  Exited (ExitSuccess) -> d $ "   id3v2 was successful."
-                 Exited (ExitFailure y) -> w $ "   id3v2 returned: " ++ show y
-                 Terminated y -> w $ "   id3v2 terminated by signal " ++ show y
+                 Exited (ExitFailure y) -> w $ "\n   id3v2 returned: " ++ show y
+                 Terminated y -> w $ "\n   id3v2 terminated by signal " ++ show y
                  _ -> fail "Stopped unexpected"
 
 getCP :: Episode -> String -> String -> IO ConfigParser
@@ -201,7 +193,7 @@ findNonExisting template =
                   (fp, h) <- openTempFile dirname fn
                   hClose h
                   return fp
--}
+
 helptext = "Usage: hpodder download [castid [castid...]]\n\n" ++ 
            genericIdHelp ++
  "\nThe download command will cause hpodder to download any podcasts\n\
