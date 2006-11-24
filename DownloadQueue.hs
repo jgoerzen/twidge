@@ -49,6 +49,7 @@ import System.Posix.Signals
 import MissingH.Checksum.MD5
 import MissingH.ProgressTracker
 import MissingH.ProgressMeter
+import MissingH.Quantity
 import Network.URI
 import Data.List
 import Control.Concurrent.MVar
@@ -107,7 +108,7 @@ easyDownloads ptname bdfunc allowresume getentryfunc procStart procFinish =
        basedir <- bdfunc
 
        pt <- newProgress ptname 0
-       meter <- simpleNewMeter pt
+       meter <- newMeter pt "B" 80 (renderNum binaryOpts 0)
        meterthread <- autoDisplayMeter meter progressinterval displayMeter
 
        dlentries <- getentryfunc pt
