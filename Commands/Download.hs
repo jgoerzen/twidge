@@ -54,6 +54,10 @@ cmd = simpleCmd "download"
       "Downloads all pending podcast episodes (run update first)" helptext 
       [] cmd_worker
 
+cmd_worker _ _ = fail "foo"
+
+{-
+
 cmd_worker gi ([], casts) =
     do podcastlist_raw <- getSelectedPodcasts (gdbh gi) casts
        let podcastlist = filter_disabled podcastlist_raw
@@ -197,7 +201,7 @@ findNonExisting template =
                   (fp, h) <- openTempFile dirname fn
                   hClose h
                   return fp
-
+-}
 helptext = "Usage: hpodder download [castid [castid...]]\n\n" ++ 
            genericIdHelp ++
  "\nThe download command will cause hpodder to download any podcasts\n\
