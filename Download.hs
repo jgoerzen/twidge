@@ -41,6 +41,7 @@ import System.Directory
 import System.Posix.Files
 import System.Posix.Process
 import System.Posix.Types
+import System.Posix.IO
 import MissingH.Checksum.MD5
 
 data Result = Success | TempFail | PermFail
@@ -91,7 +92,13 @@ startGetURL url dirbase allowresume =
        case startsize of 
          Just x -> d $ printf "Resuming download of %s at %s" fp (show x)
          Nothing -> d $ printf "Beginning download of %s" fp
-       pid <- forkRawSystem curl (curlopts ++ curlrcopts ++ [url, "-o", fp])
+       
+       msgfd <- openFd (fp ++ ".msg") WriteOnly Nothing 
+                (defaultFileFlags {trunc = True})
+       pid <- pOpen3Raw Nothing (Just msgfd) (Just msgfd) 
+                 curl (curlopts ++ curlrcopts ++ [url, "-o", fp])
+                 (return ())
+       closeFd msgfd
        return $ DownloadTok pid url fp startsize
 
 {- | Checks to see how much has been downloaded on the given file.  Also works

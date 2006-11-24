@@ -54,6 +54,7 @@ import Data.List
 import Control.Concurrent.MVar
 import Control.Concurrent
 import Data.Char
+import Control.Monad(when)
 
 d = debugM "downloadqueue"
 i = infoM "downloadqueue"
@@ -72,7 +73,7 @@ data DownloadQueue a =
                    callbackFunc :: (DownloadEntry a -> DLAction -> IO ()),
                    completedDownloads :: [(DownloadEntry a, DownloadTok, Result)]}
 
-data DLAction = DLStarted DownloadTok | DLEnded (DownloadTok, ProcessStatus, Result)
+data DLAction = DLStarted DownloadTok | DLEnded (DownloadTok, ProcessStatus, Result, String)
               deriving (Eq, Show)
 
 groupByHost :: [DownloadEntry a] -> [(String, [DownloadEntry a])]
@@ -122,8 +123,12 @@ easyDownloads ptname bdfunc allowresume getentryfunc procStart procFinish =
     where callback pt meter dlentry (DLStarted dltok) =
                  do addComponent meter (dlprogress dlentry)
                     procStart pt meter dlentry dltok
-          callback pt meter dlentry (DLEnded (dltok, status, result)) =
+          callback pt meter dlentry (DLEnded (dltok, status, result, msg)) =
               do removeComponent meter (dlname dlentry)
+                 when (msg /= "")
+                      (writeMeterString meter $
+                       " *** Message on " ++ tokurl dltok ++ ":\n" ++
+                       msg ++ "\n ***\n")
                  procFinish pt meter dlentry dltok status result
                  finishP (dlprogress dlentry)
 
@@ -169,12 +174,17 @@ childthread dqmvar semaphore =
                  callback x (DLStarted dltok)
                  status <- getProcessStatus True False (tokpid dltok)
                  result <- finishGetURL dltok (forceMaybe status)
+                 messages <- readFile (tokpath dltok ++ ".msg")
 
                  -- Add to the completed DLs list.  Also do callback here
                  -- so it's within the lock.  Handy to prevent simultaneous
                  -- DB updates.
                  modifyMVar_ dqmvar $ \dq -> 
-                     do callback x (DLEnded (dltok, (forceMaybe status), result))
+                     do callback x (DLEnded (dltok, (forceMaybe status), result, messages))
+                        -- Delete the messages file now that we don't
+                        -- care about it anymore
+                        catch (removeFile (tokpath dltok ++ ".msg"))
+                              (\_ -> return ())
                         return (dq {completedDownloads = 
                                         (x, dltok, result) :
                                         completedDownloads dq})
