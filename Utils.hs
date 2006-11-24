@@ -99,5 +99,6 @@ filter_disabled = filter pcenabled
 emptyDir :: FilePath -> IO ()
 emptyDir fp =
     do dircontents <- getDirectoryContents fp
-       mapM_ (\f -> catch (removeFile f) (\_ -> return ())) dircontents
+       mapM_ (\f -> catch (removeFile $ fp ++ "/" ++ f) (\_ -> return ()))
+                    dircontents
 
