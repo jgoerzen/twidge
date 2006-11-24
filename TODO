@@ -1,10 +1,10 @@
 New stuff:
   -- Don't say B/s for feeds 
 
-  -- Refactor spaghetti in Update.hs and Download*.hs
-     + eliminate overuse of nested structures and/or tuples
- 
-  -- Display issues with error messages -- put \n before all
+  -- Two line Get display in download, something like:
+
+     Get: 99.177 Episode Title
+                 From Podcast Title
 
 catchup -- what if some are already pending?
 

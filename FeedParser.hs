@@ -56,7 +56,7 @@ item2ep pc item =
              epurl = sanitize_basic (enclosureurl item),
              eptype = sanitize_basic (enclosuretype item), epstatus = Pending,
              eplength = case reads . sanitize_basic . enclosurelength $ item of
-                          [] -> 0,
+                          [] -> 0
                           [(x, [])] -> x
                           _ -> 0}
 
