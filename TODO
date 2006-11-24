@@ -6,6 +6,15 @@ New stuff:
      Get: 99.177 Episode Title
                  From Podcast Title
 
+
+       or
+
+     Get 99: Podcast Title
+         Episode 177: Episode Title
+
+  -- Option to force two numbers to be rendered on the same
+     scale, and to drop the suffix from the first
+
 catchup -- what if some are already pending?
 
 document sqlite3 stuff
