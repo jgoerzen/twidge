@@ -36,7 +36,6 @@ import Types
 import System.Exit
 import Config
 import System.Directory
-import DB
 import Database.HDBC
 import MissingH.List
 import System.Time
@@ -89,20 +88,6 @@ genericIdHelp =
  "You can optionally specify one or more podcast IDs.  If given,\n\
   \only those IDs will be selected for processing.\n\n\
   \The special id \"all\" will select all podcast IDs.\n"
-
-getSelectedPodcasts dbh [] = getSelectedPodcasts dbh ["all"]
-getSelectedPodcasts dbh ["all"] = getPodcasts dbh
-getSelectedPodcasts dbh podcastlist =
-    do r <- mapM (getPodcast dbh) (map read podcastlist)
-       return $ uniq $ concat r
-
-getSelectedEpisodes :: Connection -> Podcast -> [String] -> IO [Episode]
-getSelectedEpisodes _ _ [] = return []
-getSelectedEpisodes dbh pc ["all"] = getEpisodes dbh pc
-getSelectedEpisodes dbh pc episodelist =
-    do eps <- getEpisodes dbh pc
-       return $ uniq . filter (\e -> (epid e `elem` eplist)) $ eps
-    where eplist = map read episodelist
 
 now :: IO Integer
 now = do ct <- getClockTime

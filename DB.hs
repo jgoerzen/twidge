@@ -37,6 +37,8 @@ import Database.HDBC.Sqlite3
 import MissingH.Logging.Logger
 import Control.Monad
 import Control.Exception
+import Utils
+import MissingH.List
 dbdebug = debugM "DB"
 
 connect :: IO Connection
@@ -212,3 +214,19 @@ insertEpisode insertsql dbh episode newepid =
             toSql (eptitle episode), toSql (epurl episode), 
             toSql (eptype episode), toSql (show (epstatus episode)),
             toSql (eplength episode)]
+
+getSelectedPodcasts dbh [] = getSelectedPodcasts dbh ["all"]
+getSelectedPodcasts dbh ["all"] = getPodcasts dbh
+getSelectedPodcasts dbh podcastlist =
+    do r <- mapM (getPodcast dbh) (map read podcastlist)
+       return $ uniq $ concat r
+
+getSelectedEpisodes :: Connection -> Podcast -> [String] -> IO [Episode]
+getSelectedEpisodes _ _ [] = return []
+getSelectedEpisodes dbh pc ["all"] = getEpisodes dbh pc
+getSelectedEpisodes dbh pc episodelist =
+    do eps <- getEpisodes dbh pc
+       return $ uniq . filter (\e -> (epid e `elem` eplist)) $ eps
+    where eplist = map read episodelist
+
+
