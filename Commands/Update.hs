@@ -55,10 +55,13 @@ cmd_worker _ _ =
     fail $ "Invalid arguments to update; please see hpodder update --help"
 
 updatePodcasts gi podcastlist =
-    do easyDownloads "update" getFeedTmp False
+    do ft <- getFeedTmp
+       emptyDir ft
+       easyDownloads "update" getFeedTmp False
                      (\pt -> mapM (podcast2dlentry pt) podcastlist)
                      procStart
                      (updateThePodcast gi)
+       emptyDir ft
     where podcast2dlentry pt podcast = 
               do cpt <- newProgress (show . castid $ podcast) 1
                  addParent cpt pt

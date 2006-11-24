@@ -109,3 +109,10 @@ now = do ct <- getClockTime
          return (clockTimeToEpoch ct)
 
 filter_disabled = filter pcenabled
+
+-- | Delete files in a given directory, but not the directory itself
+emptyDir :: FilePath -> IO ()
+emptyDir fp =
+    do dircontents <- getDirectoryContents fp
+       mapM_ (\f -> catch (removeFile f) (\_ -> return ())) dircontents
+

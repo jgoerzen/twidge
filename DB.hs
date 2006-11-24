@@ -74,6 +74,11 @@ upgradeSchema dbh 2 tables =
        run dbh "ALTER TABLE episodes ADD eplength INTEGER NOT NULL DEFAULT 0" []
        setSchemaVer dbh 3
        commit dbh
+       
+       -- Empty the enclosure storage since our naming changed when this
+       -- version arrived
+       edir <- getEnclTmp
+       emptyDir edir
        upgradeSchema dbh 3 tables
 
 upgradeSchema dbh 1 tables = 
