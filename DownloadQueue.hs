@@ -47,6 +47,7 @@ import System.Posix.Files
 import System.Posix.Signals
 import MissingH.Checksum.MD5
 import MissingH.ProgressTracker
+import MissingH.ProgressMeter
 import Network.URI
 import Data.List
 import Control.Concurrent.MVar
@@ -93,11 +94,12 @@ groupByHost dllist =
 easyDownloads :: String         -- ^ Name for tracker
               -> IO FilePath    -- ^ Function to get base dir
               -> Bool           -- ^ Allow resuming
-              -> (Progress -> IO [DownloadEntry]) -- ^ Function to get DLentries
-              -> (Progress -> ProgressMeter -> DownloadEntry -> DownloadTok -> IO ()) -- ^ Callback when downloads starts
-              -> (Progress -> ProgressMeter -> DownloadEntry -> DownloadTok -> ProcessStatus -> Result -> IO ()) -- ^ Callback that gets called after the download is complete
+              -> (Progress -> IO [DownloadEntry a]) -- ^ Function to get DLentries
+              -> (Progress -> ProgressMeter -> DownloadEntry a -> DownloadTok -> IO ()) -- ^ Callback when downloads starts
+              -> (Progress -> ProgressMeter -> DownloadEntry a -> DownloadTok -> ProcessStatus -> Result -> IO ()) -- ^ Callback that gets called after the download is complete
+              -> IO ()
                  
-easyDownloads ptname bdfunc allowresume getentryfunc procFinish =
+easyDownloads ptname bdfunc allowresume getentryfunc procStart procFinish =
     do maxthreads <- getMaxThreads
        progressinterval <- getProgressInterval
        basedir <- bdfunc
@@ -122,7 +124,7 @@ easyDownloads ptname bdfunc allowresume getentryfunc procFinish =
           callback pt meter dlentry (DLEnded (dltok, status, result)) =
               do removeComponent meter (dlname dlentry)
                  procFinish pt meter dlentry dltok status result
-                 finishP (dlprogress dltok)
+                 finishP (dlprogress dlentry)
 
 runDownloads :: (DownloadEntry a -> DLAction -> IO ()) -> -- Callback when a download starts or stops
                   FilePath ->   --  Base path
