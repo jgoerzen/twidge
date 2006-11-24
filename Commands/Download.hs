@@ -77,7 +77,7 @@ downloadEpisodes gi episodes =
 
        easyDownloads "download" getEnclTmp True
                      (\pt -> mapM (ep2dlentry pt) episodes)
-                     procStart
+                     (procStart watchFiles)
                      (callback watchFiles)
 
     where nameofep e = printf "%d.%d" (castid . podcast $ e) (epid e)
@@ -89,10 +89,10 @@ downloadEpisodes gi episodes =
                                          usertok = episode,
                                          dlname = nameofep episode,
                                          dlprogress = cpt}
-          procStart pt meter dlentry dltok =
+          procStart watchFilesMV pt meter dlentry dltok =
               do writeMeterString meter $
                   "Get: " ++ nameofep (usertok dlentry) ++ " "
-                   ++ (take 60 . epname . usertok $ dlentry) ++ "\n"
+                   ++ (take 60 . eptitle . usertok $ dlentry) ++ "\n"
                  modifyMVar_ watchFilesMV $ \wf ->
                      return $ (dltok, dlprogress dlentry) : wf
 
@@ -122,15 +122,16 @@ watchTheFiles progressinterval watchFilesMV =
 
 procEpisode gi meter dltok ep name r =
        case r of
-         (Success, _) -> procSuccess gi ep tmpfp
+         (Success, _) -> procSuccess gi ep (tokpath dltok)
          (TempFail, Terminated sigINT) -> 
              do i "Ctrl-C hit; aborting!"
                 exitFailure
-         (TempFail, _) -> writeMeterString $ " *** " ++ name ++ 
-                          ": Temporary failure; will retry later"
+         (TempFail, _) -> writeMeterString meter $ " *** " ++ name ++ 
+                          ": Temporary failure; will retry later\n"
          _ -> do updateEpisode (gdbh gi) (ep {epstatus = Error})
                  commit (gdbh gi)
-                 writeMeterString $ " *** " ++ name ++ ": Error downloading"
+                 writeMeterString meter $ " *** " ++ name ++ 
+                                      ": Error downloading\n"
 
 procSuccess gi ep tmpfp =
     do cp <- getCP ep idstr fnpart

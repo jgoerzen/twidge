@@ -73,7 +73,7 @@ updatePodcasts gi podcastlist =
                  --removeFile ((\(_, _, fp, _) -> fp) dltok)
           procStart pt meter dlentry dltok =
               writeMeterString meter $
-                 "Get:" ++ show (castid . usertok $ dlentry) ++ " "
+                 "Get: " ++ show (castid . usertok $ dlentry) ++ " "
                  ++ (take 65 . castname . usertok $ dlentry) ++ "\n"
                   
 
