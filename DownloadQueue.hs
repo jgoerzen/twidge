@@ -108,8 +108,9 @@ easyDownloads ptname bdfunc allowresume getentryfunc procStart procFinish =
        basedir <- bdfunc
 
        pt <- newProgress ptname 0
-       meter <- newMeter pt "B" 80 (renderNum binaryOpts 0)
-       meterthread <- autoDisplayMeter meter progressinterval displayMeter
+       meter <- newMeter pt "B" 80 (renderNums binaryOpts 0)
+       meterthread <- autoDisplayMeter meter progressinterval 
+                      (displayMeter stdout)
 
        dlentries <- getentryfunc pt
 
@@ -118,7 +119,7 @@ easyDownloads ptname bdfunc allowresume getentryfunc procStart procFinish =
 
        killAutoDisplayMeter meter meterthread
        finishP pt
-       displayMeter meter
+       displayMeter stdout meter
        putStrLn ""
 
     where callback pt meter dlentry (DLStarted dltok) =
@@ -127,7 +128,7 @@ easyDownloads ptname bdfunc allowresume getentryfunc procStart procFinish =
           callback pt meter dlentry (DLEnded (dltok, status, result, msg)) =
               do removeComponent meter (dlname dlentry)
                  when (msg /= "")
-                      (writeMeterString meter $
+                      (writeMeterString stderr meter $
                        " *** " ++ dlname dlentry ++ ": Message on " ++ 
                        tokurl dltok ++ ":\n" ++ msg ++ "\n")
                  procFinish pt meter dlentry dltok status result
