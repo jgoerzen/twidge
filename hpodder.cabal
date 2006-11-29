@@ -1,10 +1,10 @@
 Name: hpodder
-Version: 0.5.7
+Version: 0.99.0
 License: GPL
 Maintainer: John Goerzen <jgoerzen@complete.org>
-Stability: Alpha
+Stability: Beta
 Copyright: Copyright (c) 2006 John Goerzen
-Build-Depends: haskell98, network, unix, parsec, MissingH>=0.14.5,
+Build-Depends: haskell98, network, unix, parsec, MissingH>=0.16.3,
  HDBC>=0.99.2, HDBC-sqlite3>=0.99.2, mtl, base, HaXml>=1.13.2
 
 Executable: hpodder

@@ -1,3 +1,13 @@
+hpodder (0.99.0) unstable; urgency=low
+
+  * New version.
+  * New, better output using the new MissingH features
+    Closes: #400536, #389959.
+  * Now has a multithreaded downloading process.
+  * Fix typo in description.  Closes: #389692.
+
+ -- John Goerzen <jgoerzen@complete.org>  Tue, 28 Nov 2006 06:16:27 -0600
+
 hpodder (0.5.8) unstable; urgency=low
 
   * Update for GHC 6.6.

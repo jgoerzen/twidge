@@ -3,10 +3,10 @@ Sorry, I need to work on this some more...
 
 PREREQUISITES:
 
- * GHC 6.4.2        http://www.haskell.org/ghc
+ * GHC 6.6          http://www.haskell.org/ghc
  * Curl             http://curl.haxx.se
  * id3v2            http://download.sourceforge.net/id3v2/id3v2-0.1.11.tar.gz
- * MissingH         http://quux.org/devel/missingh
+ * MissingH 0.16.3  http://quux.org/devel/missingh
  * HDBC             http://quux.org/devel/hdbc
  * Sqlite3          http://www.sqlite.org/
  * HDBC-sqlite3     http://quux.org/devel/hdbc
