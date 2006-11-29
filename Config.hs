@@ -64,7 +64,7 @@ getDefaultCP =
                  cp <- set cp "DEFAULT" "downloaddir" downloaddir
                  cp <- set cp "DEFAULT" "namingpatt" 
                        "%(safecasttitle)s/%(safefilename)s"
-                 cp <- set cp "DEFAULT" "maxthreads" "1"
+                 cp <- set cp "DEFAULT" "maxthreads" "2"
                  cp <- set cp "DEFAULT" "progressinterval" "1"
                  return cp
 
