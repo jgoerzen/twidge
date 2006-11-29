@@ -43,6 +43,7 @@ import Config
 import MissingH.Logging.Logger
 import Text.Printf
 import System.Exit
+import System.IO
 import System.Directory
 import System.Posix.Files
 import System.Posix.Signals

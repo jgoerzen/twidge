@@ -90,7 +90,7 @@ downloadEpisodes gi episodes =
                                          dlname = nameofep episode,
                                          dlprogress = cpt}
           procStart watchFilesMV pt meter dlentry dltok =
-              do writeMeterString meter $
+              do writeMeterString stdout meter $
                   "Get: " ++ nameofep (usertok dlentry) ++ " "
                    ++ (take 60 . eptitle . usertok $ dlentry) ++ "\n"
                  modifyMVar_ watchFilesMV $ \wf ->
@@ -126,11 +126,11 @@ procEpisode gi meter dltok ep name r =
          (TempFail, Terminated sigINT) -> 
              do i "Ctrl-C hit; aborting!"
                 exitFailure
-         (TempFail, _) -> writeMeterString meter $ " *** " ++ name ++ 
+         (TempFail, _) -> writeMeterString stderr meter $ " *** " ++ name ++ 
                           ": Temporary failure; will retry later\n"
          _ -> do updateEpisode (gdbh gi) (ep {epstatus = Error})
                  commit (gdbh gi)
-                 writeMeterString meter $ " *** " ++ name ++ 
+                 writeMeterString stderr meter $ " *** " ++ name ++ 
                                       ": Error downloading\n"
 
 procSuccess gi ep tmpfp =

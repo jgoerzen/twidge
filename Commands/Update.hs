@@ -35,6 +35,7 @@ import MissingH.Str
 import System.Exit
 import System.Posix.Process
 import System.Directory
+import System.IO
 import Data.List
 
 i = infoM "update"
@@ -72,7 +73,7 @@ updatePodcasts gi podcastlist =
 
                  --removeFile ((\(_, _, fp, _) -> fp) dltok)
           procStart pt meter dlentry dltok =
-              writeMeterString meter $
+              writeMeterString stdout meter $
                  "Get: " ++ show (castid . usertok $ dlentry) ++ " "
                  ++ (take 65 . castname . usertok $ dlentry) ++ "\n"
                   
@@ -109,13 +110,13 @@ getFeed meter pc (result, status) dltok =
              do feed <- parse (tokpath dltok) (feedurl pc)
                 case feed of
                   Right f -> return $ Just (f {items = reverse (items f)})
-                  Left x -> do writeMeterString meter $
+                  Left x -> do writeMeterString stderr meter $
                                  " *** " ++ (show . castid $ pc) ++ 
                                  ": Failure parsing feed: " ++ x ++ "\n"
                                return Nothing
          (TempFail, Terminated sigINT) -> do w "\n   Ctrl-C hit; aborting!"
                                              exitFailure
-         _ -> do writeMeterString meter $
+         _ -> do writeMeterString stderr meter $
                   " *** " ++ (show . castid $ pc) ++ ": Failure downloading feed; will attempt again on next update\n"
                  return Nothing
 
