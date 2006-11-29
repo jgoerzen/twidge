@@ -22,13 +22,6 @@
       <arg choice="opt">-d</arg>
       <arg choice="opt"><replaceable>command</replaceable></arg>
       <arg choice="opt"><replaceable>command_args</replaceable></arg>
-      <!--
-      <arg choice="opt">-a <replaceable>arch</replaceable></arg>
-      <arg choice="opt">-R</arg>
-      <arg choice="opt">-v | -V</arg>
-      <arg choice="plain">-c <replaceable>config_file</replaceable></arg>
-      <arg choice="plain">-w <replaceable>working_dir</replaceable></arg>
-      -->
     </cmdsynopsis>
   </refsynopsisdiv>
 
@@ -710,12 +703,15 @@ namingpatt = %(safecasttitle)s/%(safefilename)s
 ; you have already gone through the intro.
 showintro = no
 
+maxthreads = 2
+progressinterval = 1
+
 [31]
 ; Store this particular podcast somewhere else
 downloaddir = /nfs/remote/podcasts
 ]]></programlisting>
     <para>
-      In this example, you saw one "general" option --
+      In this example, you saw some "general" options, such as
       <option>showintro</option>.  There are two other sections
       represented: <option>31</option> and <option>DEFAULT</option>.
     </para>
@@ -732,14 +728,38 @@ downloaddir = /nfs/remote/podcasts
       That podcast goes elsewhere because its
       <option>downloaddir</option> overrides the default.
     </para>
-    <para>
-      The only <option>general</option> option is
-      <option>showintro</option>.  The first time you run
-      <command>fetch</command>, &hpodder; automatically writes a
-      configuration file for you that sets this option to
-      <option>no</option>.  This prevents you from having to do the
-      new-user intro more than once.
-    </para>
+    <refsect2 id="hpodder.config.general">
+      <title>General Options</title>
+      <para>These are specified in the <option>general</option>
+        section.
+      </para>
+      <variablelist>
+        <varlistentry><term>maxthreads</term>
+          <listitem><para>The maximum number of simultaneous download
+              threads that will be active at any given time.
+              &hpodder; can download multiple files at once, and this
+              options says how many it can download simultaneously.
+              It defaults to 2.
+            </para></listitem>
+        </varlistentry>
+        <varlistentry><term>progressinterval</term>
+          <listitem><para>How frequently to update the status bar on
+          the screen, in seconds.  It defaults to 1, which will update
+          the status every second.  Raise it if you are running
+          &hpodder; over a very low-bandwidth link and are concerned
+          about flooding it with status updates.</para></listitem>
+        </varlistentry>
+        <varlistentry><term>showintro</term>
+          <listitem><para>The first time you run
+              <command>fetch</command>, &hpodder; automatically writes a
+              configuration file for you that sets this option to
+              <option>no</option>.  This prevents you from having to
+              do the new user intro more than once.
+            </para></listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>              
+
     <refsect2 id="hpodder.config.podcast">
       <title>Per-Podcast Options</title>
       <para>
