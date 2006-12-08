@@ -1,8 +1,9 @@
 hpodder (0.99.1) unstable; urgency=low
 
+  * Updated for MissingH 0.18.0 changes.
   * Recognize x-audio/mp3 as mp3 files for extensions.  Closes: #401772.
 
- -- John Goerzen <jgoerzen@complete.org>  Tue,  5 Dec 2006 04:46:41 -0600
+ -- John Goerzen <jgoerzen@complete.org>  Fri,  8 Dec 2006 05:04:37 -0600
 
 hpodder (0.99.0) unstable; urgency=low
 
