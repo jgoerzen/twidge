@@ -29,11 +29,11 @@ import Database.HDBC
 import Control.Monad
 import Utils
 import System.Console.GetOpt
-import MissingH.GetOpt
+import System.Console.GetOpt.Utils
 import qualified Commands.Update
-import MissingH.Path.FilePath
+import System.Path.FilePath
 import Data.List
-import MissingH.Str
+import Data.String
 import System.Directory
 import Control.Exception
 

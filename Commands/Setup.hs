@@ -35,7 +35,7 @@ import qualified Commands.Add
 import Data.ConfigFile
 import System.IO
 import Data.Either.Utils
-import MissingH.Str
+import Data.String
 
 i = infoM "setup"
 w = warningM "setup"

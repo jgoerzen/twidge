@@ -29,7 +29,7 @@ import Database.HDBC
 import Control.Exception(evaluate)
 import Control.Monad
 import Utils
-import MissingH.Str
+import Data.String
 import System.IO
 
 i = infoM "enable/disable"

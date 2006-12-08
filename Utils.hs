@@ -30,7 +30,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 -}
 
 module Utils where
-import MissingH.GetOpt
+import System.Console.GetOpt.Utils
 import System.Console.GetOpt
 import Types
 import System.Exit
@@ -39,7 +39,7 @@ import System.Directory
 import Database.HDBC
 import Data.List.Utils
 import System.Time
-import MissingH.Time
+import System.Time.Utils
 
 simpleCmd :: String -> String -> String -> [OptDescr (String, String)] 
           -> (GlobalInfo -> ([(String, String)], [String]) -> IO ()) 

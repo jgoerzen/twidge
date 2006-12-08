@@ -34,7 +34,7 @@ import Types
 import Text.XML.HaXml
 import Text.XML.HaXml.Parse
 import Utils
-import MissingH.Maybe
+import Data.Maybe.Utils
 import Data.Char
 import Data.Either.Utils
 import Data.List

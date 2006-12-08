@@ -28,7 +28,7 @@ import Config
 import Database.HDBC
 import Control.Monad
 import Utils
-import MissingH.Str
+import Data.String
 import qualified Commands.Ls
 import System.IO
 

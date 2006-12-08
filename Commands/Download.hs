@@ -29,20 +29,20 @@ import Config
 import Database.HDBC
 import Control.Monad
 import Utils
-import MissingH.Checksum.MD5
-import MissingH.Path.FilePath
+import Data.Hash.MD5
+import System.Path.FilePath
 import System.IO
 import System.Directory
 import System.Cmd.Utils
 import System.Posix.Process
 import Data.ConfigFile
-import MissingH.Str
+import Data.String
 import Data.Either.Utils
 import Data.List
 import System.Exit
 import Control.Exception
-import MissingH.ProgressTracker
-import MissingH.ProgressMeter
+import Data.Progress.Tracker
+import Data.Progress.Meter
 import Control.Concurrent.MVar
 import Control.Concurrent
 

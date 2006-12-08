@@ -42,7 +42,7 @@ import System.Posix.Files
 import System.Posix.Process
 import System.Posix.Types
 import System.Posix.IO
-import MissingH.Checksum.MD5
+import Data.Hash.MD5
 import Control.Exception(evaluate)
 
 data Result = Success | TempFail | PermFail

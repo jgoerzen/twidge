@@ -32,7 +32,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 import Config
 import DB
 import System.Log.Logger
-import MissingH.GetOpt
+import System.Console.GetOpt.Utils
 import System.Console.GetOpt
 import System.Environment
 import Data.List

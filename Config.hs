@@ -34,7 +34,7 @@ import System.Directory
 import Data.ConfigFile
 import Control.Monad
 import Data.Either.Utils
-import MissingH.Path
+import System.Path
 
 getFeedTmp =
     do appdir <- getAppDir

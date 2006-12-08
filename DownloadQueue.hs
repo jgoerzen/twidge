@@ -37,7 +37,7 @@ module DownloadQueue(DownloadEntry(..),
                     ) where
 import Download
 import System.Cmd.Utils
-import MissingH.Maybe
+import Data.Maybe.Utils
 import System.Posix.Process
 import Config
 import System.Log.Logger
@@ -47,10 +47,10 @@ import System.IO
 import System.Directory
 import System.Posix.Files
 import System.Posix.Signals
-import MissingH.Checksum.MD5
-import MissingH.ProgressTracker
-import MissingH.ProgressMeter
-import MissingH.Quantity
+import Data.Hash.MD5
+import Data.Progress.Tracker
+import Data.Progress.Meter
+import Data.Quantity
 import Network.URI
 import Data.List
 import Control.Concurrent.MVar

@@ -22,8 +22,8 @@ import System.Log.Logger
 import DB
 import Download
 import DownloadQueue
-import MissingH.ProgressMeter
-import MissingH.ProgressTracker
+import Data.Progress.Meter
+import Data.Progress.Tracker
 import FeedParser
 import Types
 import Text.Printf
@@ -31,7 +31,7 @@ import Config
 import Database.HDBC
 import Control.Monad
 import Utils
-import MissingH.Str
+import Data.String
 import System.Exit
 import System.Posix.Process
 import System.Directory

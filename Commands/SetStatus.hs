@@ -28,10 +28,10 @@ import Config
 import Database.HDBC
 import Control.Monad hiding (join)
 import Utils
-import MissingH.Str
+import Data.String
 import System.IO
 import System.Console.GetOpt
-import MissingH.GetOpt
+import System.Console.GetOpt.Utils
 import qualified Control.Exception as E
 
 i = infoM "setstatus"

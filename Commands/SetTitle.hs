@@ -28,10 +28,10 @@ import Config
 import Database.HDBC
 import Control.Monad
 import Utils
-import MissingH.Str
+import Data.String
 import System.IO
 import System.Console.GetOpt
-import MissingH.GetOpt
+import System.Console.GetOpt.Utils
 import Control.Exception
 
 i = infoM "settitle"
