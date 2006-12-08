@@ -36,11 +36,11 @@ module DownloadQueue(DownloadEntry(..),
                      runDownloads
                     ) where
 import Download
-import MissingH.Cmd
+import System.Cmd.Utils
 import MissingH.Maybe
 import System.Posix.Process
 import Config
-import MissingH.Logging.Logger
+import System.Log.Logger
 import Text.Printf
 import System.Exit
 import System.IO

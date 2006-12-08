@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 module Commands.Setup(cmd, cmd_worker) where
 import Utils
-import MissingH.Logging.Logger
+import System.Log.Logger
 import DB
 import Download
 import FeedParser
@@ -32,9 +32,9 @@ import qualified Commands.Update
 import qualified Commands.Download
 import qualified Commands.Catchup
 import qualified Commands.Add
-import MissingH.ConfigParser
+import Data.ConfigFile
 import System.IO
-import MissingH.Either
+import Data.Either.Utils
 import MissingH.Str
 
 i = infoM "setup"

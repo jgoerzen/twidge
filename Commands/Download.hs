@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 module Commands.Download(cmd, cmd_worker) where
 import Utils
-import MissingH.Logging.Logger
+import System.Log.Logger
 import DB
 import Download
 import DownloadQueue
@@ -33,11 +33,11 @@ import MissingH.Checksum.MD5
 import MissingH.Path.FilePath
 import System.IO
 import System.Directory
-import MissingH.Cmd
+import System.Cmd.Utils
 import System.Posix.Process
-import MissingH.ConfigParser
+import Data.ConfigFile
 import MissingH.Str
-import MissingH.Either
+import Data.Either.Utils
 import Data.List
 import System.Exit
 import Control.Exception

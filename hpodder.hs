@@ -31,7 +31,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 import Config
 import DB
-import MissingH.Logging.Logger
+import System.Log.Logger
 import MissingH.GetOpt
 import System.Console.GetOpt
 import System.Environment

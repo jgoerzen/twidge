@@ -37,7 +37,7 @@ import System.Exit
 import Config
 import System.Directory
 import Database.HDBC
-import MissingH.List
+import Data.List.Utils
 import System.Time
 import MissingH.Time
 

@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 module Commands.Ls(lscasts, lscasts_worker, lsepisodes, lseps) where
 import Utils
-import MissingH.Logging.Logger
+import System.Log.Logger
 import DB
 import Types
 import Database.HDBC

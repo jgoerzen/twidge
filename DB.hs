@@ -34,11 +34,11 @@ import Types
 
 import Database.HDBC
 import Database.HDBC.Sqlite3
-import MissingH.Logging.Logger
+import System.Log.Logger
 import Control.Monad
 import Control.Exception
 import Utils
-import MissingH.List
+import Data.List.Utils
 dbdebug = debugM "DB"
 
 connect :: IO Connection

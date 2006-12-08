@@ -31,9 +31,9 @@ Written by John Goerzen, jgoerzen\@complete.org
 module Config where
 
 import System.Directory
-import MissingH.ConfigParser
+import Data.ConfigFile
 import Control.Monad
-import MissingH.Either
+import Data.Either.Utils
 import MissingH.Path
 
 getFeedTmp =

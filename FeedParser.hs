@@ -36,7 +36,7 @@ import Text.XML.HaXml.Parse
 import Utils
 import MissingH.Maybe
 import Data.Char
-import MissingH.Either
+import Data.Either.Utils
 import Data.List
 
 data Item = Item {itemtitle :: String,

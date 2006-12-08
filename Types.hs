@@ -29,7 +29,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 -}
 module Types where
-import MissingH.ConfigParser
+import Data.ConfigFile
 import Database.HDBC
 
 data GlobalInfo = GlobalInfo {gcp :: ConfigParser,

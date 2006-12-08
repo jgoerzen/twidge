@@ -35,8 +35,8 @@ import Text.Printf
 import Utils
 import Types
 import Config
-import MissingH.ConfigParser
-import MissingH.Either
+import Data.ConfigFile
+import Data.Either.Utils
 
 import qualified Commands.Add
 import qualified Commands.Ls

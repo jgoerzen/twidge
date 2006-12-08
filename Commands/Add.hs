@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 module Commands.Add(cmd, cmd_worker) where
 import Utils
-import MissingH.Logging.Logger
+import System.Log.Logger
 import DB
 import Types
 import Database.HDBC
