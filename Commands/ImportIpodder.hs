@@ -31,7 +31,7 @@ import Utils
 import System.Console.GetOpt
 import System.Console.GetOpt.Utils
 import qualified Commands.Update
-import System.Path.FilePath
+import System.FilePath
 import Data.List
 import Data.String
 import System.Directory

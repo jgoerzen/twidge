@@ -30,7 +30,7 @@ import Database.HDBC
 import Control.Monad
 import Utils
 import Data.Hash.MD5
-import System.Path.FilePath
+import System.FilePath
 import System.IO
 import System.Directory
 import System.Cmd.Utils

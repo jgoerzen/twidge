@@ -6,7 +6,7 @@ Stability: Beta
 Copyright: Copyright (c) 2006 John Goerzen
 Build-Depends: haskell98, network, unix, parsec, MissingH>=0.18.0,
  HDBC>=0.99.2, HDBC-sqlite3>=0.99.2, mtl, base, HaXml>=1.13.2, hslogger,
- ConfigFile
+ ConfigFile, FilePath
 
 Executable: hpodder
 Main-Is: hpodder.hs

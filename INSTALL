@@ -6,9 +6,13 @@ PREREQUISITES:
  * GHC 6.6          http://www.haskell.org/ghc
  * Curl             http://curl.haxx.se
  * id3v2            http://download.sourceforge.net/id3v2/id3v2-0.1.11.tar.gz
- * MissingH 0.16.3  http://quux.org/devel/missingh
- * HDBC             http://quux.org/devel/hdbc
+ * hslogger         http://software.complete.org/hslogger
+ * MissingH 0.18.0  http://software.complete.org/missingh
+   hpodder also uses these libraries that MissingH also depends upon:
+   FilePath, mtl
+ * ConfigFile       http://software.complete.org/configfile
  * Sqlite3          http://www.sqlite.org/
  * HDBC-sqlite3     http://quux.org/devel/hdbc
  * HaXml>=1.13.2    http://www.cs.york.ac.uk/fp/HaXml/
+ * HDBC             http://quux.org/devel/hdbc
 
