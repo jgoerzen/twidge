@@ -150,7 +150,7 @@ runDownloads callbackfunc basefp resumeOK delist maxthreads =
                                           allowResume = resumeOK,
                                           callbackFunc = callbackfunc}
        semaphore <- newQSem 0 -- Used by threads to signal they're done
-       mapM_ (\_ -> forkOS (childthread dqmvar semaphore)) [1..maxthreads]
+       mapM_ (\_ -> forkIO (childthread dqmvar semaphore)) [1..maxthreads]
        mapM_ (\_ -> waitQSem semaphore) [1..maxthreads]
        restoresignals oldsigs
        withMVar dqmvar (\dq -> return (completedDownloads dq))
@@ -167,6 +167,12 @@ childthread dqmvar semaphore =
                   [] -> return (dq, [])
                   (x:xs) -> return (dq {pendingHosts = xs}, snd x)
 
+          getProcessStatusWithDelay pid =
+              do status <- getProcessStatus False False pid
+                 case status of
+                   Nothing -> do threadDelay 1000000
+                                 getProcessStatusWithDelay pid
+                   Just x -> return x
           processChildWorkData [] = return []
           processChildWorkData (x:xs) = 
               do (basefp, resumeOK, callback) <- withMVar dqmvar 
@@ -174,15 +180,15 @@ childthread dqmvar semaphore =
                                             callbackFunc dq))
                  dltok <- startGetURL (dlurl x) basefp resumeOK
                  callback x (DLStarted dltok)
-                 status <- getProcessStatus True False (tokpid dltok)
-                 result <- finishGetURL dltok (forceMaybe status)
+                 status <- getProcessStatusWithDelay (tokpid dltok)
+                 result <- finishGetURL dltok status
                  messages <- readFile (tokpath dltok ++ ".msg")
 
                  -- Add to the completed DLs list.  Also do callback here
                  -- so it's within the lock.  Handy to prevent simultaneous
                  -- DB updates.
                  modifyMVar_ dqmvar $ \dq -> 
-                     do callback x (DLEnded (dltok, (forceMaybe status), result, messages))
+                     do callback x (DLEnded (dltok, status, result, messages))
                         -- Delete the messages file now that we don't
                         -- care about it anymore
                         catch (removeFile (tokpath dltok ++ ".msg"))

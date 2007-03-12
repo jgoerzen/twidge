@@ -68,6 +68,6 @@ Build-Depends: haskell98, network, unix, parsec, MissingH>=0.18.0,
 
 Executable: hpodder
 Main-Is: hpodder.hs
-GHC-Options: -O2 -threaded
+GHC-Options: -O2
 Extensions: ExistentialQuantification, OverlappingInstances,
     UndecidableInstances
