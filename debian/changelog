@@ -1,3 +1,9 @@
+hpodder (0.99.2) unstable; urgency=low
+
+  * Modified to not require threaded RTS.  CLoses: #408000.
+
+ -- John Goerzen <jgoerzen@complete.org>  Mon, 12 Mar 2007 06:11:41 -0500
+
 hpodder (0.99.1) unstable; urgency=low
 
   * Updated for MissingH 0.18.0 changes.
