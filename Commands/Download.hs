@@ -135,8 +135,9 @@ procEpisode gi meter dltok ep name r =
 
 procSuccess gi ep tmpfp =
     do cp <- getCP ep idstr fnpart
-       let newfn = (strip . forceEither $ (get cp idstr "downloaddir")) ++ "/" ++
-                   (strip . forceEither $ (get cp idstr "namingpatt"))
+       let cfg = get cp idstr
+       let newfn = (strip $ forceEither $ cfg "downloaddir") ++ "/" ++
+                   (strip $ forceEither $ cfg "namingpatt")
        createDirectoryIfMissing True (fst . splitFileName $ newfn)
        finalfn <- if ((eptype ep) `elem` ["audio/mpeg", "audio/mp3", 
                                           "x-audio/mp3"]) && 
