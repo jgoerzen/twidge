@@ -27,7 +27,7 @@ import Types
 import Text.Printf
 import Config
 import Database.HDBC
-import Control.Monad
+import Control.Monad hiding(forM_)
 import Utils
 import Data.Hash.MD5
 import System.FilePath
@@ -45,6 +45,15 @@ import Data.Progress.Tracker
 import Data.Progress.Meter
 import Control.Concurrent.MVar
 import Control.Concurrent
+import Data.Foldable(forM_)
+import System.Posix.IO(
+                       OpenMode(..),
+                       closeFd,
+                       defaultFileFlags,
+                       dupTo,
+                       openFd,
+                       stdOutput
+                      )
 
 d = debugM "download"
 i = infoM "download"
@@ -154,6 +163,8 @@ procSuccess gi ep tmpfp =
                                        "--WOAS", feedurl . podcast $ ep,
                                         -- "--WXXX", feedurl . podcast $ ep,
                                        finalfn] >>= id3result
+       forM_ (either (const Nothing) Just $ cfg "posthook")
+             (runHook finalfn)
        updateEpisode (gdbh gi) (ep {epstatus = Downloaded})
        commit (gdbh gi)
        
@@ -165,6 +176,28 @@ procSuccess gi ep tmpfp =
                  Exited (ExitFailure y) -> w $ "\n   id3v2 returned: " ++ show y
                  Terminated y -> w $ "\n   id3v2 terminated by signal " ++ show y
                  _ -> fail "Stopped unexpected"
+
+-- | Runs a hook script.
+runHook :: String -- ^ The name of the file to pass as an argument to the script.
+        -> String -- ^ The name of the script to invoke.
+        -> IO ()
+runHook fn script =
+    do child <- forkProcess runScript
+       status <- getProcessStatus True False child
+       case status of
+         Nothing -> fail "No status unexpected."
+         Just (Stopped _) -> fail "Stopped process unexpected."
+         Just (Terminated sig) -> fail (printf "Post-hook \"%s\" terminated by signal %s" script (show sig))
+         Just (Exited (ExitFailure code)) -> fail (printf "Post-hook \"%s\" failed with exit code %s" script (show code))
+         Just (Exited ExitSuccess) -> return ()
+    where runScript =
+              -- Open /dev/null, duplicate it to stdout, and close it.
+              do bracket (openFd "/dev/null" ReadOnly
+                                 Nothing defaultFileFlags)
+                         closeFd
+                         (\devNull ->
+                              do dupTo devNull stdOutput)
+                 executeFile script False [fn] Nothing
 
 getCP :: Episode -> String -> String -> IO ConfigParser
 getCP ep idstr fnpart =
