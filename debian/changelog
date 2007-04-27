@@ -1,3 +1,11 @@
+hpodder (0.99.3) unstable; urgency=low
+
+  * Applied patch from Daniel Burrows to allow post-processing of
+    downloads.  Closes: #414501.
+  * Updated .cabal for new filepath.  Closes: #420977.
+
+ -- John Goerzen <jgoerzen@complete.org>  Fri, 27 Apr 2007 01:03:32 -0500
+
 hpodder (0.99.2) unstable; urgency=low
 
   * Modified to not require threaded RTS.  CLoses: #408000.
