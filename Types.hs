@@ -32,8 +32,8 @@ module Types where
 import Data.ConfigFile
 import Database.HDBC
 
-data GlobalInfo = GlobalInfo {gcp :: ConfigParser,
-                              gdbh :: Connection}
+data IConnection a => GlobalInfo a = GlobalInfo {gcp :: ConfigParser,
+                                                 gdbh :: a}
 
 data EpisodeStatus = Pending -- ^ Ready to download
                    | Downloaded -- ^ Already downloaded
@@ -60,7 +60,8 @@ data Episode = Episode {podcast :: Podcast,
                         eplength :: Integer}
              deriving (Eq, Show, Read)
 
-data Command = Command {cmdname :: String,
+data IConnection a => Command a = 
+               Command {cmdname :: String,
                         cmddescrip :: String,
-                        execcmd :: [String] -> GlobalInfo -> IO ()}
+                        execcmd :: [String] -> a -> IO ()}
 
