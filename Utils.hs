@@ -1,5 +1,5 @@
 {- hpodder component
-Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2006-2007 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 {- |
    Module     : Utils
-   Copyright  : Copyright (C) 2006 John Goerzen
+   Copyright  : Copyright (C) 2006-2007 John Goerzen
    License    : GNU GPL, version 2 or above
 
    Maintainer : John Goerzen <jgoerzen@complete.org>
@@ -40,6 +40,8 @@ import Database.HDBC
 import Data.List.Utils
 import System.Time
 import System.Time.Utils
+import System.IO
+import System.Posix.IO
 
 simpleCmd :: IConnection conn => 
           String -> String -> String -> [OptDescr (String, String)] 
@@ -71,6 +73,21 @@ initDirs =
     do appdir <- getAppDir
        mapM_ mkdir [appdir, appdir ++ "/feedxfer", appdir ++ "/enclosurexfer"]
        where mkdir = createDirectoryIfMissing True
+
+lock func =
+    do appdir <- getAppDir
+       lockh <- openFile (appdir ++ "/.lock") WriteMode
+       lockfd <- handleToFd lockh
+       lockres <- getLock lockfd (WriteLock, AbsoluteSeek, 0, 0)
+       case lockres of
+            Nothing -> do r <- func
+                          setLock lockfd (Unlock, AbsoluteSeek, 0, 0)
+                          closeFd lockfd
+                          return r
+            Just (pid, lock) -> do
+                putStrLn "Aborting because another hpodder is already running"
+                putStrLn $ "Other hpodder pid: " ++ show pid
+                exitFailure
 
 sanitize_basic inp =
     case filter (\c -> not (c `elem` "\n\r\t\0")) inp of

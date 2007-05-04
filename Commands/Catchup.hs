@@ -1,5 +1,5 @@
 {- hpodder component
-Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2006-2007 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ cmd = simpleCmd "catchup"
        "Number of episodes to allow to download (default 1)"] 
       cmd_worker
 
-cmd_worker gi (args, casts) =
+cmd_worker gi (args, casts) = lock $
     do podcastlist <- getSelectedPodcasts (gdbh gi) casts
        let n = case lookup "n" args of
                  Nothing -> 1
