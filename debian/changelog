@@ -3,6 +3,7 @@ hpodder (0.99.4) unstable; urgency=low
   * Now uses locking to prevent multiple copies of hpodder from running
     simultaneously.  Closes: #419471.
   * Updated for HDBC 1.1.x.
+  * Logged messages go to stdout.  Closes: #410630.
 
  -- John Goerzen <jgoerzen@complete.org>  Thu, 03 May 2007 05:58:29 -0500
 

@@ -32,6 +32,8 @@ Written by John Goerzen, jgoerzen\@complete.org
 import Config
 import DB
 import System.Log.Logger
+import System.Log.Handler.Simple
+import System.IO(stdout)
 import System.Console.GetOpt.Utils
 import System.Console.GetOpt
 import System.Environment
@@ -56,7 +58,10 @@ options = [Option "d" ["debug"] (NoArg ("d", "")) "Enable debugging",
 
 worker args n commandargs =
     do when (lookup "help" args == Just "") $ usageerror ""
-       when (lookup "d" args == Just "") $ updateGlobalLogger "" (setLevel DEBUG)
+       when (lookup "d" args == Just "") 
+            (updateGlobalLogger "" (setLevel DEBUG))
+       handler <- streamHandler stdout DEBUG
+       updateGlobalLogger "" (setHandlers [handler])
        initDirs
        let commandname = head cmdargs
        case lookup commandname allCommands of
