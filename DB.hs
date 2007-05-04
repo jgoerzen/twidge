@@ -69,20 +69,7 @@ prepSchema dbh tables =
                commit dbh
                return 0
 
-upgradeSchema dbh 4 _ = return ()
-
-upgradeSchema dbh 3 tables =
-    do dbdebug "Upgrading schema 3 -> 4"
-       dbdebug "Adding pcfailcount column"
-       run dbh "ALTER TABLE podcasts ADD pcfailcount INTEGER NOT NULL DEFAULT 0" []
-       dbdebug "Adding epfailcount column"
-       run dbh "ALTER TABLE epidoses ADD epfailcount INTEGER NOT NULL DEFAULT 0" []
-       dbdebug "Adding epattempt column"
-       curtime <- now
-       run dbh "ALTER TABLE episodes ADD epattempt INTEGER" []
-       setSchemaVer dbh 4
-       commit dbh
-       upgradeSchema dbh 4 tables
+upgradeSchema dbh 3 _ = return ()
 
 upgradeSchema dbh 2 tables =
     do dbdebug "Upgrading schema 2 -> 3"
@@ -152,7 +139,7 @@ addPodcast dbh podcast =
                ++ show e) $
                run dbh "INSERT INTO podcasts (castname, feedurl, pcenabled, lastupdate) VALUES (?, ?, ?, ?)"
                          [toSql (castname podcast), toSql (feedurl podcast),
-                          toSql (fromEnum (pcstatus podcast)),
+                          toSql (fromEnum (pcenabled podcast)),
                           toSql (lastupdate podcast)]
        r <- quickQuery dbh "SELECT castid FROM podcasts WHERE feedurl = ?"
             [toSql (feedurl podcast)]
@@ -165,7 +152,7 @@ updatePodcast dbh podcast =
     run dbh "UPDATE podcasts SET castname = ?, feedurl = ?, pcenabled = ?, \
             \lastupdate = ? WHERE castid = ?"
         [toSql (castname podcast), toSql (feedurl podcast),
-         toSql (fromEnum (pcstatus podcast)),
+         toSql (fromEnum (pcenabled podcast)),
          toSql (lastupdate podcast), toSql (castid podcast)] >> return ()
 
 {- | Remove a podcast. -}
@@ -199,9 +186,9 @@ getEpisodes dbh pc =
                        eplength = fromSql slength}
           toItem x = error $ "Unexpected result in getEpisodes: " ++ show x
 
-podcast_convrow [svid, svname, svurl, pcenabled, lupdate] =
+podcast_convrow [svid, svname, svurl, isenabled, lupdate] =
     Podcast {castid = fromSql svid, castname = fromSql svname,
-             feedurl = fromSql svurl, pcstatus = toEnum . fromSql $ pcenabled,
+             feedurl = fromSql svurl, pcenabled = toEnum . fromSql $ isenabled,
              lastupdate = fromSql lupdate}
 
 {- | Add a new episode.  If the episode already exists, ignore the add request
