@@ -78,16 +78,17 @@ lock func =
     do appdir <- getAppDir
        lockh <- openFile (appdir ++ "/.lock") WriteMode
        lockfd <- handleToFd lockh
-       lockres <- getLock lockfd (WriteLock, AbsoluteSeek, 0, 0)
-       case lockres of
-            Nothing -> do r <- func
-                          setLock lockfd (Unlock, AbsoluteSeek, 0, 0)
-                          closeFd lockfd
-                          return r
-            Just (pid, lock) -> do
-                putStrLn "Aborting because another hpodder is already running"
-                putStrLn $ "Other hpodder pid: " ++ show pid
-                exitFailure
+       catch (placelock lockfd) errorhandler
+    where placelock lockfd =
+              do setLock lockfd (WriteLock, AbsoluteSeek, 0, 0)
+                 r <- func
+                 setLock lockfd (Unlock, AbsoluteSeek, 0, 0)
+                 closeFd lockfd
+                 return r
+          errorhandler _ =
+              do putStrLn "Aborting because another hpodder is already running"
+                 exitFailure
+
 
 sanitize_basic inp =
     case filter (\c -> not (c `elem` "\n\r\t\0")) inp of
