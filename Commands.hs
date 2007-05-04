@@ -50,7 +50,7 @@ import qualified Commands.SetStatus
 import qualified Commands.SetTitle
 import qualified Commands.EnableDisable
 
-allCommands :: [(String, Command)]
+--allCommands :: [(String, Command)]
 allCommands = 
     [Commands.Add.cmd,
      Commands.Catchup.cmd,
