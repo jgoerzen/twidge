@@ -41,16 +41,15 @@ import Data.List.Utils
 import System.Time
 import System.Time.Utils
 
-simpleCmd :: IConnection d => 
+simpleCmd :: IConnection conn => 
           String -> String -> String -> [OptDescr (String, String)] 
-          -> (GlobalInfo d -> ([(String, String)], [String]) -> IO ()) 
-          -> (String, Command d)
+          -> (GlobalInfo conn -> ([(String, String)], [String]) -> IO ()) 
+          -> (String, Command conn)
 simpleCmd name descrip helptext optionsinp func =
     (name, Command {cmdname = name, cmddescrip = descrip,
                     execcmd = worker})
     where options =
               optionsinp ++ [Option "" ["help"] (NoArg ("help", "")) "Display this help"]
-          worker :: [String] -> GlobalInfo d -> IO ()
           worker argv gi =
               case getOpt RequireOrder options argv of
                 (o, n, []) -> 

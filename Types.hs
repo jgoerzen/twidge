@@ -63,5 +63,5 @@ data Episode = Episode {podcast :: Podcast,
 data IConnection a => Command a = 
                Command {cmdname :: String,
                         cmddescrip :: String,
-                        execcmd :: [String] -> a -> IO ()}
+                        execcmd :: [String] -> GlobalInfo a -> IO ()}
 
