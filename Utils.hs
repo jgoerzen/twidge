@@ -112,7 +112,7 @@ now :: IO Integer
 now = do ct <- getClockTime
          return (clockTimeToEpoch ct)
 
-filter_disabled = filter ((==) Enabled . pcstatus)
+filter_disabled = filter pcenabled
 
 -- | Delete files in a given directory, but not the directory itself
 emptyDir :: FilePath -> IO ()

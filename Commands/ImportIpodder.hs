@@ -97,7 +97,7 @@ newpodcasts id gi =
        let podcaststoadd = map (\url -> Podcast {castid = 0, 
                                                  castname = "",
                                                  feedurl = url,
-                                                 pcstatus = Enabled,
+                                                 pcenabled = True,
                                                  lastupdate = Nothing}) urlstoadd
                            
        newpcs <- mapM (addPodcast (gdbh gi)) podcaststoadd
