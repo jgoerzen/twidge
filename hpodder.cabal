@@ -1,10 +1,10 @@
 Name: hpodder
-Version: 0.99.1
+Version: 0.99.4
 License: GPL
 Maintainer: John Goerzen <jgoerzen@complete.org>
 Author: John Goerzen
 Stability: Beta
-Copyright: Copyright (c) 2006 John Goerzen
+Copyright: Copyright (c) 2006-2007 John Goerzen
 license-file: COPYRIGHT
 extra-source-files: COPYING
 homepage: http://software.complete.org/hpodder

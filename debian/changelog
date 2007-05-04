@@ -1,3 +1,11 @@
+hpodder (0.99.4) unstable; urgency=low
+
+  * Now uses locking to prevent multiple copies of hpodder from running
+    simultaneously.  Closes: #419471.
+  * Updated for HDBC 1.1.x.
+
+ -- John Goerzen <jgoerzen@complete.org>  Thu, 03 May 2007 05:58:29 -0500
+
 hpodder (0.99.3) unstable; urgency=low
 
   * Applied patch from Daniel Burrows to allow post-processing of
