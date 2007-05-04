@@ -1,3 +1,9 @@
+hpodder (0.99.5) unstable; urgency=low
+
+  * Bump build-depends on HDBC.  Closes: #422156.
+
+ -- John Goerzen <jgoerzen@complete.org>  Thu, 03 May 2007 19:34:50 -0500
+
 hpodder (0.99.4) unstable; urgency=low
 
   * Now uses locking to prevent multiple copies of hpodder from running
