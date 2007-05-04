@@ -56,9 +56,10 @@ lscasts_worker gi (opts, casts) =
                           printf "%-4d %3d/%3d %s\n" (castid pc) 
                                      (npend::Int) (ntot::Int) title
                           when (islong) (printf "     %s\n" (feedurl pc))
-              where title = if pcenabled pc
-                               then castname pc
-                               else "[disabled] " ++ castname pc
+              where title = case pcstatus pc of
+                               Enabled -> castname pc
+                               Disabled -> "[disabled] " ++ castname pc
+                               Broken -> "[broken] " ++ castname pc
 
 lscasts_help =
  "Usage: hpodder lscasts [-l] [castid [castid...]]\n\n" ++ genericIdHelp ++

@@ -38,11 +38,11 @@ d = debugM "enable/disable"
 
 cmd_enable = simpleCmd "enable" 
              "Enable a podcast that was previously disabled" helptext 
-             [] (cmd_worker "enable" True)
+             [] (cmd_worker "enable" Enabled)
 
 cmd_disable = simpleCmd "disable"
               "Stop updating and downloading given podcasts" helptext_disable
-              [] (cmd_worker "disable" False)
+              [] (cmd_worker "disable" Disabled)
 
 cmd_worker cmd _ gi ([], []) =
     fail $ cmd ++ " requires a podcast ID to remove; please see hpodder "
@@ -53,7 +53,7 @@ cmd_worker cmd newstat gi ([], casts) = lock $
        evaluate (length podcastlist)
        d $ "Setting " ++ (show . length $ podcastlist) ++ " podcasts to " ++
          show (newstat)
-       mapM_ (\x -> updatePodcast (gdbh gi) (x {pcenabled = newstat})) 
+       mapM_ (\x -> updatePodcast (gdbh gi) (x {pcstatus = newstat})) 
              podcastlist
        commit (gdbh gi)
 
