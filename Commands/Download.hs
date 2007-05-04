@@ -1,5 +1,5 @@
 {- hpodder component
-Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2006-2007 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ cmd = simpleCmd "download"
       "Downloads all pending podcast episodes (run update first)" helptext 
       [] cmd_worker
 
-cmd_worker gi ([], casts) =
+cmd_worker gi ([], casts) = lock $
     do podcastlist_raw <- getSelectedPodcasts (gdbh gi) casts
        let podcastlist = filter_disabled podcastlist_raw
        episodelist <- mapM (getEpisodes (gdbh gi)) podcastlist

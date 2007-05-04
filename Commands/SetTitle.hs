@@ -1,5 +1,5 @@
 {- hpodder component
-Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2006-2007 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ cmd = simpleCmd "settitle"
        "New title for this podcast"]
       cmd_worker
 
-cmd_worker gi (args, []) = 
+cmd_worker gi (args, []) =  lock $
     do podcastid <- case lookup "castid" args of
                       Just x -> return (read x)
                       Nothing -> fail "settitle: --castid required; see hpodder settitle --help"

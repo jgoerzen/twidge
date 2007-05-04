@@ -1,5 +1,5 @@
 {- hpodder component
-Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2006-2007 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ cmd_worker cmd _ gi ([], []) =
     fail $ cmd ++ " requires a podcast ID to remove; please see hpodder "
            ++ cmd ++ " --help"
 
-cmd_worker cmd newstat gi ([], casts) =
+cmd_worker cmd newstat gi ([], casts) = lock $
     do podcastlist <- getSelectedPodcasts (gdbh gi) casts
        evaluate (length podcastlist)
        d $ "Setting " ++ (show . length $ podcastlist) ++ " podcasts to " ++

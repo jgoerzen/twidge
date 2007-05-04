@@ -1,5 +1,5 @@
 {- hpodder component
-Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2006-2007 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ cmd = simpleCmd "setstatus"
 cmd_worker _ (_, []) =
     fail $ "setstatus: episode IDs missing; see hpodder setstatus --help"
 
-cmd_worker gi (args, episodes) =
+cmd_worker gi (args, episodes) = lock $
     do podcastid <- case lookup "castid" args of
                       Just x -> return (read x)
                       Nothing -> fail "setstatus: --castid required; see hpodder setstatus --help"

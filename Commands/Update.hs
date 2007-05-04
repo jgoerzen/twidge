@@ -1,5 +1,5 @@
 {- hpodder component
-Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2006-2007 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ cmd = simpleCmd "update"
       "Re-scan all feeds and update list of needed downloads" helptext 
       [] cmd_worker
 
-cmd_worker gi ([], casts) =
+cmd_worker gi ([], casts) = lock $
     do podcastlist' <- getSelectedPodcasts (gdbh gi) casts
        let podcastlist = filter_disabled podcastlist'
        i $ printf "%d podcast(s) to consider\n" (length podcastlist)
