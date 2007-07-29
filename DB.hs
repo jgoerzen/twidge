@@ -265,5 +265,3 @@ getSelectedEpisodes dbh pc episodelist =
     do eps <- getEpisodes dbh pc
        return $ uniq . filter (\e -> (epid e `elem` eplist)) $ eps
     where eplist = map read episodelist
-
-

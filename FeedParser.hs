@@ -58,7 +58,10 @@ item2ep pc item =
              eplength = case reads . sanitize_basic . enclosurelength $ item of
                           [] -> 0
                           [(x, [])] -> x
-                          _ -> 0}
+                          _ -> 0,
+             eplastupdate = Nothing,
+             eplastattempt = Nothing,
+             epfailedattempts = 0}
 
 parse :: FilePath -> String -> IO (Either String Feed)
 parse fp name = 
