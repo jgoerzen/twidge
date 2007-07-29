@@ -134,6 +134,7 @@ procEpisode gi meter dltok ep name r =
          (Success, _) -> procSuccess gi ep (tokpath dltok)
          (TempFail, Terminated sigINT) -> 
              do i "Ctrl-C hit; aborting!"
+                -- Do not consider Ctrl-C a trackable error
                 exitFailure
          (TempFail, _) -> writeMeterString stderr meter $ " *** " ++ name ++ 
                           ": Temporary failure; will retry later\n"

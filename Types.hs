@@ -63,7 +63,7 @@ data Episode = Episode {podcast :: Podcast,
                         eptype :: String,
                         epstatus :: EpisodeStatus,
                         eplength :: Integer,
-                        eplastdownload :: Maybe Integer, -- Last successful updat
+                        epfirstattempt :: Maybe Integer, -- Last successful updat
                         eplastattempt :: Maybe Integer, -- Last attempt
                         epfailedattempts :: Integer}
              deriving (Eq, Show, Read)

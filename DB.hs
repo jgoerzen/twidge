@@ -78,8 +78,8 @@ upgradeSchema dbh 3 tables =
        dbdebug "Adding failedattempts column"
        run dbh "ALTER TABLE podcasts ADD failedattempts INTEGER NOT NULL DEFAULT 0" []
 
-       dbdebug "Adding eplastdownload column"
-       run dbh "ALTER TABLE episodes ADD eplastdownload INTEGER" []
+       dbdebug "Adding epfirstattempt column"
+       run dbh "ALTER TABLE episodes ADD epfirstattempt INTEGER" []
        dbdebug "Adding eplastattempt column"
        run dbh "ALTER TABLE episodes ADD eplastattempt INTEGER" []
        dbdebug "Adding epfailedattempts column"
@@ -201,7 +201,7 @@ getPodcast dbh wantedid =
 getEpisodes :: Connection -> Podcast -> IO [Episode]
 getEpisodes dbh pc =
     do r <- quickQuery dbh "SELECT episodeid, title, epurl, enctype,\
-                            \status, eplength, eplastdownload, eplastattempt, \
+                            \status, eplength, epfirstattempt, eplastattempt, \
                             \epfailedattempts FROM episodes \
                             \WHERE castid = ? ORDER BY \
                             \episodeid" [toSql (castid pc)]
@@ -213,7 +213,7 @@ getEpisodes dbh pc =
                        epurl = fromSql sepurl, eptype = fromSql senctype,
                        epstatus = read (fromSql sstatus),
                        eplength = fromSql slength,
-                       eplastdownload = fromSql slu,
+                       epfirstattempt = fromSql slu,
                        eplastattempt = fromSql sla,
                        epfailedattempts = fromSql sfa}
           toItem x = error $ "Unexpected result in getEpisodes: " ++ show x
@@ -244,12 +244,12 @@ updateEpisode dbh ep = insertEpisode "INSERT OR REPLACE" dbh ep (epid ep)
 
 insertEpisode insertsql dbh episode newepid =
     run dbh (insertsql ++ " INTO episodes (castid, episodeid, title,\
-           \epurl, enctype, status, eplength, eplastdownload, eplastattempt,\
+           \epurl, enctype, status, eplength, epfirstattempt, eplastattempt,\
            \epfailedattempts) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
            [toSql (castid (podcast episode)), toSql newepid, 
             toSql (eptitle episode), toSql (epurl episode), 
             toSql (eptype episode), toSql (show (epstatus episode)),
-            toSql (eplength episode), toSql (eplastdownload episode),
+            toSql (eplength episode), toSql (epfirstattempt episode),
             toSql (eplastattempt episode), toSql (epfailedattempts episode)]
 
 getSelectedPodcasts dbh [] = getSelectedPodcasts dbh ["all"]
