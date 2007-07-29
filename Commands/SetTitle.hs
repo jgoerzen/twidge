@@ -51,7 +51,7 @@ cmd_worker gi (args, []) =  lock $
                       Just x -> return (read x)
                       Nothing -> fail "settitle: --castid required; see hpodder settitle --help"
        newtitle <- case lookup "title" args of
-                      Just x -> return (read x)
+                      Just x ->  return x
                       Nothing -> fail "settitle: --title required; see hpodder settitle --help"
        pc <- getPodcast (gdbh gi) podcastid
        case pc of
