@@ -1,5 +1,5 @@
 {- hpodder component
-Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2006-2007 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 {- |
    Module     : Types
-   Copyright  : Copyright (C) 2006 John Goerzen
+   Copyright  : Copyright (C) 2006-2007 John Goerzen
    License    : GNU GPL, version 2 or above
 
    Maintainer : John Goerzen <jgoerzen@complete.org>
@@ -41,11 +41,17 @@ data EpisodeStatus = Pending -- ^ Ready to download
                    | Skipped -- ^ Skipped by some process or other
                      deriving (Eq, Show, Read, Ord, Enum)
 
+data PCEnabled = PCUserDisabled | PCEnabled | PCErrorDisabled
+    deriving (Eq, Show, Read, Org, Enum)
+
 data Podcast = Podcast {castid :: Integer,
                         castname :: String,
                         feedurl :: String,
-                        pcenabled :: Bool,
-                        lastupdate :: Maybe Integer}
+                        pcenabled :: PCEnabled,
+                        lastupdate :: Maybe Integer,
+                        lastattempt :: Integer,
+                        failedattempts :: Integer,
+                        lastsuccess :: Integer}
              deriving (Eq, Show, Read)
 
 instance Ord Podcast where

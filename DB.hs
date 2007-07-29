@@ -69,7 +69,17 @@ prepSchema dbh tables =
                commit dbh
                return 0
 
-upgradeSchema dbh 3 _ = return ()
+upgradeSchema dbh 4 _ = return ()
+
+upgradeSchema dbh 3 tables =
+    do dbdebug "Upgrading schema 3 -> 4"
+       dbdebug "Adding lastattempt column"
+       run dbh "ALTER TABLE podcasts ADD lastattempt INTEGER" []
+       dbdebug "Adding failedattempts column"
+       run dbh "ALTER TABLE podcasts ADD failedattempts INTEGER NOT NULL DEFAULT 0" []
+       timenow <- now
+       dbdebug "Adding lastsuccess column"
+       run dbh "ALTER TABLE podcasts ADD lastsuccess INTEGER NOT NULL DEFAULT ?" [now]
 
 upgradeSchema dbh 2 tables =
     do dbdebug "Upgrading schema 2 -> 3"
@@ -137,10 +147,13 @@ addPodcast dbh podcast =
     do handleSql 
         (\e -> fail $ "Error adding podcast; perhaps this URL already exists\n"
                ++ show e) $
-               run dbh "INSERT INTO podcasts (castname, feedurl, pcenabled, lastupdate) VALUES (?, ?, ?, ?)"
+               run dbh "INSERT INTO podcasts (castname, feedurl, pcenabled, lastupdate, lastattempt, failedattempts, lastsuccess) VALUES (?, ?, ?, ?, ?, ?, ?)"
                          [toSql (castname podcast), toSql (feedurl podcast),
                           toSql (fromEnum (pcenabled podcast)),
-                          toSql (lastupdate podcast)]
+                          toSql (lastupdate podcast),
+                          toSql (lastattempt podcast),
+                          toSql (failedattempts podcast),
+                          toSql (lastsuccess podcast)]
        r <- quickQuery dbh "SELECT castid FROM podcasts WHERE feedurl = ?"
             [toSql (feedurl podcast)]
        case r of
@@ -150,10 +163,13 @@ addPodcast dbh podcast =
 updatePodcast :: Connection -> Podcast -> IO ()
 updatePodcast dbh podcast = 
     run dbh "UPDATE podcasts SET castname = ?, feedurl = ?, pcenabled = ?, \
-            \lastupdate = ? WHERE castid = ?"
+            \lastupdate = ?, lastattempt = ?, failedattempts = ?,\
+            \lastsuccess = ? WHERE castid = ?"
         [toSql (castname podcast), toSql (feedurl podcast),
          toSql (fromEnum (pcenabled podcast)),
-         toSql (lastupdate podcast), toSql (castid podcast)] >> return ()
+         toSql (lastupdate podcast), toSql (castid podcast),
+         toSql (lastattempt podcast), toSql (failedattempts podcast),
+         toSql (lastsuccess podcast)] >> return ()
 
 {- | Remove a podcast. -}
 removePodcast :: Connection -> Podcast -> IO ()
@@ -164,12 +180,16 @@ removePodcast dbh podcast =
 
 getPodcasts :: Connection -> IO [Podcast]
 getPodcasts dbh =
-    do res <- quickQuery dbh "SELECT castid, castname, feedurl, pcenabled, lastupdate FROM podcasts ORDER BY castid" []
+    do res <- quickQuery dbh "SELECT castid, castname, feedurl, pcenabled,\
+              \lastupdate, lastattempt, failedattempts, lastsuccess \
+              \FROM podcasts ORDER BY castid" []
        return $ map podcast_convrow res
 
 getPodcast :: Connection -> Integer -> IO [Podcast]
 getPodcast dbh wantedid =
-    do res <- quickQuery dbh "SELECT castid, castname, feedurl, pcenabled, lastupdate FROM podcasts WHERE castid = ? ORDER BY castid" [toSql wantedid]
+    do res <- quickQuery dbh "SELECT castid, castname, feedurl, pcenabled,\
+              \lastupdate, lastattempt, failedattempts, lastsuccess \
+              \FROM podcasts WHERE castid = ? ORDER BY castid" [toSql wantedid]
        return $ map podcast_convrow res
 
 getEpisodes :: Connection -> Podcast -> IO [Episode]
@@ -186,10 +206,12 @@ getEpisodes dbh pc =
                        eplength = fromSql slength}
           toItem x = error $ "Unexpected result in getEpisodes: " ++ show x
 
-podcast_convrow [svid, svname, svurl, isenabled, lupdate] =
+podcast_convrow [svid, svname, svurl, isenabled, lupdate, lattempt, fattempts,
+                 lsuccess] =
     Podcast {castid = fromSql svid, castname = fromSql svname,
              feedurl = fromSql svurl, pcenabled = toEnum . fromSql $ isenabled,
-             lastupdate = fromSql lupdate}
+             lastupdate = fromSql lupdate, lastattempt = fromSql lattempt,
+             failedattempts = fromSql fattempts, lastsuccess = fromSql lsuccess}
 
 {- | Add a new episode.  If the episode already exists, ignore the add request
 and preserve the existing record. -}
