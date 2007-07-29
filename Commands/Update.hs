@@ -87,9 +87,10 @@ updateThePodcast gi pt meter dlentry dltok status result =
            case status of 
              Terminated sigINT -> return () -- Ctrl-C is not a tackable error
              _ -> do curtime <- now
-                     updatePodcast (gdbh gi) 
+                     let newpc = considerDisable gi
                            (pc {lastattempt = curtime,
                                 failedattempts = 1 + failedattempts pc})
+                     updatePodcast (gdbh gi) newpc
                      commit (gdbh gi)
          Just f -> do newpc <- updateFeed gi pc f
                       curtime <- now
@@ -99,7 +100,24 @@ updateThePodcast gi pt meter dlentry dltok status result =
                                             failedattempts = 0}
                       --i $ "   Podcast Title: " ++ (castname newpc)
                       commit (gdbh gi)
- 
+
+considerDisable gi pc = forceEither $
+    do faildays <- get cp (show (castid pc)) "podcastfaildays"
+       failattempts <- get cp (show (castid pc)) "podcastfailattempts"
+       let lupdate = case lastupdate pc of
+         Nothing -> 0
+         Just x -> x
+       case pcenabled pc of
+         PCUserDisabled -> pc
+         PCErrorDisabled -> pc
+         PCEnabled -> 
+           pc {pcenabled =
+               if (failedattempts pc > failattempts) &&
+                  (lastattempt pc - lupdate > faildays * 60 * 60 * 24)
+                  then PCErrorDisabled
+                  else PCEnabled
+                  }
+
 updateFeed gi pcorig f =
     do count <- foldM (updateEnc gi pc) 0 (items f)
        --i $ printf "   %d new episodes" count
