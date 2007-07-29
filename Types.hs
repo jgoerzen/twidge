@@ -48,10 +48,9 @@ data Podcast = Podcast {castid :: Integer,
                         castname :: String,
                         feedurl :: String,
                         pcenabled :: PCEnabled,
-                        lastupdate :: Maybe Integer,
-                        lastattempt :: Integer,
-                        failedattempts :: Integer,
-                        lastsuccess :: Integer}
+                        lastupdate :: Maybe Integer, -- Last successful update
+                        lastattempt :: Integer,      -- Last attempt
+                        failedattempts :: Integer}   -- failed attempts since last success
              deriving (Eq, Show, Read)
 
 instance Ord Podcast where
