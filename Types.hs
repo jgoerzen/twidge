@@ -62,7 +62,10 @@ data Episode = Episode {podcast :: Podcast,
                         epurl :: String,
                         eptype :: String,
                         epstatus :: EpisodeStatus,
-                        eplength :: Integer}
+                        eplength :: Integer,
+                        eplastupdate :: Maybe Integer, -- Last successful updat
+                        eplastattempt :: Maybe Integer, -- Last attempt
+                        epfailedattempts :: Integer}
              deriving (Eq, Show, Read)
 
 data IConnection a => Command a = 

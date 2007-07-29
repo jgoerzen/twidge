@@ -77,6 +77,14 @@ upgradeSchema dbh 3 tables =
        run dbh "ALTER TABLE podcasts ADD lastattempt INTEGER" []
        dbdebug "Adding failedattempts column"
        run dbh "ALTER TABLE podcasts ADD failedattempts INTEGER NOT NULL DEFAULT 0" []
+
+       dbdebug "Adding eplastupdate column"
+       run dbh "ALTER TABLE episodes ADD eplastupdate INTEGER" []
+       dbdebug "Adding eplastattempt column"
+       run dbh "ALTER TABLE episodes ADD eplastattempt INTEGER" []
+       dbdebug "Adding epfailedattempts column"
+       run dbh "ALTER TABLE episodes ADD epfailedattempts INTEGER NOT NULL DEFAULT 0" []
+
        setSchemaVer dbh 4
        commit dbh
 
