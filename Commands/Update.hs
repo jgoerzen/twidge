@@ -83,11 +83,20 @@ updateThePodcast gi pt meter dlentry dltok status result =
        let pc = usertok dlentry
        feed <- getFeed meter pc (result, status) dltok
        case feed of
-         Nothing -> return ()
+         Nothing ->                         -- some problem with the feed
+           case status of 
+             Terminated sigINT -> return () -- Ctrl-C is not a tackable error
+             _ -> do curtime <- now
+                     updatePodcast (gdbh gi) 
+                           (pc {lastattempt = curtime,
+                                failedattempts = 1 + failedattempts pc})
+                     commit (gdbh gi)
          Just f -> do newpc <- updateFeed gi pc f
                       curtime <- now
                       updatePodcast (gdbh gi) 
-                                    (newpc {lastupdate = Just curtime})
+                                    (newpc {lastupdate = Just curtime},
+                                            lastattempt = curtime,
+                                            failedattempts = 0}
                       --i $ "   Podcast Title: " ++ (castname newpc)
                       commit (gdbh gi)
  
