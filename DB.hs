@@ -165,9 +165,9 @@ updatePodcast dbh podcast =
             \WHERE castid = ?"
         [toSql (castname podcast), toSql (feedurl podcast),
          toSql (fromEnum (pcenabled podcast)),
-         toSql (lastupdate podcast), toSql (castid podcast),
+         toSql (lastupdate podcast),
          toSql (lastattempt podcast),
-         toSql (failedattempts podcast)] >> return ()
+         toSql (failedattempts podcast), toSql (castid podcast)] >> return ()
 
 {- | Remove a podcast. -}
 removePodcast :: Connection -> Podcast -> IO ()
