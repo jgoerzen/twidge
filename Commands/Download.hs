@@ -74,9 +74,21 @@ cmd_worker gi ([], casts) = lock $
        i $ printf "%d episode(s) to consider from %d podcast(s)"
          (length episodes) (length podcastlist)
        downloadEpisodes gi episodes
+       cleanupDirectory gi episodes
 
 cmd_worker _ _ =
     fail $ "Invalid arguments to download; please see hpodder download --help"
+
+cleanupDirectory gi episodes =
+    do base <- getEnclTmp
+       files <- getDirectoryContents base
+       mapM_ (removeold base) files
+    where epmd5s = map (getdlfname . epurl) episodes
+          epmsgs = map (\e -> e ++ ".msg") epmd5s
+          eps = epmd5s ++ epmsgs
+          removeold base file =
+            when (not (file `elem` eps)) $
+                removeFile (base ++ "/" ++ file)
 
 downloadEpisodes gi episodes =
     do progressinterval <- getProgressInterval
@@ -170,7 +182,9 @@ updateAttempt curtime ep =
     ep {epfirstattempt =
         case epfirstattempt ep of
             Nothing -> Just curtime
-            Just x -> Just x}
+            Just x -> Just x
+       }
+
 
 procSuccess gi ep tmpfp =
     do cp <- getCP ep idstr fnpart
@@ -193,6 +207,8 @@ procSuccess gi ep tmpfp =
                                        "--WOAS", feedurl . podcast $ ep,
                                         -- "--WXXX", feedurl . podcast $ ep,
                                        finalfn] >>= id3result
+       cp <- getCP ep idstr fnpart
+       let cfg = get cp (show . castid . podcast $ ep)
        forM_ (either (const Nothing) Just $ cfg "posthook")
              (runHook finalfn)
        curtime <- now

@@ -71,7 +71,8 @@ cmd_worker gi (args, episodes) = lock $
        E.evaluate (length eplist_orig)
        d $ printf "Modifying %d episodes" (length eplist_orig)
        return $ seq eplist_orig eplist_orig
-       let eplist_new = map (\e -> e {epstatus = newstatus}) eplist_orig
+       let eplist_new = map (\e -> e {epstatus = newstatus, 
+                                      epfailedattempts = 0 }) eplist_orig
        mapM_ (updateEpisode (gdbh gi)) eplist_new
        commit (gdbh gi)
 

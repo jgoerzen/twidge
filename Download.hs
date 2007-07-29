@@ -30,7 +30,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 -}
 
 module Download(startGetURL, finishGetURL, checkDownloadSize, Result(..), 
-                DownloadTok(..)) where
+                DownloadTok(..), getdlfname) where
 import System.Cmd.Utils
 import System.Posix.Process
 import Config
@@ -88,7 +88,7 @@ startGetURL url dirbase allowresume =
        havecurlrc <- doesFileExist curlrc
        let curlrcopts = (if havecurlrc then ["-K", curlrc] else [])
                         ++ (if allowresume then ["-C", "-"] else [])
-       let fp = dirbase ++ "/" ++ md5s (Str url)
+       let fp = dirbase ++ "/" ++ getdlfname url
        startsize <- getsize fp
        case startsize of 
          Just x -> d $ printf "Resuming download of %s at %s" fp (show x)
@@ -104,6 +104,7 @@ startGetURL url dirbase allowresume =
        closeFd msgfd2
        return $ DownloadTok pid url fp startsize
 
+getdlfname url = md5s (Str url)
 {- | Checks to see how much has been downloaded on the given file.  Also works
 after download is complete to get the final size.  Returns Nothing if the
 file doesn't exist. -}
