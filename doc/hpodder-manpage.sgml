@@ -884,6 +884,9 @@ podcastfaildays = 5
                   </para>
                 </listitem>
               </varlistentry>
+            </variablelist>
+            </listitem>
+        </varlistentry>
         <varlistentry><term>podcastfailattempts</term>
           <listitem><para>
             The minimum number of attempts to download this podcast before
@@ -901,9 +904,6 @@ podcastfaildays = 5
             </para>
             </listitem>
             </varlistentry>
-            </variablelist>
-            </listitem>
-        </varlistentry>
       </variablelist>
     </refsect2>
   </refsect1>
