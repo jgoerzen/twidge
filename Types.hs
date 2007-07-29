@@ -49,7 +49,7 @@ data Podcast = Podcast {castid :: Integer,
                         feedurl :: String,
                         pcenabled :: PCEnabled,
                         lastupdate :: Maybe Integer, -- Last successful update
-                        lastattempt :: Integer,      -- Last attempt
+                        lastattempt :: Maybe Integer,      -- Last attempt
                         failedattempts :: Integer}   -- failed attempts since last success
              deriving (Eq, Show, Read)
 

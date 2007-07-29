@@ -36,7 +36,7 @@ cmd_worker gi (_, [url]) =
                                             feedurl = url,
                                             lastupdate = Nothing,
                                             pcenabled = PCEnabled,
-                                            lastattempt = 0,
+                                            lastattempt = Nothing,
                                             failedattempts = 0})
        commit (gdbh gi)
        printf "Podcast added:\n    URL: %s\n    ID: %d\n" url (castid pc)

@@ -90,7 +90,7 @@ updateThePodcast gi pt meter dlentry dltok status result =
              Terminated sigINT -> return () -- Ctrl-C is not a tackable error
              _ -> do curtime <- now
                      let newpc = considerDisable gi
-                           (pc {lastattempt = curtime,
+                           (pc {lastattempt = Just curtime,
                                 failedattempts = 1 + failedattempts pc})
                      updatePodcast (gdbh gi) newpc
                      commit (gdbh gi)
@@ -100,7 +100,7 @@ updateThePodcast gi pt meter dlentry dltok status result =
                       curtime <- now
                       updatePodcast (gdbh gi) 
                                     (newpc {lastupdate = Just curtime,
-                                            lastattempt = curtime,
+                                            lastattempt = Just curtime,
                                             failedattempts = 0})
                       --i $ "   Podcast Title: " ++ (castname newpc)
                       commit (gdbh gi)
@@ -111,13 +111,15 @@ considerDisable gi pc = forceEither $
        let lupdate = case lastupdate pc of
                             Nothing -> 0
                             Just x -> x
+       let timepermitsdel = case lastattempt pc of
+                                Nothing -> True
+                                Just x -> x - lupdate > faildays * 60 * 60 * 24
        case pcenabled pc of
          PCUserDisabled -> return pc
          PCErrorDisabled -> return pc
          PCEnabled -> return $
            pc {pcenabled =
-               if (failedattempts pc > failattempts) &&
-                  (lastattempt pc - lupdate > faildays * 60 * 60 * 24)
+               if (failedattempts pc > failattempts) && timepermitsdel
                   then PCErrorDisabled
                   else PCEnabled
                   }

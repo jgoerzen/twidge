@@ -99,7 +99,7 @@ newpodcasts id gi =
                                                  feedurl = url,
                                                  pcenabled = PCEnabled,
                                                  lastupdate = Nothing,
-                                                 lastattempt = 0,
+                                                 lastattempt = Nothing,
                                                  failedattempts = 0}) urlstoadd
                            
        newpcs <- mapM (addPodcast (gdbh gi)) podcaststoadd
