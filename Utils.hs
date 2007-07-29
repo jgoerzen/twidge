@@ -42,6 +42,7 @@ import System.Time
 import System.Time.Utils
 import System.IO
 import System.Posix.IO
+import Control.Exception(finally)
 
 simpleCmd :: IConnection conn => 
           String -> String -> String -> [OptDescr (String, String)] 
@@ -79,12 +80,13 @@ lock func =
        lockh <- openFile (appdir ++ "/.lock") WriteMode
        lockfd <- handleToFd lockh
        catch (placelock lockfd) errorhandler
-    where placelock lockfd =
-              do setLock lockfd (WriteLock, AbsoluteSeek, 0, 0)
-                 r <- func
-                 setLock lockfd (Unlock, AbsoluteSeek, 0, 0)
-                 closeFd lockfd
-                 return r
+       r <- finally func (releaselock lockfd)
+       return r
+
+    where placelock lockfd = setLock lockfd (WriteLock, AbsoluteSeek, 0, 0)
+          releaselock lockfd = do
+               setLock lockfd (Unlock, AbsoluteSeek, 0, 0)
+               closeFd lockfd
           errorhandler _ =
               do putStrLn "Aborting because another hpodder is already running"
                  exitFailure
