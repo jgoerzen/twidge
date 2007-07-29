@@ -37,6 +37,8 @@ import System.Posix.Process
 import System.Directory
 import System.IO
 import Data.List
+import Data.Either.Utils
+import Data.ConfigFile(get)
 
 i = infoM "update"
 w = warningM "update"
@@ -97,22 +99,22 @@ updateThePodcast gi pt meter dlentry dltok status result =
          Just f -> do newpc <- updateFeed gi pc f
                       curtime <- now
                       updatePodcast (gdbh gi) 
-                                    (newpc {lastupdate = Just curtime},
+                                    (newpc {lastupdate = Just curtime,
                                             lastattempt = curtime,
-                                            failedattempts = 0}
+                                            failedattempts = 0})
                       --i $ "   Podcast Title: " ++ (castname newpc)
                       commit (gdbh gi)
 
 considerDisable gi pc = forceEither $
-    do faildays <- get cp (show (castid pc)) "podcastfaildays"
-       failattempts <- get cp (show (castid pc)) "podcastfailattempts"
+    do faildays <- get (gcp gi) (show (castid pc)) "podcastfaildays"
+       failattempts <- get (gcp gi) (show (castid pc)) "podcastfailattempts"
        let lupdate = case lastupdate pc of
-         Nothing -> 0
-         Just x -> x
+                            Nothing -> 0
+                            Just x -> x
        case pcenabled pc of
-         PCUserDisabled -> pc
-         PCErrorDisabled -> pc
-         PCEnabled -> 
+         PCUserDisabled -> return pc
+         PCErrorDisabled -> return pc
+         PCEnabled -> return $
            pc {pcenabled =
                if (failedattempts pc > failattempts) &&
                   (lastattempt pc - lupdate > faildays * 60 * 60 * 24)
