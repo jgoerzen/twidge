@@ -77,9 +77,8 @@ upgradeSchema dbh 3 tables =
        run dbh "ALTER TABLE podcasts ADD lastattempt INTEGER" []
        dbdebug "Adding failedattempts column"
        run dbh "ALTER TABLE podcasts ADD failedattempts INTEGER NOT NULL DEFAULT 0" []
-       timenow <- now
-       dbdebug "Adding lastsuccess column"
-       run dbh "ALTER TABLE podcasts ADD lastsuccess INTEGER NOT NULL DEFAULT ?" [now]
+       setSchemaVer dbh 4
+       commit dbh
 
 upgradeSchema dbh 2 tables =
     do dbdebug "Upgrading schema 2 -> 3"
@@ -147,13 +146,12 @@ addPodcast dbh podcast =
     do handleSql 
         (\e -> fail $ "Error adding podcast; perhaps this URL already exists\n"
                ++ show e) $
-               run dbh "INSERT INTO podcasts (castname, feedurl, pcenabled, lastupdate, lastattempt, failedattempts, lastsuccess) VALUES (?, ?, ?, ?, ?, ?, ?)"
+               run dbh "INSERT INTO podcasts (castname, feedurl, pcenabled, lastupdate, lastattempt, failedattempts) VALUES (?, ?, ?, ?, ?, ?, ?)"
                          [toSql (castname podcast), toSql (feedurl podcast),
                           toSql (fromEnum (pcenabled podcast)),
                           toSql (lastupdate podcast),
                           toSql (lastattempt podcast),
-                          toSql (failedattempts podcast),
-                          toSql (lastsuccess podcast)]
+                          toSql (failedattempts podcast)]
        r <- quickQuery dbh "SELECT castid FROM podcasts WHERE feedurl = ?"
             [toSql (feedurl podcast)]
        case r of
@@ -163,13 +161,13 @@ addPodcast dbh podcast =
 updatePodcast :: Connection -> Podcast -> IO ()
 updatePodcast dbh podcast = 
     run dbh "UPDATE podcasts SET castname = ?, feedurl = ?, pcenabled = ?, \
-            \lastupdate = ?, lastattempt = ?, failedattempts = ?,\
-            \lastsuccess = ? WHERE castid = ?"
+            \lastupdate = ?, lastattempt = ?, failedattempts = ? \
+            \WHERE castid = ?"
         [toSql (castname podcast), toSql (feedurl podcast),
          toSql (fromEnum (pcenabled podcast)),
          toSql (lastupdate podcast), toSql (castid podcast),
-         toSql (lastattempt podcast), toSql (failedattempts podcast),
-         toSql (lastsuccess podcast)] >> return ()
+         toSql (lastattempt podcast),
+         toSql (failedattempts podcast)] >> return ()
 
 {- | Remove a podcast. -}
 removePodcast :: Connection -> Podcast -> IO ()
@@ -181,14 +179,14 @@ removePodcast dbh podcast =
 getPodcasts :: Connection -> IO [Podcast]
 getPodcasts dbh =
     do res <- quickQuery dbh "SELECT castid, castname, feedurl, pcenabled,\
-              \lastupdate, lastattempt, failedattempts, lastsuccess \
+              \lastupdate, lastattempt, failedattempts \
               \FROM podcasts ORDER BY castid" []
        return $ map podcast_convrow res
 
 getPodcast :: Connection -> Integer -> IO [Podcast]
 getPodcast dbh wantedid =
     do res <- quickQuery dbh "SELECT castid, castname, feedurl, pcenabled,\
-              \lastupdate, lastattempt, failedattempts, lastsuccess \
+              \lastupdate, lastattempt, failedattempts \
               \FROM podcasts WHERE castid = ? ORDER BY castid" [toSql wantedid]
        return $ map podcast_convrow res
 
@@ -206,12 +204,12 @@ getEpisodes dbh pc =
                        eplength = fromSql slength}
           toItem x = error $ "Unexpected result in getEpisodes: " ++ show x
 
-podcast_convrow [svid, svname, svurl, isenabled, lupdate, lattempt, fattempts,
-                 lsuccess] =
+podcast_convrow [svid, svname, svurl, isenabled, lupdate, lattempt,
+                 fattempts] =
     Podcast {castid = fromSql svid, castname = fromSql svname,
              feedurl = fromSql svurl, pcenabled = toEnum . fromSql $ isenabled,
              lastupdate = fromSql lupdate, lastattempt = fromSql lattempt,
-             failedattempts = fromSql fattempts, lastsuccess = fromSql lsuccess}
+             failedattempts = fromSql fattempts}
 
 {- | Add a new episode.  If the episode already exists, ignore the add request
 and preserve the existing record. -}
