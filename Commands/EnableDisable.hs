@@ -53,9 +53,13 @@ cmd_worker cmd newstat gi ([], casts) = lock $
        evaluate (length podcastlist)
        d $ "Setting " ++ (show . length $ podcastlist) ++ " podcasts to " ++
          show (newstat)
-       mapM_ (\x -> updatePodcast (gdbh gi) (x {pcenabled = newstat})) 
+       mapM_ (\x -> updatePodcast (gdbh gi) 
+                    (x {pcenabled = newstat,
+                        failedattempts = if newstat == PCEnabled then 0 
+                                            else failedattempts x})) 
              podcastlist
        commit (gdbh gi)
+           
 
 cmd_worker cmd _ _ _ =
     fail $ "Invalid arguments to enable; please see hpodder " ++ cmd ++ " --help"
