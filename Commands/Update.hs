@@ -150,7 +150,7 @@ getFeed meter pc (result, status) dltok =
          (Failure, Terminated sigINT) -> do w "\n   Ctrl-C hit; aborting!"
                                             exitFailure
          _ -> do writeMeterString stderr meter $
-                  " *** " ++ (show . castid $ pc) ++ ": Failure downloading feed; will attempt again on next update\n"
+                  " *** " ++ (show . castid $ pc) ++ ": Failure downloading feed\n"
                  return Nothing
 
 helptext = "Usage: hpodder update [castid [castid...]]\n\n" ++ genericIdHelp ++
