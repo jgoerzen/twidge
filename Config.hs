@@ -66,8 +66,10 @@ getDefaultCP =
                        "%(safecasttitle)s/%(safefilename)s"
                  cp <- set cp "DEFAULT" "maxthreads" "2"
                  cp <- set cp "DEFAULT" "progressinterval" "1"
-                 cp <- set cp "DEFAULT" "podcastfaildays" "14"
-                 cp <- set cp "DEFAULT" "podcastfailattempts" "6"
+                 cp <- set cp "DEFAULT" "podcastfaildays" "21"
+                 cp <- set cp "DEFAULT" "podcastfailattempts" "15"
+                 cp <- set cp "DEFAULT" "epfaildays" "21"
+                 cp <- set cp "DEFAULT" "epfailattempts" "15"
                  return cp
 
 startingcp = emptyCP {accessfunc = interpolatingAccess 10}
