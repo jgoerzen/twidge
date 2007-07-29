@@ -1,3 +1,15 @@
+hpodder (1.0.0) unstable; urgency=low
+
+  * Release 1.0.0.
+  * Now remove files in the temporary download directory that belong
+    to episodes that are no longer marked for download.
+  * New automatic episode/podcast expiration/error system implemented
+    and documented.
+  * Propogate exceptions out of locking properly.  Closes: #428106.
+  * Fixed settitle.  Closes: #389956.
+
+ -- John Goerzen <jgoerzen@complete.org>  Sat, 28 Jul 2007 21:18:19 -0500
+
 hpodder (0.99.5) unstable; urgency=low
 
   * Bump build-depends on HDBC.  Closes: #422156.
