@@ -1,5 +1,5 @@
 {- hpodder component
-Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2006-2007 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 {- |
    Module     : Download
-   Copyright  : Copyright (C) 2006 John Goerzen
+   Copyright  : Copyright (C) 2006-2007 John Goerzen
    License    : GNU GPL, version 2 or above
 
    Maintainer : John Goerzen <jgoerzen@complete.org>
@@ -45,7 +45,7 @@ import System.Posix.IO
 import Data.Hash.MD5
 import Control.Exception(evaluate)
 
-data Result = Success | TempFail | PermFail
+data Result = Success | Failure
             deriving (Eq, Show, Read)
 
 data DownloadTok = 
@@ -115,24 +115,9 @@ finishGetURL dltok ec =
     do newsize <- getsize (tokpath dltok)
        let r = case ec of
                   Exited ExitSuccess -> Success
-                  Exited (ExitFailure i) ->
-                      case i of
-                        5 -> TempFail -- error resolving proxy
-                        6 -> TempFail -- error resolving host
-                        7 -> TempFail -- couldn't connect
-                        9 -> TempFail -- FTP access denied
-                        15 -> TempFail -- FTP host problem
-                        16 -> TempFail -- FTP connect problem
-                        18 -> TempFail -- Partial transfer
-                        26 -> TempFail -- Read error
-                        27 -> TempFail -- out of memory
-                        28 -> TempFail -- timeout
-                        35 -> TempFail -- SSL handshake fail
-                        37 -> TempFail -- permissions
-                        52 -> TempFail -- no reply
-                        _ -> PermFail
-                  Terminated _ -> TempFail
-                  Stopped _ -> TempFail
+                  Exited (ExitFailure i) -> Failure
+                  Terminated _ -> Failure
+                  Stopped _ -> Failure
        if r == Success
           then do d $ "curl returned successfully; new size is " ++
                         (show newsize)
@@ -142,11 +127,11 @@ finishGetURL dltok ec =
                      then do i $ "Attempt to resume download failed; will re-try download on next run"
                              removeFile (tokpath dltok)
                              --getURL url fp
-                             return TempFail
+                             return Failure
                      else if newsize == Nothing
                              -- Sometimes Curl returns success but doesn't 
                              -- actually download anything
-                             then return TempFail
+                             then return Failure
                              else return r
           else do d $ "curl returned error; new size is " ++ (show newsize)
                   return r
