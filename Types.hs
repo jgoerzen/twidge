@@ -42,7 +42,7 @@ data EpisodeStatus = Pending -- ^ Ready to download
                      deriving (Eq, Show, Read, Ord, Enum)
 
 data PCEnabled = PCUserDisabled | PCEnabled | PCErrorDisabled
-    deriving (Eq, Show, Read, Org, Enum)
+    deriving (Eq, Show, Read, Ord, Enum)
 
 data Podcast = Podcast {castid :: Integer,
                         castname :: String,

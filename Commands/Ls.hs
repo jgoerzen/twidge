@@ -57,7 +57,7 @@ lscasts_worker gi (opts, casts) =
                                      (npend::Int) (ntot::Int) title
                           when (islong) (printf "     %s\n" (feedurl pc))
               where title = case pcenabled pc of
-                               PCEnabled -> pcenabled pc
+                               PCEnabled -> castname pc
                                PCUserDisabled -> "[disabled] " ++ castname pc
                                PCErrorDisabled -> "[disabled by errors] " ++
                                                   castname pc
