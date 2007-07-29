@@ -132,17 +132,27 @@ watchTheFiles progressinterval watchFilesMV =
 procEpisode gi meter dltok ep name r =
        case r of
          (Success, _) -> procSuccess gi ep (tokpath dltok)
-         (TempFail, Terminated sigINT) -> 
+         (Failure, Terminated sigINT) -> 
              do i "Ctrl-C hit; aborting!"
                 -- Do not consider Ctrl-C a trackable error
                 exitFailure
-         (TempFail, _) -> writeMeterString stderr meter $ " *** " ++ name ++ 
-                          ": Temporary failure; will retry later\n"
-         _ -> do updateEpisode (gdbh gi) (ep {epstatus = Error})
+         _ -> do curtime <- now
+                 updateEpisode (gdbh gi) $ considerDisable gi $
+                    (ep {eplastattempt = Just now,
+                         epfailedattempts = epfailedattempts ep + 1})
                  commit (gdbh gi)
                  writeMeterString stderr meter $ " *** " ++ name ++ 
                                       ": Error downloading\n"
-
+                 when (epstatus newpc == Error) $
+                    writeMeterString stderr meter $ " *** " ++ name ++ 
+                             ": Disabled due to errors.\n"
+considerDisable gi ep = forceEither $
+    do faildays <- get (gcp gi) castid "epfaildays"
+       failattempts <- get (gcp gi) castid "epfailattempts"
+       let lupdate = case epfirstattempt ep of
+                        Nothing -> 0
+                        
+    where castid = show . castid . podcast $ ep
 procSuccess gi ep tmpfp =
     do cp <- getCP ep idstr fnpart
        let cfg = get cp idstr
