@@ -59,7 +59,7 @@ item2ep pc item =
                           [] -> 0
                           [(x, [])] -> x
                           _ -> 0,
-             eplastupdate = Nothing,
+             eplastdownload = Nothing,
              eplastattempt = Nothing,
              epfailedattempts = 0}
 
