@@ -201,15 +201,21 @@ getPodcast dbh wantedid =
 getEpisodes :: Connection -> Podcast -> IO [Episode]
 getEpisodes dbh pc =
     do r <- quickQuery dbh "SELECT episodeid, title, epurl, enctype,\
-                            \status, eplength FROM episodes WHERE castid = ? ORDER BY \
+                            \status, eplength, eplastupdate, eplastattempt, \
+                            \epfailedattempts FROM episodes \
+                            \WHERE castid = ? ORDER BY \
                             \episodeid" [toSql (castid pc)]
        return $ map toItem r
-    where toItem [sepid, stitle, sepurl, senctype, sstatus, slength] =
+    where toItem [sepid, stitle, sepurl, senctype, sstatus, slength,
+                  slu, sla, sfa] =
               Episode {podcast = pc, epid = fromSql sepid,
                        eptitle = fromSql stitle,
                        epurl = fromSql sepurl, eptype = fromSql senctype,
                        epstatus = read (fromSql sstatus),
-                       eplength = fromSql slength}
+                       eplength = fromSql slength,
+                       eplastupdate = fromSql slu,
+                       eplastattempt = fromSql sla,
+                       epfailedattempts = fromSql sfa}
           toItem x = error $ "Unexpected result in getEpisodes: " ++ show x
 
 podcast_convrow [svid, svname, svurl, isenabled, lupdate, lattempt,
@@ -232,17 +238,19 @@ addEpisode dbh ep =
                    [[x]] -> return ((fromSql x) + (1::Int))
                    _ -> fail "Unexpected response in getepid"
 
-{- | Update an episode.  If it doesn't already exist, create ie. -}
+{- | Update an episode.  If it doesn't already exist, create it. -}
 updateEpisode :: Connection -> Episode -> IO Integer
 updateEpisode dbh ep = insertEpisode "INSERT OR REPLACE" dbh ep (epid ep)
 
 insertEpisode insertsql dbh episode newepid =
     run dbh (insertsql ++ " INTO episodes (castid, episodeid, title,\
-           \epurl, enctype, status, eplength) VALUES (?, ?, ?, ?, ?, ?, ?)")
+           \epurl, enctype, status, eplength, eplastupdate, eplastattempt,\
+           \epfailedattempts) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
            [toSql (castid (podcast episode)), toSql newepid, 
             toSql (eptitle episode), toSql (epurl episode), 
             toSql (eptype episode), toSql (show (epstatus episode)),
-            toSql (eplength episode)]
+            toSql (eplength episode), toSql (eplastupdate episode),
+            toSql (eplastattempt episode), toSql (epfailedattempts episode)]
 
 getSelectedPodcasts dbh [] = getSelectedPodcasts dbh ["all"]
 getSelectedPodcasts dbh ["all"] = getPodcasts dbh
