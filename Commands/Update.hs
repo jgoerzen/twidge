@@ -92,6 +92,8 @@ updateThePodcast gi pt meter dlentry dltok status result =
                                 failedattempts = 1 + failedattempts pc})
                      updatePodcast (gdbh gi) newpc
                      commit (gdbh gi)
+                     when (pcenabled newpc == PCErrorDisabled) $
+                        i ("   Podcast " ++ castname newpc ++ " disabled due to errors.")
          Just f -> do newpc <- updateFeed gi pc f
                       curtime <- now
                       updatePodcast (gdbh gi) 
