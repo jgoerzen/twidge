@@ -147,8 +147,8 @@ getFeed meter pc (result, status) dltok =
                                  " *** " ++ (show . castid $ pc) ++ 
                                  ": Failure parsing feed: " ++ x ++ "\n"
                                return Nothing
-         (TempFail, Terminated sigINT) -> do w "\n   Ctrl-C hit; aborting!"
-                                             exitFailure
+         (Failure, Terminated sigINT) -> do w "\n   Ctrl-C hit; aborting!"
+                                            exitFailure
          _ -> do writeMeterString stderr meter $
                   " *** " ++ (show . castid $ pc) ++ ": Failure downloading feed; will attempt again on next update\n"
                  return Nothing

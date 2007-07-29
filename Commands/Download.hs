@@ -137,22 +137,41 @@ procEpisode gi meter dltok ep name r =
                 -- Do not consider Ctrl-C a trackable error
                 exitFailure
          _ -> do curtime <- now
-                 updateEpisode (gdbh gi) $ considerDisable gi $
-                    (ep {eplastattempt = Just now,
-                         epfailedattempts = epfailedattempts ep + 1})
+                 let newep = considerDisable gi $
+                       updateAttempt curtime $
+                       (ep {eplastattempt = Just curtime,
+                            epfailedattempts = epfailedattempts ep + 1})
+                 updateEpisode (gdbh gi) newep
                  commit (gdbh gi)
                  writeMeterString stderr meter $ " *** " ++ name ++ 
                                       ": Error downloading\n"
-                 when (epstatus newpc == Error) $
+                 when (epstatus newep == Error) $
                     writeMeterString stderr meter $ " *** " ++ name ++ 
                              ": Disabled due to errors.\n"
 considerDisable gi ep = forceEither $
-    do faildays <- get (gcp gi) castid "epfaildays"
-       failattempts <- get (gcp gi) castid "epfailattempts"
+    do faildays <- get (gcp gi) cast "epfaildays"
+       failattempts <- get (gcp gi) cast "epfailattempts"
        let lupdate = case epfirstattempt ep of
                         Nothing -> 0
+                        Just x -> x
+       let timepermitsdel = case eplastattempt ep of
+                                Nothing -> True
+                                Just x -> x - lupdate > faildays * 60 * 60 * 24
+       case epstatus ep of
+         Pending -> return $ ep {epstatus =
+            if (epfailedattempts ep > failattempts) && timepermitsdel
+                then Error
+                else Pending}
+         _ -> return ep 
                         
-    where castid = show . castid . podcast $ ep
+    where cast = show . castid . podcast $ ep
+                  
+updateAttempt curtime ep =
+    ep {epfirstattempt =
+        case epfirstattempt ep of
+            Nothing -> Just curtime
+            Just x -> Just x}
+
 procSuccess gi ep tmpfp =
     do cp <- getCP ep idstr fnpart
        let cfg = get cp idstr
@@ -176,7 +195,9 @@ procSuccess gi ep tmpfp =
                                        finalfn] >>= id3result
        forM_ (either (const Nothing) Just $ cfg "posthook")
              (runHook finalfn)
-       updateEpisode (gdbh gi) (ep {epstatus = Downloaded})
+       curtime <- now
+       updateEpisode (gdbh gi) $ 
+           updateAttempt curtime $ (ep {epstatus = Downloaded})
        commit (gdbh gi)
        
     where idstr = show . castid . podcast $ ep
