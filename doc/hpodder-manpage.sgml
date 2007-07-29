@@ -667,6 +667,47 @@
     </variablelist>
   </refsect1>
 
+  <refsect1 id="hpodder.error">
+    <indexterm><primary>Errors</></>
+    <title>Automatic Error Handling</title>
+    <para>
+      For whatever reason, podcast feeds or individual episodes sometimes
+      fail to download.  The reasons for this range from the podcast being
+      taken down by its author to the network being disconnected from the
+      local computer.
+    </para>
+    <para>
+      People that track many podcasts over a long time will probably find it
+      annoying to have &hpodder; attempt to download invalid feeds or
+      episodes over and over again.  For that reason, &hpodder; 1.0.0
+      introduced automatic error handling.
+    </para>
+    <para>
+      Once a podcast feed or episode has failed at least 15 times, 
+      it's been at least 21 days since the first download attempt (episodes)
+      or last update (feeds), &hpodder; will automatically mark the item to
+      be skipped in future runs.  For podcast feeds, &hpodder; disabled the
+      podcast; this status will appear in <command>hpodder lscasts</>.
+      For episodes, &hpodder; sets the status to Error; this will appear
+      in <command>hpodder lseps</>.  Both can be changed later, with
+      <command>hpodder enable</> or <command>hpodder setstatus</>,
+      respectively.
+    </para>
+    <para>
+      The default minimums of 15 attempts and 21 days may be adjusted in
+      the &hpodder; configuration file, either globally or on a per-podcast
+      basis.
+    </para>
+    <para>
+      If you wish to disable checking entirely, you can put lines such as
+      <literal>epfaildays = 123456789</literal> and
+      <literal>podcastfaildays = 123456789</literal> in your <literal>DEFAULT</>
+      section in <filename>~/.hpodder/hpodder.conf</>.  Of course, if you
+      have podcasts that still fail after 338,237 years, you could be in
+      trouble.
+    </para>
+  </refsect1>
+
   <refsect1 id="hpodder.config">
     <indexterm><primary>Configuration File</><secondary>hpodder</></>
     <title>hpodder Configuration File</title>
@@ -697,6 +738,10 @@ downloaddir = /home/jgoerzen/podcasts
 
 namingpatt = %(safecasttitle)s/%(safefilename)s
 
+; Don't disable a podcast due to errors unless it's been at least 20
+; days since the last (or first) attempt
+podcastfaildays = 20
+
 [general]
 
 ; The following line tells hpodder that
@@ -709,6 +754,9 @@ progressinterval = 1
 [31]
 ; Store this particular podcast somewhere else
 downloaddir = /nfs/remote/podcasts
+
+; And we don't care as much about disabling it
+podcastfaildays = 5
 ]]></programlisting>
     <para>
       In this example, you saw some "general" options, such as
@@ -773,6 +821,22 @@ downloaddir = /nfs/remote/podcasts
               necessary if it does not already exist.  The default is
             <filename>~/podcasts</filename></para></listitem>
         </varlistentry>
+        <varlistentry><term>epfailattempts</term>
+          <listitem><para>
+            The minimum number of attempts to download this episode before
+            the episode will be considered to be marked Error.  Default is
+            15.
+          </para></listitem>
+        </varlistentry>
+        <varlistentry><term>epfaildays</term>
+          <listitem><para>
+            The minimum number of days that must have elapsed between the
+            first attempt to download the episode and the present time before
+            the episode will be considered to be marked Error.  Default is
+            21.
+            </para>
+            </listitem>
+            </varlistentry>
         <varlistentry><term>namingpatt</term>
           <listitem><para>How to name downloaded files.  This pattern
           is relative to the <option>downloaddir</option>.  The
@@ -820,6 +884,23 @@ downloaddir = /nfs/remote/podcasts
                   </para>
                 </listitem>
               </varlistentry>
+        <varlistentry><term>podcastfailattempts</term>
+          <listitem><para>
+            The minimum number of attempts to download this podcast before
+            the episode will be considered to be marked disabled.  Default is
+            15.
+          </para></listitem>
+        </varlistentry>
+        <varlistentry><term>podcastfaildays</term>
+          <listitem><para>
+            The minimum number of days that must have elapsed between the
+            last successful download of the podcast's feed
+            and the present time before
+            the podcast will be considered to be marked disabled.  Default is
+            21.
+            </para>
+            </listitem>
+            </varlistentry>
             </variablelist>
             </listitem>
         </varlistentry>
