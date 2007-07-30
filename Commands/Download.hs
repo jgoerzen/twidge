@@ -46,6 +46,7 @@ import Data.Progress.Meter
 import Control.Concurrent.MVar
 import Control.Concurrent
 import Data.Foldable(forM_)
+import Network.URI(unEscapeString)
 import System.Posix.IO(
                        OpenMode(..),
                        closeFd,
@@ -258,7 +259,8 @@ getCP ep idstr fnpart =
                        (sanitize_fn . castname . podcast $ ep)
                  cp <- set cp idstr "epid" (show . epid $ ep)
                  cp <- set cp idstr "castid" idstr
-                 cp <- set cp idstr "safefilename" (sanitize_fn fnpart)
+                 cp <- set cp idstr "safefilename" 
+                       (sanitize_fn (unEscapeString fnpart))
                  cp <- set cp idstr "safeeptitle" (sanitize_fn . eptitle $ ep)
                  return cp
 
