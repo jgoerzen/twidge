@@ -72,10 +72,10 @@ lscasts_help =
 
 lsepisodes = simpleCmd "lsepisodes" "List episodes in hspodder database"
                lsepisodes_help
-             [Option "l" [] (NoArg ("l", "")) "Long format display -- include URLs in putput"] lsepisodes_worker
+             [Option "l" [] (NoArg ("l", "")) "Long format display -- include URLs in output"] lsepisodes_worker
 
 lseps = simpleCmd "lseps" "Alias for lsepisodes" lsepisodes_help
-             [Option "l" [] (NoArg ("l", "")) "Long format display -- include URLs in putput"] lsepisodes_worker
+             [Option "l" [] (NoArg ("l", "")) "Long format display -- include URLs in output"] lsepisodes_worker
 
 lsepisodes_worker gi (opts, casts) =
     do pc <- getSelectedPodcasts (gdbh gi) casts
