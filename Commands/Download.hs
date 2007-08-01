@@ -88,8 +88,8 @@ cleanupDirectory gi episodes =
           epmsgs = map (\e -> e ++ ".msg") epmd5s
           eps = epmd5s ++ epmsgs
           removeold base file =
-            when (not (file `elem` eps)) &&
-                 (not (file `elem` [".", ".."])) $
+            when ((not (file `elem` eps)) &&
+                 (not (file `elem` [".", ".."]))) $
                 removeFile (base ++ "/" ++ file)
 
 downloadEpisodes gi episodes =
