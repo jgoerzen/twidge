@@ -1,3 +1,9 @@
+hpodder (1.0.2) unstable; urgency=low
+
+  * Fix removeFile error.
+
+ -- John Goerzen <jgoerzen@complete.org>  Wed, 01 Aug 2007 10:25:44 -0500
+
 hpodder (1.0.1) unstable; urgency=low
 
   * Correct the location of some info in the manpage.
