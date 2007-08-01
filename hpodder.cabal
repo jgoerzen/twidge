@@ -68,6 +68,11 @@ Build-Depends: haskell98, network, unix, parsec, MissingH>=0.18.0,
 
 Executable: hpodder
 Main-Is: hpodder.hs
+Other-Modules: Commands, Config, DB, Download, DownloadQueue, FeedParser,
+        Types, Utils, Commands.Add, Commands.Catchup, Commands.Download,
+        Commands.EnableDisable, Commands.ImportIpodder, Commands.Ls,
+        Commands.Rm, Commands.SetStatus, Commands.SetTitle,
+        Commands.Setup, Commands.Update
 GHC-Options: -O2
 Extensions: ExistentialQuantification, OverlappingInstances,
     UndecidableInstances
