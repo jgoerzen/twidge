@@ -1,3 +1,9 @@
+hpodder (1.0.3) unstable; urgency=low
+
+  * Fix error with hpodder add.  Closes: #435738.
+
+ -- John Goerzen <jgoerzen@complete.org>  Thu, 02 Aug 2007 21:46:02 -0500
+
 hpodder (1.0.2) unstable; urgency=low
 
   * Fix removeFile error.
