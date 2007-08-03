@@ -154,7 +154,7 @@ addPodcast dbh podcast =
     do handleSql 
         (\e -> fail $ "Error adding podcast; perhaps this URL already exists\n"
                ++ show e) $
-               run dbh "INSERT INTO podcasts (castname, feedurl, pcenabled, lastupdate, lastattempt, failedattempts) VALUES (?, ?, ?, ?, ?, ?, ?)"
+               run dbh "INSERT INTO podcasts (castname, feedurl, pcenabled, lastupdate, lastattempt, failedattempts) VALUES (?, ?, ?, ?, ?, ?)"
                          [toSql (castname podcast), toSql (feedurl podcast),
                           toSql (fromEnum (pcenabled podcast)),
                           toSql (lastupdate podcast),
