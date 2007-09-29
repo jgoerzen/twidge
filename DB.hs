@@ -69,38 +69,7 @@ prepSchema dbh tables =
                commit dbh
                return 0
 
-upgradeSchema dbh 5 _ = return ()
-
-upgradeSchema dbh 4 tables =
-    do dbdebug "Upgrading schema 4 -> 5"
-       dbdebug "Recreating episodes table to add epguid column and UNIQUE constaint"
-       -- Silly sqlite can't add a UNIQUE constaint to an existing table, so we
-       -- have to recreate it.
-       run dbh "CREATE TABLE episodes5 (\
-               \castid INTEGER NOT NULL,\
-               \episodeid INTEGER NOT NULL,\
-               \title TEXT NOT NULL,\
-               \epurl TEXT NOT NULL,\
-               \enctype TEXT NOT NULL,\
-               \status TEXT NOT NULL,\
-               \eplength INTEGER NOT NULL DEFAULT 0,\
-               \epfirstattempt INTEGER,\
-               \eplastattempt INTEGER,\
-               \epfailedattempts INTEGER NOT NULL DEFAULT 0,\
-               \epguid TEXT,\
-               \UNIQUE(castid, epurl),\
-               \UNIQUE(castid, episodeid),\
-               \UNIQUE(castid, epguid))" []
-       dbdebug "Copying data from old episodes table"
-       run dbh "INSERT INTO episodes5 SELECT *, NULL FROM episodes" []
-       dbdebug "Dropping old episodes table"
-       run dbh "DROP TABLE episodes" []
-       dbdebug "Renaming new episodes table"
-       run dbh "ALTER TABLE episodes5 RENAME TO episodes" []
-
-       setSchemaVer dbh 5
-       commit dbh
-       upgradeSchema dbh 5 tables
+upgradeSchema dbh 4 _ = return ()
 
 upgradeSchema dbh 3 tables =
     do dbdebug "Upgrading schema 3 -> 4"
@@ -118,7 +87,6 @@ upgradeSchema dbh 3 tables =
 
        setSchemaVer dbh 4
        commit dbh
-       upgradeSchema dbh 4 tables
 
 upgradeSchema dbh 2 tables =
     do dbdebug "Upgrading schema 2 -> 3"
@@ -234,12 +202,12 @@ getEpisodes :: Connection -> Podcast -> IO [Episode]
 getEpisodes dbh pc =
     do r <- quickQuery dbh "SELECT episodeid, title, epurl, enctype,\
                             \status, eplength, epfirstattempt, eplastattempt, \
-                            \epfailedattempts, epguid FROM episodes \
+                            \epfailedattempts FROM episodes \
                             \WHERE castid = ? ORDER BY \
                             \episodeid" [toSql (castid pc)]
        return $ map toItem r
     where toItem [sepid, stitle, sepurl, senctype, sstatus, slength,
-                  slu, sla, sfa, sepguid] =
+                  slu, sla, sfa] =
               Episode {podcast = pc, epid = fromSql sepid,
                        eptitle = fromSql stitle,
                        epurl = fromSql sepurl, eptype = fromSql senctype,
@@ -247,8 +215,7 @@ getEpisodes dbh pc =
                        eplength = fromSql slength,
                        epfirstattempt = fromSql slu,
                        eplastattempt = fromSql sla,
-                       epfailedattempts = fromSql sfa,
-                       epguid = fromSql sepguid}
+                       epfailedattempts = fromSql sfa}
           toItem x = error $ "Unexpected result in getEpisodes: " ++ show x
 
 podcast_convrow [svid, svname, svurl, isenabled, lupdate, lattempt,
@@ -258,17 +225,11 @@ podcast_convrow [svid, svname, svurl, isenabled, lupdate, lattempt,
              lastupdate = fromSql lupdate, lastattempt = fromSql lattempt,
              failedattempts = fromSql fattempts}
 
-{- | Add a new episode. If the episode already exists, update the URL, GUID
-and title fields while preserving other fields as they are. Returns the number
-of inserted rows. -}
+{- | Add a new episode.  If the episode already exists, ignore the add request
+and preserve the existing record. -}
 addEpisode :: Connection -> Episode -> IO Integer
 addEpisode dbh ep = 
-    do run dbh "UPDATE episodes SET epurl = ?, epguid = ?, title = ? WHERE castid = ? AND (epurl = ? OR epguid = ?)"
-           [toSql (epurl ep), toSql (epguid ep), toSql (eptitle ep),
-            toSql (castid (podcast ep)), toSql (epurl ep), toSql (epguid ep)]
-       -- if the UPDATE was successful, that means that something with the same
-       -- URL or GUID already exists, so the INSERT below will be ignored.
-       nextepid <- getepid
+    do nextepid <- getepid
        insertEpisode "INSERT OR IGNORE" dbh ep nextepid
     where getepid = 
               do r <- quickQuery dbh "SELECT MAX(episodeid) FROM episodes WHERE castid = ?" [toSql (castid (podcast ep))]
@@ -284,13 +245,12 @@ updateEpisode dbh ep = insertEpisode "INSERT OR REPLACE" dbh ep (epid ep)
 insertEpisode insertsql dbh episode newepid =
     run dbh (insertsql ++ " INTO episodes (castid, episodeid, title,\
            \epurl, enctype, status, eplength, epfirstattempt, eplastattempt,\
-           \epfailedattempts, epguid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+           \epfailedattempts) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
            [toSql (castid (podcast episode)), toSql newepid, 
             toSql (eptitle episode), toSql (epurl episode), 
             toSql (eptype episode), toSql (show (epstatus episode)),
             toSql (eplength episode), toSql (epfirstattempt episode),
-            toSql (eplastattempt episode), toSql (epfailedattempts episode),
-            toSql (epguid episode)]
+            toSql (eplastattempt episode), toSql (epfailedattempts episode)]
 
 getSelectedPodcasts dbh [] = getSelectedPodcasts dbh ["all"]
 getSelectedPodcasts dbh ["all"] = getPodcasts dbh

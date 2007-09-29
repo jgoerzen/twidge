@@ -40,7 +40,6 @@ import Data.Either.Utils
 import Data.List
 
 data Item = Item {itemtitle :: String,
-                  itemguid :: Maybe String,
                   enclosureurl :: String,
                   enclosuretype :: String,
                   enclosurelength :: String
@@ -55,7 +54,6 @@ item2ep pc item =
     Episode {podcast = pc, epid = 0,
              eptitle = sanitize_basic (itemtitle item), 
              epurl = sanitize_basic (enclosureurl item),
-             epguid = fmap sanitize_basic (itemguid item),
              eptype = sanitize_basic (enclosuretype item), epstatus = Pending,
              eplength = case reads . sanitize_basic . enclosurelength $ item of
                           [] -> 0
@@ -87,17 +85,13 @@ getTitle doc = forceEither $ strofm "title" (channel doc)
 
 getEnclosures doc =
     concat . map procitem $ item doc
-    where procitem i = map (procenclosure title guid) enclosure
+    where procitem i = map (procenclosure title) enclosure
               where title = case strofm "title" [i] of
                               Left x -> "Untitled"
                               Right x -> x
-                    guid = case strofm "guid" [i] of
-                              Left _ -> Nothing
-                              Right x -> Just x
                     enclosure = tag "enclosure" `o` children $ i
-          procenclosure title guid e =
+          procenclosure title e =
               Item {itemtitle = title,
-                    itemguid = guid,
                     enclosureurl = head0 $ forceMaybe $ stratt "url" e,
                     enclosuretype = head0 $ case stratt "type" e of
                                               Nothing -> ["application/octet-stream"]
