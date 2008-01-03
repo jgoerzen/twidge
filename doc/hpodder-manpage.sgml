@@ -812,8 +812,12 @@ podcastfaildays = 5
       <title>Per-Podcast Options</title>
       <para>
         These options may be specified in <option>DEFAULT</option> or
-        in a per-podcast section.
+        in a per-podcast section.  If placed in
+        <option>DEFAULT</option>, they will apply to all podcasts
+        unless overridden.
       </para>
+      <refsect3 id="hpodder.config.podcast.basic">
+        <title>Basic Per-Podcast Options</title>
       <variablelist>
         <varlistentry><term>downloaddir</term>
           <listitem><para>The main directory into which all podcasts
@@ -864,47 +868,107 @@ podcastfaildays = 5
                 </listitem>
               </varlistentry>
 
-              <varlistentry><term>safecasttitle</term>
-                <listitem><para>The title of the podcast, as specified
-                in the feed.  Special characters, such as spaces or
-                exclamation marks, are converted to
-                underscores.</para></listitem>
-              </varlistentry>
+                <varlistentry><term>safecasttitle</term>
+                  <listitem><para>The title of the podcast, as specified
+                      in the feed.  Special characters, such as spaces or
+                      exclamation marks, are converted to
+                      underscores.</para></listitem>
+                </varlistentry>
 
-              <varlistentry><term>safeeptitle</term>
-                <listitem><para>The title of this episode, as
-                specified in the podcast's feed, with special
-                characters converted to underscores.
-                  </para></listitem></varlistentry>
+                <varlistentry><term>safeeptitle</term>
+                  <listitem><para>The title of this episode, as
+                      specified in the podcast's feed, with special
+                      characters converted to underscores.
+                    </para></listitem></varlistentry>
 
-              <varlistentry><term>safefilename</term>
-                <listitem><para>The component from the URL for this
-                episode after the last slash in the URL, with special
-                characters converted to underscores.
-                  </para>
-                </listitem>
-              </varlistentry>
-            </variablelist>
+                <varlistentry><term>safefilename</term>
+                  <listitem><para>The component from the URL for this
+                      episode after the last slash in the URL, with special
+                      characters converted to underscores.
+                    </para>
+                  </listitem>
+                </varlistentry>
+              </variablelist>
             </listitem>
-        </varlistentry>
-        <varlistentry><term>podcastfailattempts</term>
-          <listitem><para>
-            The minimum number of attempts to download this podcast before
-            the episode will be considered to be marked disabled.  Default is
-            15.
-          </para></listitem>
-        </varlistentry>
-        <varlistentry><term>podcastfaildays</term>
-          <listitem><para>
-            The minimum number of days that must have elapsed between the
-            last successful download of the podcast's feed
-            and the present time before
-            the podcast will be considered to be marked disabled.  Default is
-            21.
-            </para>
+          </varlistentry>
+          <varlistentry><term>podcastfailattempts</term>
+            <listitem><para>
+                The minimum number of attempts to download this podcast before
+                the episode will be considered to be marked disabled.  Default is
+                15.
+              </para></listitem>
+          </varlistentry>
+          <varlistentry><term>podcastfaildays</term>
+            <listitem><para>
+                The minimum number of days that must have elapsed between the
+                last successful download of the podcast's feed
+                and the present time before
+                the podcast will be considered to be marked disabled.  Default is
+                21.
+              </para>
             </listitem>
-            </varlistentry>
-      </variablelist>
+          </varlistentry>
+        </variablelist>
+      </refsect3>
+      <refsect3 id="hpodder.config.podcast.processing">
+        <title>Per-Podcast Command Options</title>
+        <para>
+          These are external commands that will be run in certain
+          situations.  For each of the commands, the following
+          environment variables are set:
+        </para>
+        <variablelist>
+          <varlistentry><term>CASTID</term>
+            <listitem><para>The numeric ID for this podcast</para>
+            </listitem>
+          </varlistentry>
+          
+          <varlistentry><term>CASTTITLE</term>
+            <listitem><para>The title of the podcast,
+            verbatim</para></listitem>
+          </varlistentry>
+
+          <varlistentry><term>EPFILENAME</term>
+            <listitem><para>The on-disk filename where this episode
+            has been stored</para></listitem></varlistentry>
+
+          <varlistentry><term>EPID</term>
+            <listitem><para>The numeric epidose ID for this
+            episode</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term>EPTITLE</term>
+            <listitem><para>The title of this episode, as specified in
+            the podcast's feed.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term>EPURL</term>
+            <listitem><para>The URL of this episode.</para></listitem>
+          </varlistentry>
+
+          <varlistentry><term>FEEDURL</term>
+            <listitem><para>The URL of the podcast's
+            feed.</para></listitem>
+          </varlistentry>
+
+
+          <varlistentry><term>SAFECASTTITLE</term>
+            <listitem><para>The title of the podcast, as specified in
+            the feed.  Special characters, such as spaces or
+            exclamation marks, are converted to
+            underscores.</para></listitem>
+          </varlistentry>
+
+          <varlistentry><term>SAFEEPTITLE</term>
+            <listitem><para>The title of this episode, as specified in
+            the podcast's feed, with special characters converted to
+            underscores.
+              </para></listitem></varlistentry>
+          
+          
+
     </refsect2>
   </refsect1>
               
