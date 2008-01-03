@@ -1112,11 +1112,15 @@ podcastfaildays = 5
     <title>Environment</title>
     <indexterm><primary>Environment Variables</></>
     <para>
-      &hpodder; does not process any environment variables directly.
-      However, it does pass on the environment unmodified to the
+      &hpodder; does not read any environment variables directly.
+      However, it does pass on the environment to the
       programs it calls, such as Curl.  This can be useful for
       specifying proxies.  Please see
       <application>curl</application>(1) for more details.
+      As specified in <xref
+      linkend="hpodder.config.podcast.processing"></xref>, &hpodder;
+      will also set certain variables for post-processing of
+      downloaded files.
     </para>
   </refsect1>
 
