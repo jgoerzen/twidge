@@ -966,8 +966,80 @@ podcastfaildays = 5
             the podcast's feed, with special characters converted to
             underscores.
               </para></listitem></varlistentry>
-          
-          
+        </variablelist>
+        <para>
+          Here are the supported commands:
+        </para>
+        <varlistentry><term>gettypecommand</term>
+          <listitem><para>This command is intended to analyze the
+          content of the file and return the true MIME type of the
+          file, based on the on-disk content.  If this command exits
+          with an error, the MIME type given in the podcast feed will
+          be used.  If you want to always use the MIME type in the
+          podcast feed, you can set this to
+          <literal>/bin/false</literal>.
+            </para>
+            <para>The default value is: <literal>file -i "${EPFILENAME}"</literal>
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry><term>postproccommand</term>
+          <listitem><para>This command provides a user-configurable
+          post-processing hook for downloaded podcasts.  It is only
+          invoked on files whose type matches the
+          <option>postproctypes</option> list.  This command is the
+          very last step in the downloading process.
+            </para>
+            <para>
+              The default value adds ID3 tags to MP3 files.  It is:
+              <literal>id3v2 -A "${CASTTITLE}" -t "${EPTITLE}" --WOAF
+              "${EPURL}" --WOAS "${FEEDURL}" "${EPFILENAME}"</literal>
+            </para>
+          </listitem>
+        </varlistentry>
+      </refsect3>
+
+      <refsect3 id="hpodder.config.podcast.types">
+        <title>Per-Podcast Type Processing Lists</title>
+        <para>
+          These options govern what types of files are processed in
+          different ways.  The types used here are MIME types.  They
+          will be the actual type determined by
+          <option>gettypecommand</option>, or if that command is
+          unable to determine a useful type, the MIME type given by
+          the podcast's RSS feed.  Items in these lists are to be
+          separated by commas.
+        </para>
+        <variablelist>
+          <varlistentry><term>postproctypes</term>
+            <listitem>
+              <para>
+                This is the comma-separated list of MIME types on
+                which <option>postproccommand</option> will operate.
+                The default is: <literal>audio/mpeg, audio/mp3,
+                x-audio/mp3</literal>
+              </para></listitem></varlistentry>
+
+          <varlistentry><term>renametypes</term>
+            <listitem><para>
+                This option governs the automatic renaming of
+                downloaded files.  Some servers do not present files
+                with proper extensions to match their file type.  This
+                can confuse various software and devices.  &hpodder;
+                can automatically fix up extensions on such files.
+                Each entry in the list in a MIME type, a colon, and
+                the desired filename suffix.  Note that no whitespace
+                is allowed around the colon.
+              </para>
+              <para>
+                The default is: <literal>audio/mpeg:.mp3,
+                audio/mp3:.mp3, x-audio/mp3:.mp3</literal>
+              </para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </refsect3>
 
     </refsect2>
   </refsect1>
