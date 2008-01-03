@@ -1020,7 +1020,8 @@ podcastfaildays = 5
                 This is the comma-separated list of MIME types on
                 which <option>postproccommand</option> will operate.
                 The special single token <literal>ALL</literal> means
-                to operate on all types.
+                to operate on all types.  To disable post-processing
+                entirely, you can set this to the empty string.
                 The default is: <literal>audio/mpeg, audio/mp3,
                 x-audio/mp3</literal>
               </para></listitem></varlistentry>
