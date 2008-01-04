@@ -194,6 +194,14 @@ procSuccess gi ep tmpfp =
        let newfn = (strip $ forceEither $ cfg "downloaddir") ++ "/" ++
                    (strip $ forceEither $ cfg "namingpatt")
        createDirectoryIfMissing True (fst . splitFileName $ newfn)
+       renameTypes <- getRenameTypes 
+       finalfn <- case lookup (eptype ep) renameTypes of
+                    Nothing -> movefile tmpfp newfn
+                    Just suffix -> 
+                        if not (isSuffixOf suffix newfn)
+                           then movefile tmpfp (newfn ++ suffix)
+                           else movefile tmpfp newfn
+       
        finalfn <- if ((eptype ep) `elem` ["audio/mpeg", "audio/mp3", 
                                           "x-audio/mp3"]) && 
                      not (isSuffixOf ".mp3" newfn)
@@ -226,6 +234,15 @@ procSuccess gi ep tmpfp =
                  Exited (ExitFailure y) -> w $ "\n   id3v2 returned: " ++ show y
                  Terminated y -> w $ "\n   id3v2 terminated by signal " ++ show y
                  _ -> fail "Stopped unexpected"
+          getRenameTypes =
+              do rt <- getList (gcp gi) idstr "renametypes"
+                 let splitrt = map (span (/= ':')) rt
+                 return $ map procpair splitrt
+          procpair (t, []) = (t, [])
+          procpair (t, ':':x) = (t, x)
+          procpair (t, x) = error $ "Invalid pair in renametypes: " ++ 
+                            show (t, x)
+          
 
 -- | Runs a hook script.
 runHook :: String -- ^ The name of the file to pass as an argument to the script.
