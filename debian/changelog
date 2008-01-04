@@ -1,3 +1,26 @@
+hpodder (1.1.0) unstable; urgency=low
+
+  * New support for configurable renaming of incoming episodes to
+    standard extensions.  The previous feature was hard-coded for
+    certain data types.
+
+  * New support for using file -i (or a user-configurable program) to
+    determine the actual type of a file to deal with servers that
+    don't send correct MIME types in their feeds.  Enable this support
+    by default.
+
+  * New support for user-configurable post-processing commands that
+    do things such as tagging.
+
+  * New support for conditional running of post-processing commands
+    based on content type.
+
+  * New support for GUID tags to reduce occurances of duplicate
+    downloads.  Thanks to Jason Creighton for the patch to support
+    this.  Closes: #454531.
+
+ -- John Goerzen <jgoerzen@complete.org>  Fri, 04 Jan 2008 09:35:56 -0600
+
 hpodder (1.0.3) unstable; urgency=low
 
   * Fix error with hpodder add.  Closes: #435738.
