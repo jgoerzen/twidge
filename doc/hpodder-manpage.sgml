@@ -339,7 +339,7 @@
         disabled will be skipped during an <command>update</command>,
         <command>download</command>, or <command>fetch</command>.
         They will still participate with all other commands.
-        <command>hpodder ls</command> will notify you of which
+        <command>hpodder lscasts</command> will notify you of which
         podcasts are disabled.
       </para>
       <para>
