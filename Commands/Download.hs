@@ -201,22 +201,29 @@ procSuccess gi ep tmpfp =
                         if not (isSuffixOf suffix newfn)
                            then movefile tmpfp (newfn ++ suffix)
                            else movefile tmpfp newfn
+
+       postProcTypes <- getList (gcp gi) idstr "postproctypes"
+       postProcCommand <- get (gcp gi) idstr "postproccommand" >>=
+                          (return . strip)
        
-       finalfn <- if ((eptype ep) `elem` ["audio/mpeg", "audio/mp3", 
-                                          "x-audio/mp3"]) && 
-                     not (isSuffixOf ".mp3" newfn)
-                  then movefile tmpfp (newfn ++ ".mp3")
-                  else movefile tmpfp newfn
-       when (isSuffixOf ".mp3" finalfn) $ 
-            do d "   Setting ID3 tags..."
-               --posixRawSystem "id3v2" ["-C", finalfn] >>= id3result
-               --posixRawSystem "id3v2" ["-s", finalfn] >>= id3result
-               posixRawSystem "id3v2" ["-A", castname . podcast $ ep,
-                                       "-t", eptitle ep,
-                                       "--WOAF", epurl ep,
-                                       "--WOAS", feedurl . podcast $ ep,
-                                        -- "--WXXX", feedurl . podcast $ ep,
-                                       finalfn] >>= id3result
+       when (postProcCommand /= '' &&
+             (postProcTypes == ['ALL'] ||
+             (eptype ep) `elem` postProcTypes)) $
+            do postProcCommand <- get (gcp gi) idstr "postproccommand"
+               d $ "   Running postprocess command " ++ postProcCommand
+               d $ "   Environment for this command is " ++ show environ
+               (stdinh, stdouth, stderrh, ph) <-
+                   runInteractiveCommand postProcCommand 
+               hClose stdinh
+               
+               forkIO $ do c <- hGetContents stderrh
+                           hPutStr stderr c
+
+               c <- hGetLine stdouth
+               hClose stdouth
+               ec <- waitForProcess ph
+               d $ "   Postprocess command exited with: " ++ show ec
+
        cp <- getCP ep idstr fnpart
        let cfg = get cp (show . castid . podcast $ ep)
        forM_ (either (const Nothing) Just $ cfg "posthook")
