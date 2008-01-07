@@ -914,7 +914,13 @@ podcastfaildays = 5
         <title>Per-Podcast Command Options</title>
         <para>
           These are external commands that will be run in certain
-          situations.  For each of the commands, the following
+          situations.  For each of the commands, several environment
+          variables are set.  These variables are not pre-sanitized
+          and may contain whitespace or special characters.  
+          <emphasis>Extreme
+          caution must be exercized to properly quote these variables
+          when using them in shell commands or scripts.</emphasis>
+          The following
           environment variables are set:
         </para>
         <variablelist>
@@ -978,9 +984,19 @@ podcastfaildays = 5
                 with an error, the MIME type given in the podcast feed will
                 be used.  If you want to always use the MIME type in the
                 podcast feed, you can set this to
-                <literal>/bin/false</literal>.
+                <literal>/bin/false</literal> or the empty string.
               </para>
-              <para>The default value is: <literal>file -i "${EPFILENAME}"</literal>
+              <para>The default value is: <literal>file -bi "${EPFILENAME}"</literal>
+              </para>
+              <para>
+                It is expected that this program will write its result
+                to standard output.  The first token of the output is
+                taken to be the MIME type.  The remainder will be
+                discarded.  For instance, for the output
+                <literal>text/x-pascal; charset=us-ascii</literal>,
+                the type will be taken to be
+                <literal>text/x-pascal</literal>.  If the program
+                exits with a nonzero exit code, its output will not be used.
               </para>
             </listitem>
           </varlistentry>
