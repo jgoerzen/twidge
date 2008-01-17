@@ -1,3 +1,9 @@
+hpodder (1.0.4) unstable; urgency=low
+
+  * Update for GHC 6.8.x and new MissingH.
+
+ -- John Goerzen <jgoerzen@complete.org>  Wed, 16 Jan 2008 12:19:40 -0600
+
 hpodder (1.0.3) unstable; urgency=low
 
   * Fix error with hpodder add.  Closes: #435738.
