@@ -35,6 +35,8 @@ import System.IO
 import System.Directory
 import System.Cmd.Utils
 import System.Posix.Process
+import System.Process
+import System.Environment(getEnvironment)
 import Data.ConfigFile
 import Data.String.Utils
 import Data.Either.Utils
@@ -227,7 +229,7 @@ procSuccess gi ep tmpfp =
        commit (gdbh gi)
        
     where idstr = show . castid . podcast $ ep
-          runSimpleCmd cmd =
+          runSimpleCmd environ cmd =
               do ph <- runProcess "/bin/sh" ["-c", cmd] Nothing (Just environ)
                        Nothing Nothing Nothing
                  ec <- waitForProcess ph
