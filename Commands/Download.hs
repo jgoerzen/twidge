@@ -195,7 +195,9 @@ procSuccess gi ep tmpfp =
                    (strip $ forceEither $ cfg "namingpatt")
        createDirectoryIfMissing True (fst . splitFileName $ newfn)
        renameTypes <- getRenameTypes 
-       finalfn <- case lookup (eptype ep) renameTypes of
+       realType <- getRealType ep environ
+       let newep = ep {eptype = realType}
+       finalfn <- case lookup (eptype newep) renameTypes of
                     Nothing -> movefile tmpfp newfn
                     Just suffix -> 
                         if not (isSuffixOf suffix newfn)
@@ -208,7 +210,7 @@ procSuccess gi ep tmpfp =
        
        when (postProcCommand /= '' &&
              (postProcTypes == ['ALL'] ||
-             (eptype ep) `elem` postProcTypes)) $
+             (eptype newep) `elem` postProcTypes)) $
             do postProcCommand <- get (gcp gi) idstr "postproccommand"
                d $ "   Running postprocess command " ++ postProcCommand
                d $ "   Environment for this command is " ++ show environ
@@ -223,24 +225,43 @@ procSuccess gi ep tmpfp =
                hClose stdouth
                ec <- waitForProcess ph
                d $ "   Postprocess command exited with: " ++ show ec
+               case 
 
-       cp <- getCP ep idstr fnpart
-       let cfg = get cp (show . castid . podcast $ ep)
+       cp <- getCP newep idstr fnpart
+       let cfg = get cp (show . castid . podcast $ newep)
        forM_ (either (const Nothing) Just $ cfg "posthook")
              (runHook finalfn)
        curtime <- now
        updateEpisode (gdbh gi) $ 
-           updateAttempt curtime $ (ep {epstatus = Downloaded})
+           updateAttempt curtime $ (newep {epstatus = Downloaded})
        commit (gdbh gi)
        
     where idstr = show . castid . podcast $ ep
           fnpart = snd . splitFileName $ epurl ep
-          id3result res = 
-               case res of
-                 Exited (ExitSuccess) -> d $ "   id3v2 was successful."
-                 Exited (ExitFailure y) -> w $ "\n   id3v2 returned: " ++ show y
-                 Terminated y -> w $ "\n   id3v2 terminated by signal " ++ show y
-                 _ -> fail "Stopped unexpected"
+          -- Given an episode and an environment, call the external
+          -- command that determines the MIME type of that episode.
+          -- If the command returns the empty string or exits with
+          -- an error, just return (eptype ep) back to the caller.
+          getRealType ep environ =
+              do typecmd <- get (gcp gi) idstr "gettypecommand"
+                 d $ "  Running gettypecommand " ++ typecmd
+                 d $ "  Enrivonment for this command is " ++ show environ
+                 (stdinh, stdouth, stderrh, ph) <-
+                     runInteractiveCommand typecmd
+                 hClose stdinh
+                 forkIO $ do c <- hGetContents stderrh
+                             hPutStr stderr c
+
+                 c <- hGetLine stdouth
+                 hClose stdouth
+                 ec <- waitForProcess ph
+                 d $ "  gettypecommand exited with: " ++ show ec
+                 d $ "  gettypecommand sent to stdout: " ++ show c
+                 case ec of
+                   ExitSuccess -> case (strip ec) of
+                                    "" -> return (eptype ep)
+                                    x -> return x
+
           getRenameTypes =
               do rt <- getList (gcp gi) idstr "renametypes"
                  let splitrt = map (span (/= ':')) rt
