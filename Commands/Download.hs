@@ -213,19 +213,7 @@ procSuccess gi ep tmpfp =
              (eptype newep) `elem` postProcTypes)) $
             do postProcCommand <- get (gcp gi) idstr "postproccommand"
                d $ "   Running postprocess command " ++ postProcCommand
-               d $ "   Environment for this command is " ++ show environ
-               (stdinh, stdouth, stderrh, ph) <-
-                   runInteractiveCommand postProcCommand 
-               hClose stdinh
-               
-               forkIO $ do c <- hGetContents stderrh
-                           hPutStr stderr c
-
-               c <- hGetLine stdouth
-               hClose stdouth
-               ec <- waitForProcess ph
-               d $ "   Postprocess command exited with: " ++ show ec
-               case 
+               runSimpleCmd postProcCommand
 
        cp <- getCP newep idstr fnpart
        let cfg = get cp (show . castid . podcast $ newep)
@@ -237,6 +225,12 @@ procSuccess gi ep tmpfp =
        commit (gdbh gi)
        
     where idstr = show . castid . podcast $ ep
+          runSimpleCmd cmd =
+              do ph <- runProcess "/bin/sh" ["-c", cmd] Nothing (Just environ)
+                       Nothing Nothing Nothing
+                 ec <- waitForProcess ph
+                 d $ "  command exited with: " ++ show ec
+
           fnpart = snd . splitFileName $ epurl ep
           -- Given an episode and an environment, call the external
           -- command that determines the MIME type of that episode.
