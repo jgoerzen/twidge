@@ -35,6 +35,7 @@ import Data.ConfigFile
 import Control.Monad
 import Data.Either.Utils
 import System.Path
+import Data.String.Utils(strip, split)
 
 getFeedTmp =
     do appdir <- getAppDir
@@ -109,7 +110,8 @@ getProgressInterval =
 
 getList :: ConfigParser -> String -> String -> Maybe [String]
 getList cp sect key = 
-    do val <- get cp sect key)
-       return (splitit val)
+       case ((get cp sect key)::Either CPError String) of
+         Right x -> Just (splitit x)
+         Left _ -> Nothing
     where splitit x = filter (/= "") . map strip . split "," $ x
   
