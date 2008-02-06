@@ -195,7 +195,8 @@ procSuccess gi ep tmpfp =
                    (strip $ forceEither $ cfg "namingpatt")
        createDirectoryIfMissing True (fst . splitFileName $ newfn)
        renameTypes <- getRenameTypes 
-       realType <- getRealType ep environ
+       
+       realType <- (mkEnviron ep tmpfp) >>= (getRealType ep)
        let newep = ep {eptype = realType}
        finalfn <- case lookup (eptype newep) renameTypes of
                     Nothing -> movefile tmpfp newfn
@@ -204,6 +205,7 @@ procSuccess gi ep tmpfp =
                            then movefile tmpfp (newfn ++ suffix)
                            else movefile tmpfp newfn
 
+       environ <- mkEnviron newep finalfn
        postProcTypes <- getList (gcp gi) idstr "postproctypes"
        postProcCommand <- get (gcp gi) idstr "postproccommand" >>=
                           (return . strip)
@@ -213,7 +215,7 @@ procSuccess gi ep tmpfp =
              (eptype newep) `elem` postProcTypes)) $
             do postProcCommand <- get (gcp gi) idstr "postproccommand"
                d $ "   Running postprocess command " ++ postProcCommand
-               runSimpleCmd postProcCommand
+               runSimpleCmd environ postProcCommand
 
        cp <- getCP newep idstr fnpart
        let cfg = get cp (show . castid . podcast $ newep)
@@ -265,6 +267,17 @@ procSuccess gi ep tmpfp =
           procpair (t, x) = error $ "Invalid pair in renametypes: " ++ 
                             show (t, x)
           
+          mkEnviron ep fn =
+              do oldenviron <- getEnvironment
+                 return $ newenviron ++ oldenviron
+              where newenviron =
+                        [("CASTID", show . castid . podcast $ ep),
+                         ("CASTTITLE", castname . podcast $ ep),
+                         ("EPFILENAME", fn),
+                         ("EPURL", epurl ep),
+                         ("FEEDURL", feedurl . podcast $ ep),
+                         ("SAFECASTTITLE", sanitize_fn . castname . podcast $ ep),
+                         ("SAFEEPTITLE", sanitize_fn . eptitle $ ep)]
 
 -- | Runs a hook script.
 runHook :: String -- ^ The name of the file to pass as an argument to the script.
