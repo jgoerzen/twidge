@@ -1137,7 +1137,7 @@ podcastfaildays = 5
       specifying proxies.  Please see
       <application>curl</application>(1) for more details.
       As specified in <xref
-      linkend="hpodder.config.podcast.processing"></xref>, &hpodder;
+      linkend="hpodder.config.podcast.processing"/>, &hpodder;
       will also set certain variables for post-processing of
       downloaded files.
     </para>
