@@ -30,6 +30,7 @@ import Database.HDBC
 import Control.Monad hiding(forM_)
 import Utils
 import Data.Hash.MD5
+import Data.Maybe(fromJust)
 import System.FilePath
 import System.IO
 import System.Directory
@@ -196,7 +197,7 @@ procSuccess gi ep tmpfp =
        let newfn = (strip $ forceEither $ cfg "downloaddir") ++ "/" ++
                    (strip $ forceEither $ cfg "namingpatt")
        createDirectoryIfMissing True (fst . splitFileName $ newfn)
-       renameTypes <- getRenameTypes 
+       let renameTypes = getRenameTypes 
        
        realType <- (mkEnviron ep tmpfp) >>= (getRealType ep)
        let newep = ep {eptype = realType}
@@ -208,14 +209,14 @@ procSuccess gi ep tmpfp =
                            else movefile tmpfp newfn
 
        environ <- mkEnviron newep finalfn
-       postProcTypes <- getList (gcp gi) idstr "postproctypes"
-       postProcCommand <- get (gcp gi) idstr "postproccommand" >>=
+       let postProcTypes = fromJust $ getList (gcp gi) idstr "postproctypes"
+       let postProcCommand = forceEither $ get (gcp gi) idstr "postproccommand" >>=
                           (return . strip)
        
        when (postProcCommand /= "" &&
              (postProcTypes == ["ALL"] ||
              (eptype newep) `elem` postProcTypes)) $
-            do postProcCommand <- get (gcp gi) idstr "postproccommand"
+            do let postProcCommand = forceEither $ get (gcp gi) idstr "postproccommand"
                d $ "   Running postprocess command " ++ postProcCommand
                runSimpleCmd environ postProcCommand
 
@@ -241,7 +242,7 @@ procSuccess gi ep tmpfp =
           -- If the command returns the empty string or exits with
           -- an error, just return (eptype ep) back to the caller.
           getRealType ep environ =
-              do typecmd <- get (gcp gi) idstr "gettypecommand"
+              do let typecmd = forceEither $ get (gcp gi) idstr "gettypecommand"
                  d $ "  Running gettypecommand " ++ typecmd
                  d $ "  Enrivonment for this command is " ++ show environ
                  (stdinh, stdouth, stderrh, ph) <-
@@ -256,14 +257,15 @@ procSuccess gi ep tmpfp =
                  d $ "  gettypecommand exited with: " ++ show ec
                  d $ "  gettypecommand sent to stdout: " ++ show c
                  case ec of
-                   ExitSuccess -> case (strip ec) of
+                   ExitSuccess -> case (strip c) of
                                     "" -> return (eptype ep)
                                     x -> return x
+                   _ -> return (eptype ep)
 
           getRenameTypes =
-              do rt <- getList (gcp gi) idstr "renametypes"
-                 let splitrt = map (span (/= ':')) rt
-                 return $ map procpair splitrt
+              case getList (gcp gi) idstr "renametypes" of
+                Just x -> map procpair (map (span (/= ':')) x)
+                Nothing -> []
           procpair (t, []) = (t, [])
           procpair (t, ':':x) = (t, x)
           procpair (t, x) = error $ "Invalid pair in renametypes: " ++ 
