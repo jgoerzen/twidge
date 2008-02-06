@@ -33,7 +33,7 @@ import System.Console.GetOpt.Utils
 import qualified Commands.Update
 import System.FilePath
 import Data.List
-import Data.String
+import Data.String.Utils
 import System.Directory
 import Control.Exception
 

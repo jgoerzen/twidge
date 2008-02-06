@@ -110,7 +110,7 @@ getProgressInterval =
 
 getList :: ConfigParser -> String -> String -> Maybe [String]
 getList cp sect key = 
-       case ((get cp sect key)::Either CPError String) of
+       case get cp sect key of
          Right x -> Just (splitit x)
          Left _ -> Nothing
     where splitit x = filter (/= "") . map strip . split "," $ x

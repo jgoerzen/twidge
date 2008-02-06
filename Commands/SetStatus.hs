@@ -28,7 +28,7 @@ import Config
 import Database.HDBC
 import Control.Monad hiding (join)
 import Utils
-import Data.String
+import Data.String.Utils
 import System.IO
 import System.Console.GetOpt
 import System.Console.GetOpt.Utils

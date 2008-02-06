@@ -36,7 +36,7 @@ import System.Directory
 import System.Cmd.Utils
 import System.Posix.Process
 import Data.ConfigFile
-import Data.String
+import Data.String.Utils
 import Data.Either.Utils
 import Data.List
 import System.Exit
@@ -210,8 +210,8 @@ procSuccess gi ep tmpfp =
        postProcCommand <- get (gcp gi) idstr "postproccommand" >>=
                           (return . strip)
        
-       when (postProcCommand /= '' &&
-             (postProcTypes == ['ALL'] ||
+       when (postProcCommand /= "" &&
+             (postProcTypes == ["ALL"] ||
              (eptype newep) `elem` postProcTypes)) $
             do postProcCommand <- get (gcp gi) idstr "postproccommand"
                d $ "   Running postprocess command " ++ postProcCommand

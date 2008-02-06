@@ -31,7 +31,7 @@ import Config
 import Database.HDBC
 import Control.Monad
 import Utils
-import Data.String
+import Data.String.Utils
 import System.Exit
 import System.Posix.Process
 import System.Directory
