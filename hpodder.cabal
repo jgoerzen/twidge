@@ -6,7 +6,12 @@ Author: John Goerzen
 Stability: Stable
 Copyright: Copyright (c) 2006-2008 John Goerzen
 license-file: COPYRIGHT
-extra-source-files: COPYING
+extra-source-files: COPYING, INSTALL, doc/SConstruct,
+  doc/hpodder-manpage.sgml, doc/hpodder.sgml, doc/local.dsl,
+  doc/man.hpodder.sgml, doc/printlocal.dsl, doc/sgml-common/COPYING,
+  doc/sgml-common/COPYRIGHT, doc/sgml-common/ChangeLog,
+  doc/sgml-common/Makefile.common, doc/sgml-common/SConstruct,
+  doc/sgml-common/ps2epsi
 homepage: http://software.complete.org/hpodder
 Category: Network
 Synopsis: Podcast Aggregator (downloader)
