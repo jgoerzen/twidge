@@ -250,9 +250,24 @@
         --help</command>.  Global help is available with
       <command>hpodder --help</command>.
     </para>
-    <para>There are no current global &hpodder; options, though this
-      is expected to change.
-    </para>
+    <refsect2 id="hpodder.options.global">
+      <title>Global Option</title>
+      <para>
+        This option may be specified <emphasis>before</emphasis> any
+        command.
+      </para>
+      <variablelist>
+        <varlistentry><term>-d</term><term>--debug</term>
+          <listitem><para>
+              Enables debugging output.  This verbose output helps you
+              learn what &hpodder; is doing every step of the way and
+              diagnose any problems you may encounter.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+
   </refsect1>
 
   <refsect1 id="hpodder.commands">
