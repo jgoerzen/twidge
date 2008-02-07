@@ -246,7 +246,8 @@ procSuccess gi ep tmpfp =
                  d $ "  Running gettypecommand " ++ typecmd
                  d $ "  Enrivonment for this command is " ++ show environ
                  (stdinh, stdouth, stderrh, ph) <-
-                     runInteractiveCommand typecmd
+                     runInteractiveProcess "/bin/sh" ["-c", typecmd]
+                         Nothing (Just environ)
                  hClose stdinh
                  forkIO $ do c <- hGetContents stderrh
                              hPutStr stderr c
@@ -256,6 +257,7 @@ procSuccess gi ep tmpfp =
                  ec <- waitForProcess ph
                  d $ "  gettypecommand exited with: " ++ show ec
                  d $ "  gettypecommand sent to stdout: " ++ show c
+                 d $ "  original type was: " ++ show (eptype ep)
                  case ec of
                    ExitSuccess -> case (strip c) of
                                     "" -> return (eptype ep)
