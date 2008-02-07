@@ -2,12 +2,12 @@ hpodder (1.1.0) unstable; urgency=low
 
   * New support for configurable renaming of incoming episodes to
     standard extensions.  The previous feature was hard-coded for
-    certain data types.
+    certain data types.  Closes: #454535.
 
   * New support for using file -i (or a user-configurable program) to
     determine the actual type of a file to deal with servers that
     don't send correct MIME types in their feeds.  Enable this support
-    by default.
+    by default.  Closes: #445694.
 
   * New support for user-configurable post-processing commands that
     do things such as tagging.
