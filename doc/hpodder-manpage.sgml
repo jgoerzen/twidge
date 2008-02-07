@@ -986,7 +986,7 @@ podcastfaildays = 5
                 podcast feed, you can set this to
                 <literal>/bin/false</literal> or the empty string.
               </para>
-              <para>The default value is: <literal>file -bi "${EPFILENAME}"</literal>
+              <para>The default value is: <literal>file -b -i "${EPFILENAME}"</literal>
               </para>
               <para>
                 It is expected that this program will write its result
