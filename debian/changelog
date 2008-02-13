@@ -1,3 +1,9 @@
+hpodder (1.1.1) unstable; urgency=low
+
+  * Make sure we get full SQL dumps for any error
+
+ -- John Goerzen <jgoerzen@complete.org>  Wed, 13 Feb 2008 02:53:42 -0600
+
 hpodder (1.1.0) unstable; urgency=low
 
   * New support for configurable renaming of incoming episodes to
