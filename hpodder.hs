@@ -45,7 +45,7 @@ import Control.Monad
 import Utils
 import Database.HDBC
 
-main = 
+main = handleSqlError $
     do updateGlobalLogger "" (setLevel INFO)
        argv <- getArgs
        let (optargs, commandargs) = span (isPrefixOf "-") argv
