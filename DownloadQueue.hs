@@ -39,6 +39,7 @@ import Download
 import System.Cmd.Utils
 import Data.Maybe.Utils
 import System.Posix.Process
+import Database.HDBC(handleSqlError)
 import Config
 import System.Log.Logger
 import Text.Printf
@@ -150,7 +151,7 @@ runDownloads callbackfunc basefp resumeOK delist maxthreads =
                                           allowResume = resumeOK,
                                           callbackFunc = callbackfunc}
        semaphore <- newQSem 0 -- Used by threads to signal they're done
-       mapM_ (\_ -> forkIO (childthread dqmvar semaphore)) [1..maxthreads]
+       mapM_ (\_ -> forkIO (handleSqlError $ childthread dqmvar semaphore)) [1..maxthreads]
        mapM_ (\_ -> waitQSem semaphore) [1..maxthreads]
        restoresignals oldsigs
        withMVar dqmvar (\dq -> return (completedDownloads dq))
