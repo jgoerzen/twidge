@@ -1,5 +1,5 @@
 {- hpodder component
-Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2006-2008 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 {- |
    Module     : DownloadQueue
-   Copyright  : Copyright (C) 2006 John Goerzen
+   Copyright  : Copyright (C) 2006-2008 John Goerzen
    License    : GNU GPL, version 2 or above
 
    Maintainer : John Goerzen <jgoerzen@complete.org>
