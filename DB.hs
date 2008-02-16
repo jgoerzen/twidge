@@ -258,18 +258,22 @@ podcast_convrow [svid, svname, svurl, isenabled, lupdate, lattempt,
              lastupdate = fromSql lupdate, lastattempt = fromSql lattempt,
              failedattempts = fromSql fattempts}
 
-{- | Add a new episode. If the episode already exists, update the URL, GUID
-and title fields while preserving other fields as they are. Returns the number
-of inserted rows. -}
+{- | Add a new episode. If the episode already exists, based solely on
+looking at the GUID (if present), update the URL and title fields while 
+preserving other fields as they are. Returns the number of inserted rows. -}
 addEpisode :: Connection -> Episode -> IO Integer
 addEpisode dbh ep = 
-    do -- We have to be careful of cases where a feed may have two
-       -- different episodes with different GUIDs but identical URLs
-       run dbh "UPDATE episodes SET epurl = ?, epguid = ?, title = ? \
-               \WHERE castid = ? AND \
-               \(epguid = ? OR (epguid IS NULL AND epurl = ?)"
-           [toSql (epurl ep), toSql (epguid ep), toSql (eptitle ep),
-            toSql (castid (podcast ep)), toSql (epguid ep), toSql (epurl ep)]
+    do 
+       -- We have to be careful of cases where a feed may have two
+       -- different episodes with different GUIDs but identical URLs.
+       -- So if we have a GUID match here, we must have a conflict on URL,
+       -- so we ignore the request to change it.
+       when (epguid ep /= Nothing) $
+          do run dbh "UPDATE OR IGNORE episodes SET epurl = ?, epguid = ?, title = ? \
+                  \WHERE castid = ? AND epguid = ?"
+                 [toSql (epurl ep), toSql (epguid ep), toSql (eptitle ep),
+                  toSql (castid (podcast ep)), toSql (epguid ep)]
+             return ()
        -- if the UPDATE was successful, that means that something with the same
        -- URL or GUID already exists, so the INSERT below will be ignored.
        dbdebug "update done"
