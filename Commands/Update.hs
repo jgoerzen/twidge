@@ -42,6 +42,7 @@ import Data.ConfigFile(get)
 
 i = infoM "update"
 w = warningM "update"
+d = debugM "update"
 
 cmd = simpleCmd "update" 
       "Re-scan all feeds and update list of needed downloads" helptext 
@@ -81,7 +82,8 @@ updatePodcasts gi podcastlist =
                   
 
 updateThePodcast gi pt meter dlentry dltok status result =
-    do incrP (dlprogress dlentry) 1
+    do d "Download complete"
+       incrP (dlprogress dlentry) 1
        let pc = usertok dlentry
        feed <- getFeed meter pc (result, status) dltok
        case feed of
@@ -96,14 +98,18 @@ updateThePodcast gi pt meter dlentry dltok status result =
                      commit (gdbh gi)
                      when (pcenabled newpc == PCErrorDisabled) $
                         i ("   Podcast " ++ castname newpc ++ " disabled due to errors.")
-         Just f -> do newpc <- updateFeed gi pc f
+         Just f -> do d "Got feed"
+                      newpc <- updateFeed gi pc f
+                      d "Got newpc from feed"
                       curtime <- now
                       updatePodcast (gdbh gi) 
                                     (newpc {lastupdate = Just curtime,
                                             lastattempt = Just curtime,
                                             failedattempts = 0})
                       --i $ "   Podcast Title: " ++ (castname newpc)
+                      d $ "Updated podcast on disk"
                       commit (gdbh gi)
+                      d $ "Committed changes"
 
 considerDisable gi pc = forceEither $
     do faildays <- get (gcp gi) (show (castid pc)) "podcastfaildays"
@@ -127,6 +133,7 @@ considerDisable gi pc = forceEither $
 updateFeed gi pcorig f =
     do count <- foldM (updateEnc gi pc) 0 (items f)
        --i $ printf "   %d new episodes" count
+       d $ "Added " ++ show count ++ " new episodes"
        return pc
     where pc = pcorig {castname = newname}
           newname = if (castname pcorig) == ""
@@ -134,7 +141,10 @@ updateFeed gi pcorig f =
                        else (castname pcorig)
 
 updateEnc gi pc count item = 
-    do newc <- addEpisode (gdbh gi) (item2ep pc item)
+    do d $ "updateEnc running on item " ++ show item
+       newc <- addEpisode (gdbh gi) (item2ep pc item)
+       commit (gdbh gi)
+       d $ "addEpisode returned"
        return $ count + newc
 
 getFeed meter pc (result, status) dltok =

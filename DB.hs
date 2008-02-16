@@ -268,7 +268,10 @@ addEpisode dbh ep =
             toSql (castid (podcast ep)), toSql (epurl ep), toSql (epguid ep)]
        -- if the UPDATE was successful, that means that something with the same
        -- URL or GUID already exists, so the INSERT below will be ignored.
+       dbdebug "update done"
        nextepid <- getepid
+       dbdebug $ "addEpisode: epid: " ++ show nextepid
+       dbdebug "addEpisode: running insertEpisode"
        insertEpisode "INSERT OR IGNORE" dbh ep nextepid
     where getepid = 
               do r <- quickQuery dbh "SELECT MAX(episodeid) FROM episodes WHERE castid = ?" [toSql (castid (podcast ep))]
