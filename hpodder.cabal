@@ -13,6 +13,7 @@ extra-source-files: COPYING, INSTALL, doc/SConstruct,
   doc/sgml-common/Makefile.common, doc/sgml-common/SConstruct,
   doc/sgml-common/ps2epsi
 homepage: http://software.complete.org/hpodder
+Build-type: Simple
 Category: Network
 Synopsis: Podcast Aggregator (downloader)
 Description:  Podcasting is a method of publishing radio-like programs on the
