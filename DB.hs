@@ -263,9 +263,13 @@ and title fields while preserving other fields as they are. Returns the number
 of inserted rows. -}
 addEpisode :: Connection -> Episode -> IO Integer
 addEpisode dbh ep = 
-    do run dbh "UPDATE episodes SET epurl = ?, epguid = ?, title = ? WHERE castid = ? AND (epurl = ? OR epguid = ?)"
+    do -- We have to be careful of cases where a feed may have two
+       -- different episodes with different GUIDs but identical URLs
+       run dbh "UPDATE episodes SET epurl = ?, epguid = ?, title = ? \
+               \WHERE castid = ? AND \
+               \(epguid = ? OR (epguid IS NULL AND epurl = ?)"
            [toSql (epurl ep), toSql (epguid ep), toSql (eptitle ep),
-            toSql (castid (podcast ep)), toSql (epurl ep), toSql (epguid ep)]
+            toSql (castid (podcast ep)), toSql (epguid ep), toSql (epurl ep)]
        -- if the UPDATE was successful, that means that something with the same
        -- URL or GUID already exists, so the INSERT below will be ignored.
        dbdebug "update done"
