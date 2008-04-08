@@ -1,5 +1,5 @@
 Name: hpodder
-Version: 1.1.3
+Version: 1.1.4
 License: GPL
 Maintainer: John Goerzen <jgoerzen@complete.org>
 Author: John Goerzen
@@ -69,7 +69,7 @@ Description:  Podcasting is a method of publishing radio-like programs on the
  beginning.  It should be exceedingly difficult to lose a podcast
  episode, even in the event of a power failure.
 Build-Depends: haskell98, network, unix, parsec, MissingH>=1.0.0,
- HDBC>=1.1.0, HDBC-sqlite3>=1.1.0, mtl, base, HaXml>=1.13.2, HaXml<=1.19, hslogger,
+ HDBC>=1.1.0, HDBC-sqlite3>=1.1.0, mtl, base, HaXml>=1.13.2, HaXml<1.19, hslogger,
  ConfigFile, filepath, old-time, directory, process
 
 Executable: hpodder

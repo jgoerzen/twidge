@@ -1,8 +1,14 @@
+hpodder (1.1.4.0) unstable; urgency=low
+
+  * Make previous HaXml change tighter.
+
+ -- John Goerzen <jgoerzen@complete.org>  Tue, 08 Apr 2008 04:24:13 -0500
+
 hpodder (1.1.3.0) unstable; urgency=low
 
   * Added logic to cabal file to require stable HaXml version.
 
- -- John Goerzen <jgoerzen@complete.org>  Tue, 08 Apr 2008 14:19:39 -0500
+ -- John Goerzen <jgoerzen@complete.org>  Tue, 08 Apr 2008 04:19:39 -0500
 
 hpodder (1.1.2) unstable; urgency=low
 
