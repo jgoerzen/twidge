@@ -283,7 +283,8 @@ procSuccess gi ep tmpfp =
                          ("EPURL", epurl ep),
                          ("FEEDURL", feedurl . podcast $ ep),
                          ("SAFECASTTITLE", sanitize_fn . castname . podcast $ ep),
-                         ("SAFEEPTITLE", sanitize_fn . eptitle $ ep)]
+                         ("SAFEEPTITLE", sanitize_fn . eptitle $ ep),
+                         ("EPTITLE", eptitle ep)]
 
 -- | Runs a hook script.
 runHook :: String -- ^ The name of the file to pass as an argument to the script.
