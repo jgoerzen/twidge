@@ -1,3 +1,9 @@
+hpodder (1.1.5.0) unstable; urgency=low
+
+  * Fixed bug where episode title did not appear in id3 output.
+
+ -- John Goerzen <jgoerzen@complete.org>  Wed, 02 Jul 2008 10:28:15 -0500
+
 hpodder (1.1.4.0) unstable; urgency=low
 
   * Make previous HaXml change tighter.
