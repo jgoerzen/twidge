@@ -1025,7 +1025,7 @@ podcastfaildays = 5
               </para>
               <para>
                 The default value adds ID3 tags to MP3 files.  It is:
-                <literal>id3v2 -A "${CASTTITLE}" -t "${EPTITLE}" --WOAF
+                <literal>id3v2 -T "${EPID}" -A "${CASTTITLE}" -t "${EPTITLE}" --WOAF
                   "${EPURL}" --WOAS "${FEEDURL}" "${EPFILENAME}"</literal>
               </para>
             </listitem>
