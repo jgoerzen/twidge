@@ -284,6 +284,7 @@ procSuccess gi ep tmpfp =
                          ("FEEDURL", feedurl . podcast $ ep),
                          ("SAFECASTTITLE", sanitize_fn . castname . podcast $ ep),
                          ("SAFEEPTITLE", sanitize_fn . eptitle $ ep),
+                         ("EPID", show . epid $ ep),
                          ("EPTITLE", eptitle ep)]
 
 -- | Runs a hook script.

@@ -74,7 +74,7 @@ getDefaultCP =
                  cp <- set cp "DEFAULT" "renametypes" "audio/mpeg:.mp3,audio/mp3:.mp3,x-audio/mp3:.mp3"
                  cp <- set cp "DEFAULT" "postproctypes" "audio/mpeg,audio/mp3,x-audio/mp3"
                  cp <- set cp "DEFAULT" "gettypecommand" "file -b -i \"${EPFILENAME}\""
-                 cp <- set cp "DEFAULT" "postproccommand" "id3v2 -A \"${CASTTITLE}\" -t \"${EPTITLE}\" --WOAF \"${EPURL}\" --WOAS \"${FEDDURL}\" \"${EPFILENAME}\""
+                 cp <- set cp "DEFAULT" "postproccommand" "id3v2 -T \"${EPID}\" -A \"${CASTTITLE}\" -t \"${EPTITLE}\" --WOAF \"${EPURL}\" --WOAS \"${FEEDURL}\" \"${EPFILENAME}\""
                  return cp
 
 startingcp = emptyCP {accessfunc = interpolatingAccess 10}
