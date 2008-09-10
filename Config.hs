@@ -37,25 +37,7 @@ import Data.Either.Utils
 import System.Path
 import Data.String.Utils(strip, split)
 
-getFeedTmp =
-    do appdir <- getAppDir
-       return $ appdir ++ "/feedxfer"
-
-bracketFeedCWD func =
-    do feeddir <- getFeedTmp
-       brackettmpdirCWD (feeddir ++ "/tmp-XXXXXX") func
-
-getEnclTmp =
-    do appdir <- getAppDir
-       return $ appdir ++ "/enclosurexfer"
-
-getAppDir = do appdir <- getAppUserDataDirectory "hpodder"
-               return appdir
-
-getDBName = 
-    do appdir <- getAppDir
-       return $ appdir ++ "/hpodder.db"
-
+{-
 getDefaultCP =
     do docsdir <- getUserDocumentsDirectory
        let downloaddir = docsdir ++ "/podcasts"
@@ -76,21 +58,23 @@ getDefaultCP =
                  cp <- set cp "DEFAULT" "gettypecommand" "file -b -i \"${EPFILENAME}\""
                  cp <- set cp "DEFAULT" "postproccommand" "id3v2 -T \"${EPID}\" -A \"${CASTTITLE}\" -t \"${EPTITLE}\" --WOAF \"${EPURL}\" --WOAS \"${FEEDURL}\" \"${EPFILENAME}\""
                  return cp
-
+-}
 startingcp = emptyCP {accessfunc = interpolatingAccess 10}
 
 getCPName =
     do appdir <- getAppDir
-       return $ appdir ++ "/hpodder.conf"
+       return $ appdir ++ ".twarshrc"
 
-loadCP = 
-    do cpname <- getCPName
-       defaultcp <- getDefaultCP
+loadCP cpgiven = 
+    do cpname <- case cpgiven of
+                   Nothing -> getCPName
+                   Just x -> return x
+       -- defaultcp <- getDefaultCP
        dfe <- doesFileExist cpname
        if dfe
-          then do cp <- readfile defaultcp cpname
+          then do cp <- readfile startingcp cpname
                   return $ forceEither cp
-          else return defaultcp
+          else do fail "No config file found at " ++ cpname
 
 writeCP cp =
     do cpname <- getCPName

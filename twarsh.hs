@@ -30,7 +30,6 @@ Written by John Goerzen, jgoerzen\@complete.org
 -}
 
 import Config
-import DB
 import System.Log.Logger
 import System.Log.Handler.Simple
 import System.IO(stdout)
@@ -43,7 +42,6 @@ import Commands
 import Types
 import Control.Monad
 import Utils
-import Database.HDBC
 
 main = 
     do updateGlobalLogger "" (setLevel INFO)
@@ -54,6 +52,8 @@ main =
          (_, _, errors) -> usageerror (concat errors) -- ++ usageInfo header options)
        
 options = [Option "d" ["debug"] (NoArg ("d", "")) "Enable debugging",
+           Option "c" ["config"] (ReqArg (stdRequired "config") "FILE")
+                  "Use specified config file",
            Option "" ["help"] (NoArg ("help", "")) "Display this help"]
 
 worker args n commandargs =
@@ -62,26 +62,22 @@ worker args n commandargs =
             (updateGlobalLogger "" (setLevel DEBUG))
        handler <- streamHandler stdout DEBUG
        updateGlobalLogger "" (setHandlers [handler])
-       initDirs
        let commandname = head cmdargs
        case lookup commandname allCommands of
          Just command -> 
-             do cp <- loadCP 
-                dbh <- connect
-                handleSqlError $ execcmd command (tail cmdargs) 
-                                   (GlobalInfo {gcp = cp, gdbh = dbh})
-                disconnect dbh
+             do cp <- loadCP (lookup "c" args)
+                execcmd command (tail cmdargs) cp
          Nothing -> usageerror ("Invalid command name " ++ commandname)
        where cmdargs = case commandargs of
-                         [] -> ["fetch"]
+                         [] -> ["help"]
                          x -> x
 
 usageerror errormsg =
     do putStrLn errormsg
        putStrLn (usageInfo header options)
-       putStrLn "Run \"hpodder lscommands\" for a list of available commands.\n\
-                \Run \"hpodder command --help\" for help on a particular command.\n"
+       putStrLn "Run \"twarsh lscommands\" for a list of available commands.\n\
+                \Run \"twarsh command --help\" for help on a particular command.\n"
        exitFailure
 
-header = "Usage: hpodder [global-options] command [command-options]\n\n\
+header = "Usage: twarsh [global-options] command [command-options]\n\n\
          \Available global-options are:\n"
