@@ -47,4 +47,4 @@ update_help =
  "Usage: twidge update status\n\n\
  \Updates your status to the given status.  You will most likely need to\n\
  \quote this to prevent interference from the shell.  For instance:\n\n\
- \twidge update \"At home, baking.\"\n"
+ \  twidge update \"At home, baking.\"\n"
