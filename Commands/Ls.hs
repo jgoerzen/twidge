@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Ls(lsrecent, lsfollowing, lsfollowers) where
+module Commands.Ls(lsrecent, lsreplies, lsfollowing, lsfollowers) where
 import Utils
 import System.Log.Logger
 import Types
@@ -96,16 +96,20 @@ sinceArgs section cp args =
 
 lsrecent = simpleCmd "lsrecent" "List recent updates from those you follow"
              lsrecent_help
-             (stdopts ++ sinceopts) (paginated lsrecent_worker)
+             (stdopts ++ sinceopts) (paginated (statuses_worker "lsrecent" "friends_timeline"))
 
-lsrecent_worker cpath cp (args, _) page =
-    do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml" 
-                 (("page", show page) : sinceArgs "lsrecent" cp args)
+lsreplies = simpleCmd "lsreplies" "List recent replies to you"
+            lsreplies_help
+            (stdopts ++ sinceopts) (paginated (statuses_worker "lsreplies" "replies"))
+
+statuses_worker section command cpath cp (args, _) page =
+    do xmlstr <- sendAuthRequest cp ("/statuses/" ++ command ++ ".xml")
+                 (("page", show page) : sinceArgs section cp args)
                  []
-       debugM "lsrecent" $ "Got doc: " ++ xmlstr
+       debugM section $ "Got doc: " ++ xmlstr
        results <- handleStatus args xmlstr
        when (page == 1) $
-            maybeSaveList "lsrecent" cpath cp args 
+            maybeSaveList section cpath cp args 
                           ((map (\(_, _, i) -> i)) results)
        return results
 
@@ -119,6 +123,14 @@ lsrecent_help =
  \After running that once, you may want to use -asu in the future to get all\n\
  \unseen messages, even if there are more than 20.  Don't use -a until\n\
  \you've used -s at least once.\n"
+
+lsreplies_help =
+ "Usage: twidge lsreplies [options]\n\n\
+ \You can see the 20 most recent @replies from others to you with:\n\n\
+ \   twidge lsreplies\n\n\
+ \For more examples, including how to see only unseen replies, please\n\
+ \refer to the examples under twidge lsrecent --help, which also pertain\n\
+ \to lsreplies.\n"
 
 handleStatus args xmlstr = 
     let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr

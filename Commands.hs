@@ -49,6 +49,7 @@ allCommands =
      Commands.Ls.lsfollowers,
      Commands.Ls.lsfollowing,
      Commands.Ls.lsrecent,
+     Commands.Ls.lsreplies,
      lscommands,
      Commands.Setup.setup,
      Commands.Follow.unfollow,
