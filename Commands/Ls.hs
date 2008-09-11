@@ -31,10 +31,10 @@ i = infoM "ls"
 
 stdopts = [Option "a" ["all"] (NoArg ("a", "")) 
                       "Show ALL results, not just 1st page\n\
-                      \WARNING: may generate excessive traffic.\n\
+                      \WARNING: may generate excessive traffic.  \
                       \Use with caution!",
            Option "l" ["long"] (NoArg ("l", "")) 
-                      "Long format output -- more info and\n\
+                      "Long format output -- more info and \
                       \tab-separated columns"]
 
 paginated workerfunc cppath cp (args, remainder)
@@ -63,7 +63,7 @@ lsrecent_worker _ cp (args, _) page =
        handleStatus args xmlstr
 
 lsrecent_help =
- "Usage: twidge lsrecent\n\n"
+ "Usage: twidge lsrecent [options]\n\n"
 
 handleStatus args xmlstr = 
     let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
@@ -119,7 +119,7 @@ procUsers item =
      sanitize $ contentToString (keep /> tag "id" /> txt $ item))
 
 lsfollowing_help =
- "Usage: twidge lsfollowing [username]\n\n\
+ "Usage: twidge lsfollowing [options] [username]\n\n\
  \If username is given, list the twitter accounts that user is following.\n\
  \Otherwise, list the twitter accounts your user is following.\n"
 
@@ -145,6 +145,6 @@ lsfollowers_worker _ cp (args, user) page =
                   _ -> error "Invalid args to lsfollowers; see twidge lsfollowers --help"
 
 lsfollowers_help =
- "Usage: twidge lsfollowers [username]\n\n\
+ "Usage: twidge lsfollowers [options] [username]\n\n\
  \If username is given, list the twitter accounts that follow the user.\n\
  \Otherwise, list the twitter accounts that follow you.\n"
