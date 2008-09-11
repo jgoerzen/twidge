@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Ls(lscasts, lscasts_worker, lsepisodes, lseps) where
+module Commands.Ls(lsrecent) where
 import Utils
 import System.Log.Logger
 import DB
@@ -33,64 +33,12 @@ i = infoM "ls"
 -- lscasts
 --------------------------------------------------
 
-lscasts = simpleCmd "lscasts" "List all configured podcasts on the system"
-             lscasts_help
-          [Option "l" [] (NoArg ("l", "")) "Long format display -- include URLs in output"] lscasts_worker
+lsrecent = simpleCmd "lsrecent" "List recent updates from your friends"
+             lsrecent_help
+             [] lsrecent_worker
 
-lscasts_worker gi (opts, casts) =
-    do pc <- getSelectedPodcasts (gdbh gi) casts
-       printf "%-4s %-7s %s\n" "ID" "Pnd/Tot" "Title"
-       when (islong) (printf "     URL\n")
-       mapM_ printpc (sort pc)
-    where islong = lookup "l" opts == Just ""
-          printpc pc = do pend <- quickQuery (gdbh gi) "SELECT COUNT(*) FROM \
-                                  \episodes WHERE castid = ? AND \
-                                  \status = 'Pending'" [toSql (castid pc)]
-                          tot <- quickQuery (gdbh gi) "SELECT COUNT(*) FROM \
-                                  \episodes WHERE castid = ?" 
-                                  [toSql (castid pc)]
-                          let (npend, ntot) = case (pend, tot) of
-                                                ([[x]], [[y]]) -> 
-                                                    (fromSql x, fromSql y)
-                                                _ -> error "Bad count result"
-                          printf "%-4d %3d/%3d %s\n" (castid pc) 
-                                     (npend::Int) (ntot::Int) title
-                          when (islong) (printf "     %s\n" (feedurl pc))
-              where title = case pcenabled pc of
-                               PCEnabled -> castname pc
-                               PCUserDisabled -> "[disabled] " ++ castname pc
-                               PCErrorDisabled -> "[disabled by errors] " ++
-                                                  castname pc
+lsrecent_worker cp _ =
+    do 
 
-lscasts_help =
- "Usage: hpodder lscasts [-l] [castid [castid...]]\n\n" ++ genericIdHelp ++
- "\nIf no ID is given, then \"all\" will be used.\n"
-
---------------------------------------------------
--- lsepisodes
---------------------------------------------------
-
-lsepisodes = simpleCmd "lsepisodes" "List episodes in hspodder database"
-               lsepisodes_help
-             [Option "l" [] (NoArg ("l", "")) "Long format display -- include URLs in output"] lsepisodes_worker
-
-lseps = simpleCmd "lseps" "Alias for lsepisodes" lsepisodes_help
-             [Option "l" [] (NoArg ("l", "")) "Long format display -- include URLs in output"] lsepisodes_worker
-
-lsepisodes_worker gi (opts, casts) =
-    do pc <- getSelectedPodcasts (gdbh gi) casts
-       printf "%-5s %-5s %-4s %-60.60s\n" "CstId" "EpId" "Stts" "Episode Title"
-       when (islong) (printf "            Episode URL\n")
-       eps <- mapM (getEpisodes (gdbh gi)) pc
-       mapM_ printep (concat eps)
-    where printep ep =
-              do printf "%-5d %-5d %-4s %-60.60s\n" 
-                            (castid (podcast ep)) (epid ep) 
-                            (take 4 . show $ epstatus ep) (eptitle ep)
-                 when (islong) (printf "            %s\n" (epurl ep))
-          islong = lookup "l" opts == Just ""
-
-lsepisodes_help =
- "Usage: hpodder lsepisodes [-l] [castid [castid...]]\n\n" ++ genericIdHelp ++
- "\nIf no podcast ID is given, then \"all\" will be used.  You can find your\n\
- \podcast IDs with \"hpodder lscasts\".\n"
+lsrecent_help =
+ "Usage: twidge lsrecent\n\n"
