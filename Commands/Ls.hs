@@ -29,16 +29,25 @@ import FeedParser
 
 i = infoM "ls"
 
+stdopts = [Option "a" ["all"] (NoArg ("a", "")) 
+                      "Show ALL results, not just 1st page\n\
+                      \WARNING: may generate excessive traffic.\n\
+                      \Use with caution!",
+           Option "l" ["long"] (NoArg ("d", "")) 
+                      "Long format output -- more info and\n\
+                      \tab-separated columns"]
+
 --------------------------------------------------
 -- lsrecent
 --------------------------------------------------
 
 lsrecent = simpleCmd "lsrecent" "List recent updates from those you follow"
              lsrecent_help
-             [] lsrecent_worker
+             stdopts (paginated lsrecent_worker)
 
-lsrecent_worker _ cp _ =
-    do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml" [] []
+lsrecent_worker _ cp (args, _) page =
+    do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml" 
+                 [("page", show page)] []
        debugM "lsrecent" $ "Got doc: " ++ xmlstr
        handleStatus xmlstr
 
