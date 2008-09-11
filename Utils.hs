@@ -43,7 +43,6 @@ import System.IO
 import System.Posix.IO
 import Control.Exception(finally)
 import Data.ConfigFile
-import Sytem.Exit
 
 simpleCmd :: String             -- ^ Command name
           -> String             -- ^ Command description
@@ -112,5 +111,5 @@ ex_permfail = 69
 
 permFail :: String -> IO a
 permFail msg =
-    do putStrLn stderr msg
-       exitWith ex_permfail
+    do hPutStrLn stderr msg
+       exitWith (ExitFailure ex_permfail)

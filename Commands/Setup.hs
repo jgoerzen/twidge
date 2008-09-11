@@ -16,45 +16,60 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Ls(lsrecent) where
+module Commands.Setup(setup) where
 import Utils
 import System.Log.Logger
 import Types
 import Text.Printf
 import System.Console.GetOpt
 import Data.List
-import Text.XML.HaXml
 import Download
 import FeedParser
+import Data.ConfigFile
+import System.IO
+import Data.Either.Utils
+import Data.Char
+import Config
+import Control.Monad(when)
 
-i = infoM "ls"
+i = infoM "setup"
 
 --------------------------------------------------
 -- lscasts
 --------------------------------------------------
 
-lsrecent = simpleCmd "lsrecent" "List recent updates from those you follow"
-             lsrecent_help
-             [] lsrecent_worker
+setup = simpleCmd "setup" "Interactively configure twidge for first-time use"
+             setup_help
+             [] setup_worker
 
-lsrecent_worker _ cp _ =
-    do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml" []
-       let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
-       mapM_ printStatus . map procStatuses . getStatuses $ doc
+setup_worker cpath cp _ =
+    do when (has_option cp "DEFAULT" "username" || 
+             has_option cp "DEFAULT" "password")
+            (confirmSetup)
+       hSetBuffering stdout NoBuffering
+       putStrLn "\nWelcome to twidge.  We will now configure twidge for your"
+       putStrLn "use.  This will be quick and easy!\n"
+       putStrLn "First, what is your usename?\n"
+       putStr   "Username: "
+       username <- getLine
+       putStrLn $ "\nWelcome, " ++ username ++ "!  Now I'll need your password.\n"
+       putStr   "Password: "
+       password <- getLine
+       let newcp = forceEither $ set cp "DEFAULT" "username" username
+       let newcp = forceEither $ set newcp "DEFAULT" "password" password
        
-    where getContent (Document _ _ e _) = CElem e
+       writeCP cpath newcp
+       
+       putStrLn "\n\ntwidge has now been configured for you.\n"
+    where confirmSetup =
+              do putStrLn "\nIt looks like you have already configured twidge."
+                 putStrLn "If we continue, I may remove your existing"
+                 putStrLn "configuration.  Would you like to proceed?"
+                 putStr   "\nYES or NO: "
+                 c <- getLine
+                 if (map toLower c) == "yes"
+                    then return ()
+                    else permFail "Aborting configuration at user request."
 
-          getStatuses = tag "statuses" /> tag "status"
-          procStatuses :: Content -> (String, String)
-          procStatuses item = 
-              (sanitize $ contentToString 
-                  (keep /> tag "user" /> tag "screen_name" /> txt $ item),
-               sanitize $ contentToString
-                  (keep /> tag "text" /> txt $ item)
-              )
-
-          printStatus (name, text) =
-              printf "<%s> %s\n" name text
-
-lsrecent_help =
- "Usage: twidge lsrecent\n\n"
+setup_help =
+ "Usage: twidge setup\n\n"
