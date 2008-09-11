@@ -69,4 +69,4 @@ getAuthOpts cp =
     case (get cp "DEFAULT" "username", get cp "DEFAULT" "password") of
       (Right user, Right pass) ->
           ["--user", user ++ ":" ++ pass]
-      _ -> error "Missing username or password section in config file"
+      _ -> error "Missing username or password option in config file"

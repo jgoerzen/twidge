@@ -55,10 +55,10 @@ setup_worker cpath cp _ =
        putStrLn $ "\nWelcome, " ++ username ++ "!  Now I'll need your password.\n"
        putStr   "Password: "
        password <- getLine
-       let newcp = forceEither $ set cp "DEFAULT" "username" username
-       let newcp = forceEither $ set newcp "DEFAULT" "password" password
+       let newcp = forceEither $ set cp "DEFAULT" "username" (esc username)
+       let newcp' = forceEither $ set newcp "DEFAULT" "password" (esc password)
        
-       writeCP cpath newcp
+       writeCP cpath newcp'
        
        putStrLn "\n\ntwidge has now been configured for you.\n"
     where confirmSetup =
@@ -70,6 +70,9 @@ setup_worker cpath cp _ =
                  if (map toLower c) == "yes"
                     then return ()
                     else permFail "Aborting configuration at user request."
+          esc x = concatMap fix x
+          fix '%' = "%%"
+          fix x = [x]
 
 setup_help =
  "Usage: twidge setup\n\n"
