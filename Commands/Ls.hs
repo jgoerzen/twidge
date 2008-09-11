@@ -93,12 +93,12 @@ lsfollowing = simpleCmd "lsfollowing" "List people you are following"
              lsfollowing_help
              stdopts (paginated lsfollowing_worker)
 
-lsfollowing_worker _ cp (_, user) page =
+lsfollowing_worker _ cp (args, user) page =
     do xmlstr <- sendAuthRequest cp url [("page", show page)] []
        debugM "lsfollowing" $ "Got doc: " ++ xmlstr
        let doc = getContent . xmlParse "lsfollowing" . stripUnicodeBOM $ xmlstr
        let users = map procUsers . getUsers $ doc
-       mapM_ printUser users
+       mapM_ (printUser args) users
        return users
        
     where url = case user of
@@ -106,7 +106,10 @@ lsfollowing_worker _ cp (_, user) page =
                   [x] -> "/statuses/friends/" ++ x ++ ".xml"
                   _ -> error "Invalid args to lsfollowing; see twidge lsfollowing --help"
 
-printUser (name, _) = putStrLn name
+printUser args (name, userid) = 
+    case lookup "l" args of
+      Nothing -> putStrLn name
+      Just _ -> printf "%s\t%s\n" userid name
 
 getUsers = tag "users" /> tag "user"
 
@@ -128,12 +131,12 @@ lsfollowers = simpleCmd "lsfollowers" "List people that follow you"
              lsfollowers_help
              stdopts (paginated lsfollowers_worker)
 
-lsfollowers_worker _ cp (_, user) page =
+lsfollowers_worker _ cp (args, user) page =
     do xmlstr <- sendAuthRequest cp url [("page", show page)] []
        debugM "lsfollowers" $ "Got doc: " ++ xmlstr
        let doc = getContent . xmlParse "lsfollowers" . stripUnicodeBOM $ xmlstr
        let users = map procUsers . getUsers $ doc
-       mapM_ printUser users
+       mapM_ (printUser args) users
        return users
        
     where url = case user of
