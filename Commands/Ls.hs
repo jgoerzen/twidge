@@ -59,7 +59,8 @@ paginated workerfunc cppath cp (args, remainder)
 
 maybeSaveList section cpath cp args [] = return ()
 maybeSaveList section cpath cp args newids =
-    maybeSave section cpath cp args theid
+    do debugM section $ "maybeSaveList called: " ++ show args ++ " " ++ show newids
+       maybeSave section cpath cp args theid
     where theid = maximum . map (read::String -> Integer) $ newids
 
 maybeSave section cpath cp args newid =
@@ -76,7 +77,7 @@ maybeSave section cpath cp args newid =
                                 then return cp
                                 else add_section cp section
                      cp2 <- set cp2 section "lastid" (show newid)
-                     return cp
+                     return cp2
 
 sinceArgs section cp args =
     case (lookup "u" args, get cp section "lastid") of
@@ -99,7 +100,7 @@ lsrecent_worker cpath cp (args, _) page =
                  []
        debugM "lsrecent" $ "Got doc: " ++ xmlstr
        results <- handleStatus args xmlstr
-       when (page == 1 && not (null results)) $
+       when (page == 1) $
             maybeSaveList "lsrecent" cpath cp args 
                           ((map (\(_, _, i) -> i)) results)
        return results
