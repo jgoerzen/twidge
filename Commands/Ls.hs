@@ -31,6 +31,7 @@ import Data.String.Utils(strip)
 import Config
 import Data.Either.Utils(forceEither)
 import Control.Monad(when)
+import Distribution.Simple.Utils(wrapText)
 
 i = infoM "ls"
 
@@ -136,8 +137,11 @@ procStatuses item =
 getStatuses = tag "statuses" /> tag "status"
 printStatus args (name, text, updid) =
     case lookup "l" args of
-      Nothing -> printf "<%s> %s\n" name text
+      Nothing -> 
+          do printf "%-22s %s\n" ("<" ++ name ++ ">") (head wrappedtext)
+             mapM_ (printf "%-22s %s\n" "") (tail wrappedtext)
       Just _ ->  printf "%s\t%s\t%s\n" updid name text
+    where wrappedtext = wrapText (80 - 22 - 2) (words text)
 
 --------------------------------------------------
 -- lsfollowing
