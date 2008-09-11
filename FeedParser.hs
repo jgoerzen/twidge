@@ -71,3 +71,5 @@ sanitize = strip . map sanitizer
     where sanitizer c 
               | c `elem` "\n\r\0\t" = ' '
               | otherwise = c
+
+getContent (Document _ _ e _) = CElem e

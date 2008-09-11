@@ -45,6 +45,7 @@ import qualified Commands.Setup
 --allCommands :: [(String, Command)]
 allCommands = 
     [Commands.Follow.follow,
+     Commands.Ls.lsfollowing,
      Commands.Ls.lsrecent,
      lscommands,
      Commands.Setup.setup,

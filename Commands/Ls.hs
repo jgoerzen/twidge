@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Ls(lsrecent) where
+module Commands.Ls(lsrecent, lsfollowing) where
 import Utils
 import System.Log.Logger
 import Types
@@ -30,7 +30,7 @@ import FeedParser
 i = infoM "ls"
 
 --------------------------------------------------
--- lscasts
+-- lsrecent
 --------------------------------------------------
 
 lsrecent = simpleCmd "lsrecent" "List recent updates from those you follow"
@@ -43,19 +43,47 @@ lsrecent_worker _ cp _ =
        let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
        mapM_ printStatus . map procStatuses . getStatuses $ doc
        
-    where getContent (Document _ _ e _) = CElem e
+    where
 
           getStatuses = tag "statuses" /> tag "status"
-          procStatuses :: Content -> (String, String)
-          procStatuses item = 
-              (sanitize $ contentToString 
-                  (keep /> tag "user" /> tag "screen_name" /> txt $ item),
-               sanitize $ contentToString
-                  (keep /> tag "text" /> txt $ item)
-              )
-
           printStatus (name, text) =
               printf "<%s> %s\n" name text
 
 lsrecent_help =
  "Usage: twidge lsrecent\n\n"
+
+procStatuses :: Content -> (String, String)
+procStatuses item = 
+    (sanitize $ contentToString 
+      (keep /> tag "user" /> tag "screen_name" /> txt $ item),
+     sanitize $ contentToString
+     (keep /> tag "text" /> txt $ item)
+    )
+
+--------------------------------------------------
+-- lsfollowing
+--------------------------------------------------
+
+lsfollowing = simpleCmd "lsfollowing" "List people you are following"
+             lsfollowing_help
+             [] lsfollowing_worker
+
+lsfollowing_worker _ cp (_, user) =
+    do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml" [] []
+       debugM "lsfollowing" $ "Got doc: " ++ xmlstr
+       return ()
+       -- let doc = getContent . xmlParse "lsfollowing" . stripUnicodeBOM $ xmlstr
+       -- mapM_ printStatus . map procStatuses . getStatuses $ doc
+       
+    where url = case user of
+                  [] -> "/statuses/friends.xml"
+                  [x] -> "/statuses/friends/" ++ x ++ ".xml"
+                  _ -> error "Invalid args to lsfollowing; see twidge lsfollowing --help"
+          getStatuses = tag "statuses" /> tag "status"
+          printStatus (name, text) =
+              printf "<%s> %s\n" name text
+
+lsfollowing_help =
+ "Usage: twidge lsfollowing [username]\n\n\
+ \If username is given, list the twitter accounts that user is following.\n\
+ \Otherwise, list the twitter accounts your user is following.\n"
