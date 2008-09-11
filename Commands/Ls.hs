@@ -40,12 +40,12 @@ lsrecent = simpleCmd "lsrecent" "List recent updates from your friends"
 lsrecent_worker cp _ =
     do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml"
        let doc = getContent . xmlParse "lsrecent" $ xmlstr
-       mapM_ printStatus . concatMap procStatuses . getStatuses $ doc
+       mapM_ printStatus . map procStatuses . getStatuses $ doc
        
     where getContent (Document _ _ e _) = CElem e
 
-          getStatuses doc = tag "status" /> tag "status"
-          procStatuses :: Content -> [(String, String)]
+          getStatuses = tag "statuses" /> tag "status"
+          procStatuses :: Content -> (String, String)
           procStatuses item = 
               (contentToString 
                   (keep /> tag "user" /> tag "screen_name" /> txt $ item),
