@@ -33,7 +33,7 @@ stdopts = [Option "a" ["all"] (NoArg ("a", ""))
                       "Show ALL results, not just 1st page\n\
                       \WARNING: may generate excessive traffic.\n\
                       \Use with caution!",
-           Option "l" ["long"] (NoArg ("d", "")) 
+           Option "l" ["long"] (NoArg ("l", "")) 
                       "Long format output -- more info and\n\
                       \tab-separated columns"]
 
@@ -60,28 +60,30 @@ lsrecent_worker _ cp (args, _) page =
     do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml" 
                  [("page", show page)] []
        debugM "lsrecent" $ "Got doc: " ++ xmlstr
-       handleStatus xmlstr
+       handleStatus args xmlstr
 
 lsrecent_help =
  "Usage: twidge lsrecent\n\n"
 
-handleStatus xmlstr = 
+handleStatus args xmlstr = 
     let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
         statuses = map procStatuses . getStatuses $ doc
-    in do mapM_ printStatus statuses
+    in do mapM_ (printStatus args) statuses
           return statuses
 
-procStatuses :: Content -> (String, String)
+procStatuses :: Content -> (String, String, String)
 procStatuses item = 
     (sanitize $ contentToString 
       (keep /> tag "user" /> tag "screen_name" /> txt $ item),
-     sanitize $ contentToString
-     (keep /> tag "text" /> txt $ item)
+     sanitize $ contentToString (keep /> tag "text" /> txt $ item),
+     sanitize $ contentToString (keep /> tag "id" /> txt $ item)
     )
 
 getStatuses = tag "statuses" /> tag "status"
-printStatus (name, text) =
-    printf "<%s> %s\n" name text
+printStatus args (name, text, updid) =
+    case lookup "l" args of
+      Nothing -> printf "<%s> %s\n" name text
+      Just _ ->  printf "%s\t%s\t%s\n" updid name text
 
 --------------------------------------------------
 -- lsfollowing
