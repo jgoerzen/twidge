@@ -59,3 +59,7 @@ contentToString =
 
           unesc :: Element -> Element
           unesc = xmlUnEscape stdXmlEscaper
+
+stripUnicodeBOM :: String -> String
+stripUnicodeBOM ('\xef':'\xbb':'\xbf':x) = x
+stripUnicodeBOM x = x

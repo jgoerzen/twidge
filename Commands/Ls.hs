@@ -39,7 +39,7 @@ lsrecent = simpleCmd "lsrecent" "List recent updates from your friends"
 
 lsrecent_worker cp _ =
     do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml"
-       let doc = getContent . xmlParse "lsrecent" $ xmlstr
+       let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
        mapM_ printStatus . map procStatuses . getStatuses $ doc
        
     where getContent (Document _ _ e _) = CElem e

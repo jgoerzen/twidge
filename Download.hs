@@ -37,6 +37,7 @@ import System.Log.Logger
 import Text.Printf
 import Data.ConfigFile
 import HSH
+import Data.Either.Utils(forceEither)
 
 d = debugM "download"
 i = infoM "download"
@@ -54,7 +55,8 @@ curlopts = ["-A", "twidge v1.0.0; Haskell; GHC", -- Set User-Agent
 sendAuthRequest :: ConfigParser -> String -> IO String
 sendAuthRequest cp url =
     do let authopts = getAuthOpts cp
-       run $ (curl, curlopts ++ authopts ++ [url])
+       let urlbase = forceEither $ get cp "DEFAULT" "urlbase"
+       run $ (curl, curlopts ++ authopts ++ [urlbase ++ url])
 
 getAuthOpts :: ConfigParser -> [String]
 getAuthOpts cp =
