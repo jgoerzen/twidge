@@ -42,6 +42,7 @@ import Commands
 import Types
 import Control.Monad
 import Utils
+import Data.ConfigFile(emptyCP)
 
 main = 
     do updateGlobalLogger "" (setLevel INFO)
@@ -65,7 +66,9 @@ worker args n commandargs =
        let commandname = head cmdargs
        case lookup commandname allCommands of
          Just command -> 
-             do cp <- loadCP (lookup "c" args)
+             do cp <- if commandname == "lscommands" -- no config file needed
+                      then return emptyCP
+                      else loadCP (lookup "c" args)
                 execcmd command (tail cmdargs) cp
          Nothing -> usageerror ("Invalid command name " ++ commandname)
        where cmdargs = case commandargs of
