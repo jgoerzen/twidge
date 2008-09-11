@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Ls(lsrecent, lsfollowing) where
+module Commands.Ls(lsrecent, lsfollowing, lsfollowers) where
 import Utils
 import System.Log.Logger
 import Types
@@ -79,14 +79,41 @@ lsfollowing_worker _ cp (_, user) =
                   [] -> "/statuses/friends.xml"
                   [x] -> "/statuses/friends/" ++ x ++ ".xml"
                   _ -> error "Invalid args to lsfollowing; see twidge lsfollowing --help"
-          printUser (name, _) = putStrLn name
-          getUsers = tag "users" /> tag "user"
-          procUsers :: Content -> (String, String)
-          procUsers item =
-              (sanitize $ contentToString (keep /> tag "screen_name" /> txt $ item),
-               sanitize $ contentToString (keep /> tag "id" /> txt $ item))
+
+printUser (name, _) = putStrLn name
+
+getUsers = tag "users" /> tag "user"
+
+procUsers :: Content -> (String, String)
+procUsers item =
+    (sanitize $ contentToString (keep /> tag "screen_name" /> txt $ item),
+     sanitize $ contentToString (keep /> tag "id" /> txt $ item))
 
 lsfollowing_help =
  "Usage: twidge lsfollowing [username]\n\n\
  \If username is given, list the twitter accounts that user is following.\n\
  \Otherwise, list the twitter accounts your user is following.\n"
+
+--------------------------------------------------
+-- lsfollowers
+--------------------------------------------------
+
+lsfollowers = simpleCmd "lsfollowers" "List people that follow you"
+             lsfollowers_help
+             [] lsfollowers_worker
+
+lsfollowers_worker _ cp (_, user) =
+    do xmlstr <- sendAuthRequest cp url [] []
+       debugM "lsfollowers" $ "Got doc: " ++ xmlstr
+       let doc = getContent . xmlParse "lsfollowers" . stripUnicodeBOM $ xmlstr
+       mapM_ printUser . map procUsers . getUsers $ doc
+       
+    where url = case user of
+                  [] -> "/statuses/followers.xml"
+                  [x] -> "/statuses/followers/" ++ x ++ ".xml"
+                  _ -> error "Invalid args to lsfollowers; see twidge lsfollowers --help"
+
+lsfollowers_help =
+ "Usage: twidge lsfollowers [username]\n\n\
+ \If username is given, list the twitter accounts that follow the user.\n\
+ \Otherwise, list the twitter accounts that follow you.\n"
