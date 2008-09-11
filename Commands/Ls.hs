@@ -19,11 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 module Commands.Ls(lsrecent) where
 import Utils
 import System.Log.Logger
-import DB
 import Types
-import Database.HDBC
 import Text.Printf
-import Control.Monad
 import System.Console.GetOpt
 import Data.List
 
@@ -38,7 +35,23 @@ lsrecent = simpleCmd "lsrecent" "List recent updates from your friends"
              [] lsrecent_worker
 
 lsrecent_worker cp _ =
-    do 
+    do xmlstr <- sendAuthRequest "/statuses/friends_timeline.xml"
+       let doc = getContent . xmlParse "lsrecent" $ xmlstr
+       mapM_ printStatus . concatMap procStatuses . getStatuses $ doc
+       
+    where getContent (Document _ _ e _) = CElem e
+
+          getStatuses doc = tag "status" /> tag "status"
+          procStatuses :: Content -> [(String, String)]
+          procStatuses item = 
+              (contentToString 
+                  (keep /> tag "user" /> tag "screen_name" /> txt $ item),
+               contentToString
+                  (keep /> tag "text" /> txt $ item)
+              )
+
+          printStatus (name, text) =
+              printf "<%s> %s\n" name text
 
 lsrecent_help =
  "Usage: twidge lsrecent\n\n"
