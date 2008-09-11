@@ -38,35 +38,13 @@ import Config
 import Data.ConfigFile
 import Data.Either.Utils
 
-import qualified Commands.Add
 import qualified Commands.Ls
-import qualified Commands.Update
-import qualified Commands.Download
-import qualified Commands.Setup
-import qualified Commands.Catchup
-import qualified Commands.ImportIpodder
-import qualified Commands.Rm
-import qualified Commands.SetStatus
-import qualified Commands.SetTitle
-import qualified Commands.EnableDisable
 
 --allCommands :: [(String, Command)]
 allCommands = 
-    [Commands.Add.cmd,
-     Commands.Catchup.cmd,
-     Commands.EnableDisable.cmd_disable,
-     Commands.Download.cmd,
-     Commands.EnableDisable.cmd_enable,
-     fetch,
-     Commands.ImportIpodder.cmd,
-     Commands.Ls.lscasts,
-     lscommands,
-     Commands.Ls.lsepisodes,
-     Commands.Ls.lseps,
-     Commands.Rm.cmd,
-     Commands.SetStatus.cmd,
-     Commands.SetTitle.cmd,
-     Commands.Update.cmd]
+    [Commands.Ls.lsrecent,
+     lscommands
+    ]
 
 lscommands = 
     simpleCmd "lscommands" "Display a list of all available commands" ""
@@ -79,24 +57,3 @@ lscommands_worker _ _ =
        mapM_ (\(_, x) -> printf "%-20s %s\n" (cmdname x) (cmddescrip x))
              allCommands
                  
-
-fetch = 
-    simpleCmd "fetch" "Scan feeds, then download new episodes" fetch_help
-              [] fetch_worker
-
-fetch_worker gi ([], casts) =
-    do cp <- loadCP
-       let showintro = forceEither $ get cp "general" "showintro"
-       if showintro 
-              then Commands.Setup.cmd_worker gi ([], [])
-              else do Commands.Update.cmd_worker gi ([], casts)
-                      Commands.Download.cmd_worker gi ([], casts)
-    
-fetch_worker _ _ =
-    fail $ "Invalid arguments to fetch; please see hpodder fetch --help"
-
-fetch_help = "Usage: hpodder fetch [castid [castid...]]\n\n" ++ 
-             genericIdHelp  ++
- "\nThe fetch command will cause hpodder to scan all feeds (as with\n\
- \\"hpodder update\") and then download all new episodes (as with\n\
- \\"hpodder download\").\n"
