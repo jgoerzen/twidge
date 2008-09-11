@@ -1,5 +1,5 @@
-{- hpodder component
-Copyright (C) 2006 John Goerzen <jgoerzen@complete.org>
+{-
+Copyright (C) 2006-2008 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ i = infoM "ls"
 -- lscasts
 --------------------------------------------------
 
-lsrecent = simpleCmd "lsrecent" "List recent updates from your friends"
+lsrecent = simpleCmd "lsrecent" "List recent updates from those you follow"
              lsrecent_help
              [] lsrecent_worker
 
@@ -47,9 +47,9 @@ lsrecent_worker _ cp _ =
           getStatuses = tag "statuses" /> tag "status"
           procStatuses :: Content -> (String, String)
           procStatuses item = 
-              (contentToString 
+              (sanitize $ contentToString 
                   (keep /> tag "user" /> tag "screen_name" /> txt $ item),
-               contentToString
+               sanitize $ contentToString
                   (keep /> tag "text" /> txt $ item)
               )
 
