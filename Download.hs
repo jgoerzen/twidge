@@ -54,15 +54,18 @@ curlopts = ["-A", "twidge v1.0.0; Haskell; GHC", -- Set User-Agent
             "-f"                -- Fail on server errors
            ]
 
-sendAuthRequest :: ConfigParser -> String -> [(String, String)] -> IO String
-sendAuthRequest cp url opts =
+sendAuthRequest :: ConfigParser -> String -> [(String, String)] -> [(String, String)] -> IO String
+sendAuthRequest cp url getopts postoptlist =
     do let authopts = getAuthOpts cp
        let urlbase = forceEither $ get cp "DEFAULT" "urlbase"
-       run $ (curl, curlopts ++ authopts ++ [urlbase ++ url])
-    where optstr = case opts of
+       run $ (curl, curlopts ++ authopts ++ postopts ++ [urlbase ++ url ++ optstr])
+    where optstr = case getopts of
                      [] -> ""
-                     _ -> "?" ++ (concat . intersperse "&" . map conv $ opts)
+                     _ -> "?" ++ (concat . intersperse "&" . map conv $ getopts)
           conv (k, v) = k ++ "=" ++ escapeURIString isUnreserved v
+          postopts = concatMap postopt postoptlist
+          postopt (k, v) = ["-d", escapeURIString isUnreserved k ++ "=" ++
+                                  escapeURIString isUnreserved v]
 
 getAuthOpts :: ConfigParser -> [String]
 getAuthOpts cp =

@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Ls(lsrecent) where
+module Commands.Follow(follow) where
 import Utils
 import System.Log.Logger
 import Types
@@ -27,20 +27,21 @@ import Text.XML.HaXml
 import Download
 import FeedParser
 
-i = infoM "ls"
+i = infoM "follow"
 
 --------------------------------------------------
 -- lscasts
 --------------------------------------------------
 
-lsrecent = simpleCmd "lsrecent" "List recent updates from those you follow"
-             lsrecent_help
-             [] lsrecent_worker
+follow = simpleCmd "follow" "Start following someone"
+             follow_help
+             [] follow_worker
 
-lsrecent_worker _ cp _ =
-    do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml" []
-       let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
-       mapM_ printStatus . map procStatuses . getStatuses $ doc
+follow_worker _ cp ([], [user]) =
+    do xmlstr <- sendAuthRequest cp ("/friendships/create/" ++ user ++ ".xml") [] [("id", user)]
+       debugM "follow" $ "Got doc: " ++ xmlstr
+       let doc = getContent . xmlParse "follow" . stripUnicodeBOM $ xmlstr
+       return ()
        
     where getContent (Document _ _ e _) = CElem e
 
@@ -53,8 +54,7 @@ lsrecent_worker _ cp _ =
                   (keep /> tag "text" /> txt $ item)
               )
 
-          printStatus (name, text) =
-              printf "<%s> %s\n" name text
 
-lsrecent_help =
- "Usage: twidge lsrecent\n\n"
+follow_help =
+ "Usage: twidge follow username\n\n\
+ \will add username to your list of people you follow.\n\n"

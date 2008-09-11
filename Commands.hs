@@ -38,12 +38,14 @@ import Config
 import Data.ConfigFile
 import Data.Either.Utils
 
+import qualified Commands.Follow
 import qualified Commands.Ls
 import qualified Commands.Setup
 
 --allCommands :: [(String, Command)]
 allCommands = 
-    [Commands.Ls.lsrecent,
+    [Commands.Follow.follow,
+     Commands.Ls.lsrecent,
      lscommands,
      Commands.Setup.setup
     ]
