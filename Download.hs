@@ -40,6 +40,7 @@ import HSH
 import Data.Either.Utils(forceEither)
 import Network.URI
 import Data.List
+import Control.Exception(evaluate)
 
 d = debugM "download"
 i = infoM "download"
@@ -56,9 +57,10 @@ curlopts = ["-A", "twidge v1.0.0; Haskell; GHC", -- Set User-Agent
 
 sendAuthRequest :: ConfigParser -> String -> [(String, String)] -> [(String, String)] -> IO String
 sendAuthRequest cp url getopts postoptlist =
-    run (curl, curlopts ++ authopts ++ postopts ++ [urlbase ++ url ++ optstr])
-    where authopts = getAuthOpts cp
-          urlbase = forceEither $ get cp "DEFAULT" "urlbase"
+    do -- Force this to be evaluated in the parent process
+       authopts <- evaluate (getAuthOpts cp)
+       run (curl, curlopts ++ authopts ++ postopts ++ [urlbase ++ url ++ optstr])
+    where urlbase = forceEither $ get cp "DEFAULT" "urlbase"
           optstr = case getopts of
                      [] -> ""
                      _ -> "?" ++ (concat . intersperse "&" . map conv $ getopts)
