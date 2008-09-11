@@ -34,4 +34,4 @@ import Data.ConfigFile
 data Command =
     Command {cmdname :: String,
              cmddescrip :: String,
-             execcmd :: [String] -> ConfigParser -> IO ()}
+             execcmd :: [String] -> Maybe FilePath -> ConfigParser -> IO ()}

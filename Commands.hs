@@ -50,7 +50,7 @@ lscommands =
     simpleCmd "lscommands" "Display a list of all available commands" ""
                   [] lscommands_worker
 
-lscommands_worker _ _ =
+lscommands_worker _ _ _ =
     do putStrLn "All available commands:"
        printf "%-20s %s\n" "Name" "Description"
        putStrLn "-------------------- -------------------------------------------------------"

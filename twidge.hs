@@ -1,4 +1,4 @@
-{- hpodder component
+{- component
 Copyright (C) 2006-2008 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,7 @@ import Data.ConfigFile(emptyCP)
 main = 
     do updateGlobalLogger "" (setLevel INFO)
        argv <- getArgs
+       -- FIXME is this right?
        let (optargs, commandargs) = span (isPrefixOf "-") argv
        case getOpt RequireOrder options optargs of
          (o, n, []) -> worker o n commandargs
@@ -69,7 +70,7 @@ worker args n commandargs =
              do cp <- if commandname == "lscommands" -- no config file needed
                       then return emptyCP
                       else loadCP (lookup "c" args)
-                execcmd command (tail cmdargs) cp
+                execcmd command (tail cmdargs) (lookup "c" args) cp
          Nothing -> usageerror ("Invalid command name " ++ commandname)
        where cmdargs = case commandargs of
                          [] -> ["help"]
