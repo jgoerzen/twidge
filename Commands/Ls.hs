@@ -23,9 +23,14 @@ import Types
 import Text.Printf
 import System.Console.GetOpt
 import Data.List
-import Text.XML.HaXml
+import Text.XML.HaXml hiding (when)
 import Download
 import FeedParser
+import Data.ConfigFile
+import Data.String.Utils(strip)
+import Config
+import Data.Either.Utils(forceEither)
+import Control.Monad(when)
 
 i = infoM "ls"
 
@@ -58,7 +63,7 @@ maybeSaveList section cpath cp args newids =
     where theid = maximum . map (read::String -> Integer) $ newids
 
 maybeSave section cpath cp args newid =
-    case (lookup "s" args, get section "lastid") of
+    case (lookup "s" args, get cp section "lastid") of
       (Nothing, _) -> return ()
       (_, Left _) -> saveid
       (_, Right x) ->
@@ -66,11 +71,11 @@ maybeSave section cpath cp args newid =
              then return ()
              else saveid
     where saveid = writeCP cpath newcp
-          newcp = return $ forceEither $
+          newcp = forceEither $
                   do cp2 <- if (has_section cp section)
-                                then cp
+                                then return cp
                                 else add_section cp section
-                     cp2 <- set cp2 section "lastid" newid
+                     cp2 <- set cp2 section "lastid" (show newid)
                      return cp
 
 sinceArgs section cp args =
@@ -96,7 +101,7 @@ lsrecent_worker cpath cp (args, _) page =
        results <- handleStatus args xmlstr
        when (page == 1 && not (null results)) $
             maybeSaveList "lsrecent" cpath cp args 
-                          (map (\(_, _, i) -> i)) $ results
+                          ((map (\(_, _, i) -> i)) results)
 
 lsrecent_help =
  "Usage: twidge lsrecent [options]\n\n"
