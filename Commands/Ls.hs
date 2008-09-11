@@ -44,7 +44,8 @@ stdopts = [Option "a" ["all"] (NoArg ("a", ""))
 
 sinceopts = [
            Option "s" ["saveid"] (NoArg ("s", ""))
-                      "Save topmost ID for future use with --unseen",
+                      "Save topmost ID for future use with --unseen.\n\
+                      \Will write the ID to your config file.",
            Option "u" ["unseen"] (NoArg ("u", ""))
                       "Show only items since the last use of --saveid"]
 
