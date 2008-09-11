@@ -47,7 +47,7 @@ getDefaultCP =
 startingcp = emptyCP {accessfunc = interpolatingAccess 10}
 
 getCPName =
-    do appdir <- getAppDir
+    do appdir <- getUserDocumentsDirectory
        return $ appdir ++ ".twidgerc"
 
 loadCP cpgiven = 
@@ -59,23 +59,11 @@ loadCP cpgiven =
        if dfe
           then do cp <- readfile defaultcp cpname
                   return $ forceEither cp
-          else do fail "No config file found at " ++ cpname
+          else do fail $ "No config file found at " ++ cpname
 
 writeCP cp =
     do cpname <- getCPName
        writeFile cpname (to_string cp)
-
--- FIXME: these may be inefficient [PERFORMANCE]
-
-getMaxThreads :: IO Int
-getMaxThreads =
-    do cp <- loadCP
-       return $ read . forceEither $ get cp "general" "maxthreads"
-
-getProgressInterval :: IO Int
-getProgressInterval =
-    do cp <- loadCP
-       return $ read . forceEither $ get cp "general" "progressinterval"
 
 getList :: ConfigParser -> String -> String -> Maybe [String]
 getList cp sect key = 

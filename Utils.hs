@@ -36,7 +36,6 @@ import Types
 import System.Exit
 import Config
 import System.Directory
-import Database.HDBC
 import Data.List.Utils
 import System.Time
 import System.Time.Utils
@@ -70,11 +69,6 @@ simpleCmd name descrip helptext optionsinp func =
           header = "Available command-options for " ++ name ++ " are:\n"
                                                                
 
-initDirs = 
-    do appdir <- getAppDir
-       mapM_ mkdir [appdir, appdir ++ "/feedxfer", appdir ++ "/enclosurexfer"]
-       where mkdir = createDirectoryIfMissing True
-
 lock func =
     do appdir <- getAppDir
        lockh <- openFile (appdir ++ "/.lock") WriteMode
@@ -105,21 +99,7 @@ sanitize_fn inp =
                          then '_'
                          else x
 
-genericIdHelp =
- "You can optionally specify one or more podcast IDs.  If given,\n\
-  \only those IDs will be selected for processing.\n\n\
-  \The special id \"all\" will select all podcast IDs.\n"
-
 now :: IO Integer
 now = do ct <- getClockTime
          return (clockTimeToEpoch ct)
-
-filter_disabled = filter (\x -> pcenabled x == PCEnabled)
-
--- | Delete files in a given directory, but not the directory itself
-emptyDir :: FilePath -> IO ()
-emptyDir fp =
-    do dircontents <- getDirectoryContents fp
-       mapM_ (\f -> catch (removeFile $ fp ++ "/" ++ f) (\_ -> return ()))
-                    dircontents
 

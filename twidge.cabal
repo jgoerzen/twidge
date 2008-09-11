@@ -1,5 +1,5 @@
-Name: hpodder
-Version: 1.1.5
+Name: twidge
+Version: 0.1.0
 License: GPL
 Maintainer: John Goerzen <jgoerzen@complete.org>
 Author: John Goerzen
@@ -7,73 +7,23 @@ Stability: Stable
 Copyright: Copyright (c) 2006-2008 John Goerzen
 license-file: COPYRIGHT
 extra-source-files: COPYING, INSTALL, doc/SConstruct,
-  doc/hpodder-manpage.sgml, doc/hpodder.sgml, doc/local.dsl,
-  doc/man.hpodder.sgml, doc/printlocal.dsl, doc/sgml-common/COPYING,
+  doc/twidge-manpage.sgml, doc/twidge.sgml, doc/local.dsl,
+  doc/man.twidge.sgml, doc/printlocal.dsl, doc/sgml-common/COPYING,
   doc/sgml-common/COPYRIGHT, doc/sgml-common/ChangeLog,
   doc/sgml-common/Makefile.common, doc/sgml-common/SConstruct,
   doc/sgml-common/ps2epsi
-homepage: http://software.complete.org/hpodder
+homepage: http://software.complete.org/twidge
 Build-type: Simple
 Category: Network
-Synopsis: Podcast Aggregator (downloader)
-Description:  Podcasting is a method of publishing radio-like programs on the
- Internet.  Through podcasting, almost anyone can produce their own
- audio program, and publish episodes of it as often or as rarely as
- they like.
- .
- To listen to podcasts, you need a program to download the podcast's
- episodes from the Internet.  Such a program is called a podcatcher
- (or sometimes a podcast aggregator).  hpodder is this program.
- .
- hpodder's features include:
- .
- Convenient, easy to learn, and fast command-line interface.  It's
- simple to do simple things, and advanced things are possible.
- .
- Automatic discovery of feed metadata
- .
- Full history database for accurate prevention of duplicate
- downloads and tracking of new episodes
- .
- Conversion tools to convert your existing feed list and history from
- other applications to hpodder.  Supported applications and formats
- include: castpodder and ipodder.
- .
- Most operations can work fully automatically across your entire
- podcast database, or they can work manually.
- .
- Automatic updating of ID3 (v1 and v2) tags based on metadata in the
- podcast feed.  This important feature is available through iTunes but
- is often missed by other podcatchers.
- .
- hpodder operations can be easily scripted or scheduled using regular
- operating system tools.
- .
- Fully customizable naming scheme for downloaded episodes, including a
- name collision detection and workaround algorithm.
- .
- Automatic support for appending .mp3 extensions to MP3 files that
- lack them.
- .
- Numerous database and history inquiry tools
- .
- Small, minimalist footprint
- .
- Power users and developers can interact directly with the embedded
- Sqlite3 database used by hpodder.  The database has a simple schema
- that is developer-friendly.
- .
- Support for resuming interrupted downloads of podcasts
- .
- hpodder is SAFE and is designed with data integrity in mind from the
- beginning.  It should be exceedingly difficult to lose a podcast
- episode, even in the event of a power failure.
+Synopsis: FIXME
+Description:  FIXME
+ FIXME
 Build-Depends: haskell98, network, unix, parsec, MissingH>=1.0.0,
  mtl, base, HaXml>=1.13.2, HaXml<1.19, hslogger,
  ConfigFile, filepath, old-time, directory, process
 
-Executable: hpodder
-Main-Is: hpodder.hs
+Executable: twidge
+Main-Is: twidge.hs
 Other-Modules: Commands, Config, Download, FeedParser,
         Types, Utils, 
         Commands.Ls
