@@ -44,20 +44,23 @@ import System.Posix.IO
 import Control.Exception(finally)
 import Data.ConfigFile
 
-simpleCmd :: String -> String -> String -> [OptDescr (String, String)] 
-          -> (ConfigParser -> ([(String, String)], [String]) -> IO ()) 
+simpleCmd :: String             -- ^ Command name
+          -> String             -- ^ Command description
+          -> String             -- ^ Command help text
+          -> [OptDescr (String, String)] -- ^ Option descriptions
+          -> (Maybe String -> ConfigParser -> ([(String, String)], [String]) -> IO ()) -- ^ Function to call 
           -> (String, Command)
 simpleCmd name descrip helptext optionsinp func =
     (name, Command {cmdname = name, cmddescrip = descrip,
                     execcmd = worker})
     where options =
               optionsinp ++ [Option "" ["help"] (NoArg ("help", "")) "Display this help"]
-          worker argv gi =
+          worker argv cpath gi =
               case getOpt RequireOrder options argv of
                 (o, n, []) -> 
                     if (lookup "help" o == Just "") 
                        then usageerror []
-                       else func gi (o, n)
+                       else func cpath gi (o, n)
                 (_, _, errors) -> usageerror (concat errors)
           usageerror errormsg =
               do putStrLn $ "Error processing arguments for command " ++ 
