@@ -109,7 +109,15 @@ lsrecent_worker cpath cp (args, _) page =
        return results
 
 lsrecent_help =
- "Usage: twidge lsrecent [options]\n\n"
+ "Usage: twidge lsrecent [options]\n\n\
+ \You can see the 20 most recent items from your friends with:\n\n\
+ \   twidge lsrecent\n\n\
+ \To see items that you haven't seen yet, and remember this for the future,\n\
+ \use:\n\n\
+ \   twidge lsrecent -su\n\n\
+ \After running that once, you may want to use -asu in the future to get all\n\
+ \unseen messages, even if there are more than 20.  Don't use -a until\n\
+ \you've used -s at least once.\n"
 
 handleStatus args xmlstr = 
     let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
