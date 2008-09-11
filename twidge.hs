@@ -67,7 +67,7 @@ worker args n commandargs =
        let commandname = head cmdargs
        case lookup commandname allCommands of
          Just command -> 
-             do cp <- if commandname == "lscommands" -- no config file needed
+             do cp <- if commandname `elem` ["lscommands", "setup"] -- no config file needed
                       then return emptyCP
                       else loadCP (lookup "c" args)
                 execcmd command (tail cmdargs) (lookup "c" args) cp

@@ -60,7 +60,8 @@ loadCP cpgiven =
        if dfe
           then do cp <- readfile defaultcp cpname
                   return $ forceEither cp
-          else do fail $ "No config file found at " ++ cpname
+          else do permFail $ "No config file found at " ++ cpname ++ 
+                           "\nRun twidge setup to configure twidge for use."
 
 writeCP cpgiven cp =
     do cpname <- case cpgiven of
