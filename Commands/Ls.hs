@@ -37,6 +37,17 @@ stdopts = [Option "a" ["all"] (NoArg ("a", ""))
                       "Long format output -- more info and\n\
                       \tab-separated columns"]
 
+paginated workerfunc cppath cp (args, remainder)
+    | lookup "a" args == Nothing = 
+        do workerfunc cppath cp (args, remainder) 1
+           return ()
+    | otherwise = paginateloop 1
+    where paginateloop page =
+              do r <- workerfunc cppath cp (args, remainder) page
+                 if null r
+                     then return ()
+                     else paginateloop (page + 1)
+
 --------------------------------------------------
 -- lsrecent
 --------------------------------------------------
@@ -56,7 +67,9 @@ lsrecent_help =
 
 handleStatus xmlstr = 
     let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
-    in mapM_ printStatus . map procStatuses . getStatuses $ doc
+        statuses = map procStatuses . getStatuses $ doc
+    in do mapM_ printStatus statuses
+          return statuses
 
 procStatuses :: Content -> (String, String)
 procStatuses item = 
