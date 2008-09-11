@@ -63,7 +63,7 @@ startingcp = emptyCP {accessfunc = interpolatingAccess 10}
 
 getCPName =
     do appdir <- getAppDir
-       return $ appdir ++ ".twarshrc"
+       return $ appdir ++ ".twidgerc"
 
 loadCP cpgiven = 
     do cpname <- case cpgiven of

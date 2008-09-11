@@ -75,9 +75,9 @@ worker args n commandargs =
 usageerror errormsg =
     do putStrLn errormsg
        putStrLn (usageInfo header options)
-       putStrLn "Run \"twarsh lscommands\" for a list of available commands.\n\
-                \Run \"twarsh command --help\" for help on a particular command.\n"
+       putStrLn "Run \"twidge lscommands\" for a list of available commands.\n\
+                \Run \"twidge command --help\" for help on a particular command.\n"
        exitFailure
 
-header = "Usage: twarsh [global-options] command [command-options]\n\n\
+header = "Usage: twidge [global-options] command [command-options]\n\n\
          \Available global-options are:\n"
