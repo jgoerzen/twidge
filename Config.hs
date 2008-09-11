@@ -37,28 +37,13 @@ import Data.Either.Utils
 import System.Path
 import Data.String.Utils(strip, split)
 
-{-
 getDefaultCP =
-    do docsdir <- getUserDocumentsDirectory
-       let downloaddir = docsdir ++ "/podcasts"
-       return $ forceEither $ 
-              do cp <- add_section startingcp "general"
-                 cp <- set cp "general" "showintro" "yes"
-                 cp <- set cp "DEFAULT" "downloaddir" downloaddir
-                 cp <- set cp "DEFAULT" "namingpatt" 
-                       "%(safecasttitle)s/%(safefilename)s"
-                 cp <- set cp "DEFAULT" "maxthreads" "2"
-                 cp <- set cp "DEFAULT" "progressinterval" "1"
-                 cp <- set cp "DEFAULT" "podcastfaildays" "21"
-                 cp <- set cp "DEFAULT" "podcastfailattempts" "15"
-                 cp <- set cp "DEFAULT" "epfaildays" "21"
-                 cp <- set cp "DEFAULT" "epfailattempts" "15"
-                 cp <- set cp "DEFAULT" "renametypes" "audio/mpeg:.mp3,audio/mp3:.mp3,x-audio/mp3:.mp3"
-                 cp <- set cp "DEFAULT" "postproctypes" "audio/mpeg,audio/mp3,x-audio/mp3"
-                 cp <- set cp "DEFAULT" "gettypecommand" "file -b -i \"${EPFILENAME}\""
-                 cp <- set cp "DEFAULT" "postproccommand" "id3v2 -T \"${EPID}\" -A \"${CASTTITLE}\" -t \"${EPTITLE}\" --WOAF \"${EPURL}\" --WOAS \"${FEEDURL}\" \"${EPFILENAME}\""
+    do return $ forceEither $ 
+              do -- cp <- add_section startingcp "general"
+                 -- cp <- set cp "general" "showintro" "yes"
+                 cp <- set startingcp "DEFAULT" "urlbase" "https://twitter.com"
                  return cp
--}
+
 startingcp = emptyCP {accessfunc = interpolatingAccess 10}
 
 getCPName =
@@ -69,10 +54,10 @@ loadCP cpgiven =
     do cpname <- case cpgiven of
                    Nothing -> getCPName
                    Just x -> return x
-       -- defaultcp <- getDefaultCP
+       defaultcp <- getDefaultCP
        dfe <- doesFileExist cpname
        if dfe
-          then do cp <- readfile startingcp cpname
+          then do cp <- readfile defaultcp cpname
                   return $ forceEither cp
           else do fail "No config file found at " ++ cpname
 
