@@ -31,3 +31,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 module Types where
 import Data.ConfigFile
 
+data Command =
+    Command {cmdname :: String,
+             cmddescrip :: String,
+             execcmd :: [String] -> ConfigParser -> IO ()}

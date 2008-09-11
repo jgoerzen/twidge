@@ -29,14 +29,13 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 -}
 
-module Download(startGetURL, finishGetURL, checkDownloadSize, Result(..), 
-                DownloadTok(..), getdlfname) where
+module Download(sendAuthRequest) where
 import System.Cmd.Utils
 import System.Posix.Process
 import Config
 import System.Log.Logger
 import Text.Printf
-import Data.ConfigParser
+import Data.ConfigFile
 import HSH
 
 d = debugM "download"
@@ -53,12 +52,12 @@ curlopts = ["-A", "twidge v1.0.0; Haskell; GHC", -- Set User-Agent
            ]
 
 sendAuthRequest :: ConfigParser -> String -> IO String
-sendAuthRequst cp url =
-    do authopts <- getAuthOpts
-       run $ (curl, curlopts ++ authopts ++ url)
+sendAuthRequest cp url =
+    do let authopts = getAuthOpts cp
+       run $ (curl, curlopts ++ authopts ++ [url])
 
 getAuthOpts :: ConfigParser -> [String]
-getAuthOpts =
+getAuthOpts cp =
     case (get cp "DEFAULT" "username", get cp "DEFAULT" "password") of
       (Right user, Right pass) ->
           ["--user", user ++ ":" ++ pass]

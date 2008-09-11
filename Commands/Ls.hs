@@ -23,6 +23,9 @@ import Types
 import Text.Printf
 import System.Console.GetOpt
 import Data.List
+import Text.XML.HaXml
+import Download
+import FeedParser
 
 i = infoM "ls"
 
@@ -35,7 +38,7 @@ lsrecent = simpleCmd "lsrecent" "List recent updates from your friends"
              [] lsrecent_worker
 
 lsrecent_worker cp _ =
-    do xmlstr <- sendAuthRequest "/statuses/friends_timeline.xml"
+    do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml"
        let doc = getContent . xmlParse "lsrecent" $ xmlstr
        mapM_ printStatus . concatMap procStatuses . getStatuses $ doc
        

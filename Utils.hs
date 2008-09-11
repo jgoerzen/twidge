@@ -42,11 +42,11 @@ import System.Time.Utils
 import System.IO
 import System.Posix.IO
 import Control.Exception(finally)
+import Data.ConfigFile
 
-simpleCmd :: IConnection conn => 
-          String -> String -> String -> [OptDescr (String, String)] 
-          -> (GlobalInfo conn -> ([(String, String)], [String]) -> IO ()) 
-          -> (String, Command conn)
+simpleCmd :: String -> String -> String -> [OptDescr (String, String)] 
+          -> (ConfigParser -> ([(String, String)], [String]) -> IO ()) 
+          -> (String, Command)
 simpleCmd name descrip helptext optionsinp func =
     (name, Command {cmdname = name, cmddescrip = descrip,
                     execcmd = worker})
@@ -68,7 +68,7 @@ simpleCmd name descrip helptext optionsinp func =
                  exitFailure
           header = "Available command-options for " ++ name ++ " are:\n"
                                                                
-
+{-
 lock func =
     do appdir <- getAppDir
        lockh <- openFile (appdir ++ "/.lock") WriteMode
@@ -84,7 +84,7 @@ lock func =
           errorhandler _ =
               do putStrLn "Aborting because another hpodder is already running"
                  exitFailure
-
+-}
 
 sanitize_basic inp =
     case filter (\c -> not (c `elem` "\n\r\t\0")) inp of

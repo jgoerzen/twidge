@@ -20,7 +20,7 @@ Description:  FIXME
  FIXME
 Build-Depends: haskell98, network, unix, parsec, MissingH>=1.0.0,
  mtl, base, HaXml>=1.13.2, HaXml<1.19, hslogger,
- ConfigFile, filepath, old-time, directory, process
+ ConfigFile, old-time, directory, process, HSH
 
 Executable: twidge
 Main-Is: twidge.hs
