@@ -40,17 +40,14 @@ lsrecent = simpleCmd "lsrecent" "List recent updates from those you follow"
 lsrecent_worker _ cp _ =
     do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml" [] []
        debugM "lsrecent" $ "Got doc: " ++ xmlstr
-       let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
-       mapM_ printStatus . map procStatuses . getStatuses $ doc
-       
-    where
-
-          getStatuses = tag "statuses" /> tag "status"
-          printStatus (name, text) =
-              printf "<%s> %s\n" name text
+       handleStatus xmlstr
 
 lsrecent_help =
  "Usage: twidge lsrecent\n\n"
+
+handleStatus xmlstr = 
+    let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
+    in mapM_ printStatus . map procStatuses . getStatuses $ doc
 
 procStatuses :: Content -> (String, String)
 procStatuses item = 
@@ -59,6 +56,10 @@ procStatuses item =
      sanitize $ contentToString
      (keep /> tag "text" /> txt $ item)
     )
+
+getStatuses = tag "statuses" /> tag "status"
+printStatus (name, text) =
+    printf "<%s> %s\n" name text
 
 --------------------------------------------------
 -- lsfollowing
@@ -69,19 +70,21 @@ lsfollowing = simpleCmd "lsfollowing" "List people you are following"
              [] lsfollowing_worker
 
 lsfollowing_worker _ cp (_, user) =
-    do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml" [] []
+    do xmlstr <- sendAuthRequest cp url [] []
        debugM "lsfollowing" $ "Got doc: " ++ xmlstr
-       return ()
-       -- let doc = getContent . xmlParse "lsfollowing" . stripUnicodeBOM $ xmlstr
-       -- mapM_ printStatus . map procStatuses . getStatuses $ doc
+       let doc = getContent . xmlParse "lsfollowing" . stripUnicodeBOM $ xmlstr
+       mapM_ printUser . map procUsers . getUsers $ doc
        
     where url = case user of
                   [] -> "/statuses/friends.xml"
                   [x] -> "/statuses/friends/" ++ x ++ ".xml"
                   _ -> error "Invalid args to lsfollowing; see twidge lsfollowing --help"
-          getStatuses = tag "statuses" /> tag "status"
-          printStatus (name, text) =
-              printf "<%s> %s\n" name text
+          printUser (name, _) = putStrLn name
+          getUsers = tag "users" /> tag "user"
+          procUsers :: Content -> (String, String)
+          procUsers item =
+              (sanitize $ contentToString (keep /> tag "screen_name" /> txt $ item),
+               sanitize $ contentToString (keep /> tag "id" /> txt $ item))
 
 lsfollowing_help =
  "Usage: twidge lsfollowing [username]\n\n\
