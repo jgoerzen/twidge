@@ -39,6 +39,7 @@ lsrecent = simpleCmd "lsrecent" "List recent updates from those you follow"
 
 lsrecent_worker _ cp _ =
     do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml" [] []
+       debugM "lsrecent" $ "Got doc: " ++ xmlstr
        let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
        mapM_ printStatus . map procStatuses . getStatuses $ doc
        

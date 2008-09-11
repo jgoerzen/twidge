@@ -43,22 +43,22 @@ import Types
 import Control.Monad
 import Utils
 import Data.ConfigFile(emptyCP)
+import System.IO
 
 main = 
     do updateGlobalLogger "" (setLevel INFO)
        argv <- getArgs
-       -- FIXME is this right?
-       let (optargs, commandargs) = span (isPrefixOf "-") argv
-       case getOpt RequireOrder options optargs of
-         (o, n, []) -> worker o n commandargs
+       
+       case getOpt RequireOrder options argv of
+         (o, n, []) -> worker o n
          (_, _, errors) -> usageerror (concat errors) -- ++ usageInfo header options)
        
 options = [Option "d" ["debug"] (NoArg ("d", "")) "Enable debugging",
-           Option "c" ["config"] (ReqArg (stdRequired "config") "FILE")
+           Option "c" ["config"] (ReqArg (stdRequired "c") "FILE")
                   "Use specified config file",
            Option "" ["help"] (NoArg ("help", "")) "Display this help"]
 
-worker args n commandargs =
+worker args commandargs =
     do when (lookup "help" args == Just "") $ usageerror ""
        when (lookup "d" args == Just "") 
             (updateGlobalLogger "" (setLevel DEBUG))
