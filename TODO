@@ -3,3 +3,7 @@ support for more secure curl stuff (netrc)
 Do we need to support page= for this stuff?
 
 Prettier error handling
+
+--long, --all, etc. for ls
+
+url cramming for update
