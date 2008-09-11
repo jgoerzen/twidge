@@ -32,7 +32,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 import Config
 import System.Log.Logger
 import System.Log.Handler.Simple
-import System.IO(stdout)
+import System.IO(stdout, stderr)
 import System.Console.GetOpt.Utils
 import System.Console.GetOpt
 import System.Environment
@@ -61,7 +61,7 @@ worker args n commandargs =
     do when (lookup "help" args == Just "") $ usageerror ""
        when (lookup "d" args == Just "") 
             (updateGlobalLogger "" (setLevel DEBUG))
-       handler <- streamHandler stdout DEBUG
+       handler <- streamHandler stderr DEBUG -- stdout has issues with HSH
        updateGlobalLogger "" (setHandlers [handler])
        let commandname = head cmdargs
        case lookup commandname allCommands of
