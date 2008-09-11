@@ -124,13 +124,15 @@ lsfollowing_help =
 
 lsfollowers = simpleCmd "lsfollowers" "List people that follow you"
              lsfollowers_help
-             [] lsfollowers_worker
+             stdopts (paginated lsfollowers_worker)
 
-lsfollowers_worker _ cp (_, user) =
-    do xmlstr <- sendAuthRequest cp url [] []
+lsfollowers_worker _ cp (_, user) page =
+    do xmlstr <- sendAuthRequest cp url [("page", show page)] []
        debugM "lsfollowers" $ "Got doc: " ++ xmlstr
        let doc = getContent . xmlParse "lsfollowers" . stripUnicodeBOM $ xmlstr
-       mapM_ printUser . map procUsers . getUsers $ doc
+       let users = map procUsers . getUsers $ doc
+       mapM_ printUser users
+       return users
        
     where url = case user of
                   [] -> "/statuses/followers.xml"
