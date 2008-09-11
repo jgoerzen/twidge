@@ -40,7 +40,9 @@ stdopts = [Option "a" ["all"] (NoArg ("a", ""))
                       \Use with caution!",
            Option "l" ["long"] (NoArg ("l", "")) 
                       "Long format output -- more info and \
-                      \tab-separated columns",
+                      \tab-separated columns"]
+
+sinceopts = [
            Option "s" ["saveid"] (NoArg ("s", ""))
                       "Save topmost ID for future use with --unseen",
            Option "u" ["unseen"] (NoArg ("u", ""))
@@ -92,7 +94,7 @@ sinceArgs section cp args =
 
 lsrecent = simpleCmd "lsrecent" "List recent updates from those you follow"
              lsrecent_help
-             stdopts (paginated lsrecent_worker)
+             (stdopts ++ sinceopts) (paginated lsrecent_worker)
 
 lsrecent_worker cpath cp (args, _) page =
     do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml" 
