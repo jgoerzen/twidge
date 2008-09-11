@@ -47,7 +47,8 @@ allCommands =
     [Commands.Follow.follow,
      Commands.Ls.lsrecent,
      lscommands,
-     Commands.Setup.setup
+     Commands.Setup.setup,
+     Commands.Follow.unfollow
     ]
 
 lscommands = 
