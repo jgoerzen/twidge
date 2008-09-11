@@ -102,6 +102,7 @@ lsrecent_worker cpath cp (args, _) page =
        when (page == 1 && not (null results)) $
             maybeSaveList "lsrecent" cpath cp args 
                           ((map (\(_, _, i) -> i)) results)
+       return results
 
 lsrecent_help =
  "Usage: twidge lsrecent [options]\n\n"
