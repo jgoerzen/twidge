@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Ls(lsrecent, lsreplies, lsfollowing, lsfollowers) where
+module Commands.Ls(lsrecent, lsreplies, lsfollowing, lsfollowers, lsarchive) where
 import Utils
 import System.Log.Logger
 import Types
@@ -102,6 +102,11 @@ lsreplies = simpleCmd "lsreplies" "List recent replies to you"
             lsreplies_help
             (stdopts ++ sinceopts) (paginated (statuses_worker "lsreplies" "replies"))
 
+lsarchive = simpleCmd "lsarchive" "List recent status updates you posted yourself"
+            lsarchive_help
+            (stdopts ++ sinceopts) (paginated (statuses_worker "lsarchive" "user_timeline"))
+
+
 statuses_worker section command cpath cp (args, _) page =
     do xmlstr <- sendAuthRequest cp ("/statuses/" ++ command ++ ".xml")
                  (("page", show page) : sinceArgs section cp args)
@@ -131,6 +136,14 @@ lsreplies_help =
  \For more examples, including how to see only unseen replies, please\n\
  \refer to the examples under twidge lsrecent --help, which also pertain\n\
  \to lsreplies.\n"
+
+lsarchive_help =
+ "Usage: twidge lsarchive [options]\n\n\
+ \You can see the 20 most recent updates you posted with:\n\n\
+ \   twidge lsarchive\n\n\
+ \For more examples, including how to see only unseen updates, please\n\
+ \refer to the examples under twidge lsrecent --help, which also pertain\n\
+ \to lsarchive.\n"
 
 handleStatus args xmlstr = 
     let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
