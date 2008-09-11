@@ -54,7 +54,9 @@ setup_worker cpath cp _ =
        username <- getLine
        putStrLn $ "\nWelcome, " ++ username ++ "!  Now I'll need your password.\n"
        putStr   "Password: "
+       hSetEcho stdin False
        password <- getLine
+       hSetEcho stdin True
        let newcp = forceEither $ set cp "DEFAULT" "username" (esc username)
        let newcp' = forceEither $ set newcp "DEFAULT" "password" (esc password)
        
