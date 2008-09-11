@@ -39,6 +39,7 @@ import Data.ConfigFile
 import HSH
 import Data.Either.Utils(forceEither)
 import Network.URI
+import Data.List
 
 d = debugM "download"
 i = infoM "download"
@@ -60,7 +61,7 @@ sendAuthRequest cp url opts =
        run $ (curl, curlopts ++ authopts ++ [urlbase ++ url])
     where optstr = case opts of
                      [] -> ""
-                     _ -> "?" ++ (intersperse "&" . map conv $ opts)
+                     _ -> "?" ++ (concat . intersperse "&" . map conv $ opts)
           conv (k, v) = k ++ "=" ++ escapeURIString isUnreserved v
 
 getAuthOpts :: ConfigParser -> [String]

@@ -69,5 +69,5 @@ stripUnicodeBOM x = x
 sanitize :: String -> String
 sanitize = strip . map sanitizer
     where sanitizer c 
-              | c `elem` "\n\r\0\t" = " "
+              | c `elem` "\n\r\0\t" = ' '
               | otherwise = c
