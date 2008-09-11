@@ -41,6 +41,7 @@ import Data.Either.Utils
 import qualified Commands.Follow
 import qualified Commands.Ls
 import qualified Commands.Setup
+import qualified Commands.Update
 
 --allCommands :: [(String, Command)]
 allCommands = 
@@ -50,7 +51,8 @@ allCommands =
      Commands.Ls.lsrecent,
      lscommands,
      Commands.Setup.setup,
-     Commands.Follow.unfollow
+     Commands.Follow.unfollow,
+     Commands.Update.update
     ]
 
 lscommands = 

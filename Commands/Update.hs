@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Follow(follow, unfollow) where
+module Commands.Update(update) where
 import Utils
 import System.Log.Logger
 import Types
@@ -27,39 +27,24 @@ import Text.XML.HaXml
 import Download
 import FeedParser
 
-i = infoM "follow"
+i = infoM "update"
 
-follow = simpleCmd "follow" "Start following someone"
-             follow_help
-             [] follow_worker
+update = simpleCmd "update" "Update your status"
+             update_help
+             [] update_worker
 
-follow_worker _ cp ([], [user]) =
-    do xmlstr <- sendAuthRequest cp ("/friendships/create/" ++ user ++ ".xml") [] [("id", user)]
-       debugM "follow" $ "Got doc: " ++ xmlstr
+update_worker _ cp ([], [status]) =
+    do xmlstr <- sendAuthRequest cp "/statuses/update.xml" [] 
+                 [("status", status)]
+       debugM "update" $ "Got doc: " ++ xmlstr
        -- let doc = getContent . xmlParse "follow" . stripUnicodeBOM $ xmlstr
        -- return ()
        
-follow_worker _ _ _ =
-    permFail "follow: syntax error; see twidge follow --help"
+update_worker _ _ _ =
+    permFail "update: syntax error; see twidge update --help"
 
-follow_help =
- "Usage: twidge follow username\n\n\
- \will add username to your list of people you follow.\n\n"
-
-
-unfollow = simpleCmd "unfollow" "Stop following someone"
-             unfollow_help
-             [] unfollow_worker
-
-unfollow_worker _ cp ([], [user]) =
-    do xmlstr <- sendAuthRequest cp ("/friendships/destroy/" ++ user ++ ".xml") [] [("id", user)]
-       debugM "unfollow" $ "Got doc: " ++ xmlstr
-       -- let doc = getContent . xmlParse "follow" . stripUnicodeBOM $ xmlstr
-       -- return ()
-
-unfollow_worker _ _ _ =
-    permFail "unfollow: syntax error; see twidge unfollow --help"
-
-unfollow_help =
- "Usage: twidge unfollow username\n\n\
- \will remove username from the list of people you follow.\n"
+update_help =
+ "Usage: twidge update status\n\n\
+ \Updates your status to the given status.  You will most likely need to\n\
+ \quote this to prevent interference from the shell.  For instance:\n\n\
+ \twidge update \"At home, baking.\"\n"
