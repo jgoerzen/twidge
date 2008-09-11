@@ -38,6 +38,7 @@ import Text.Printf
 import Data.ConfigFile
 import HSH
 import Data.Either.Utils(forceEither)
+import Network.URI
 
 d = debugM "download"
 i = infoM "download"
@@ -52,11 +53,15 @@ curlopts = ["-A", "twidge v1.0.0; Haskell; GHC", -- Set User-Agent
             "-f"                -- Fail on server errors
            ]
 
-sendAuthRequest :: ConfigParser -> String -> IO String
-sendAuthRequest cp url =
+sendAuthRequest :: ConfigParser -> String -> [(String, String)] -> IO String
+sendAuthRequest cp url opts =
     do let authopts = getAuthOpts cp
        let urlbase = forceEither $ get cp "DEFAULT" "urlbase"
        run $ (curl, curlopts ++ authopts ++ [urlbase ++ url])
+    where optstr = case opts of
+                     [] -> ""
+                     _ -> "?" ++ (intersperse "&" . map conv $ opts)
+          conv (k, v) = k ++ "=" ++ escapeURIString isUnreserved v
 
 getAuthOpts :: ConfigParser -> [String]
 getAuthOpts cp =
