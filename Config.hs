@@ -36,6 +36,7 @@ import Control.Monad
 import Data.Either.Utils
 import System.Path
 import Data.String.Utils(strip, split)
+import System.Posix.Files(rename)
 
 getDefaultCP =
     do return $ forceEither $ 
@@ -61,9 +62,13 @@ loadCP cpgiven =
                   return $ forceEither cp
           else do fail $ "No config file found at " ++ cpname
 
-writeCP cp =
-    do cpname <- getCPName
-       writeFile cpname (to_string cp)
+writeCP cpgiven cp =
+    do cpname <- case cpgiven of
+                   Nothing -> getCPName
+                   Just x -> return x
+       let tempname = cpname ++ ".write.tmp"
+       writeFile tempname (to_string cp)
+       rename tempname cpname
 
 getList :: ConfigParser -> String -> String -> Maybe [String]
 getList cp sect key = 
