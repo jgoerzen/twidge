@@ -35,7 +35,11 @@ stdopts = [Option "a" ["all"] (NoArg ("a", ""))
                       \Use with caution!",
            Option "l" ["long"] (NoArg ("l", "")) 
                       "Long format output -- more info and \
-                      \tab-separated columns"]
+                      \tab-separated columns",
+           Option "s" ["saveid"] (NoArg ("s", ""))
+                      "Save topmost ID for future use with --unseen",
+           Option "u" ["unseen"] (NoArg ("u", ""))
+                      "Show only items since the last use of --saveid"]
 
 paginated workerfunc cppath cp (args, remainder)
     | lookup "a" args == Nothing = 
@@ -48,6 +52,34 @@ paginated workerfunc cppath cp (args, remainder)
                      then return ()
                      else paginateloop (page + 1)
 
+maybeSaveList section cpath cp args [] = return ()
+maybeSaveList section cpath cp args newids =
+    maybeSave section cpath cp args theid
+    where theid = maximum . map (read::String -> Integer) $ newids
+
+maybeSave section cpath cp args newid =
+    case (lookup "s" args, get section "lastid") of
+      (Nothing, _) -> return ()
+      (_, Left _) -> saveid
+      (_, Right x) ->
+          if (read x) < (newid::Integer)
+             then return ()
+             else saveid
+    where saveid = writeCP cpath newcp
+          newcp = return $ forceEither $
+                  do cp2 <- if (has_section cp section)
+                                then cp
+                                else add_section cp section
+                     cp2 <- set cp2 section "lastid" newid
+                     return cp
+
+sinceArgs section cp args =
+    case (lookup "u" args, get cp section "lastid") of
+      (Nothing, _) -> []
+      (_, Left _) -> []
+      (_, Right a) -> 
+          [("since_id", strip a)]
+
 --------------------------------------------------
 -- lsrecent
 --------------------------------------------------
@@ -56,11 +88,15 @@ lsrecent = simpleCmd "lsrecent" "List recent updates from those you follow"
              lsrecent_help
              stdopts (paginated lsrecent_worker)
 
-lsrecent_worker _ cp (args, _) page =
+lsrecent_worker cpath cp (args, _) page =
     do xmlstr <- sendAuthRequest cp "/statuses/friends_timeline.xml" 
-                 [("page", show page)] []
+                 (("page", show page) : sinceArgs "lsrecent" cp args)
+                 []
        debugM "lsrecent" $ "Got doc: " ++ xmlstr
-       handleStatus args xmlstr
+       results <- handleStatus args xmlstr
+       when (page == 1 && not (null results)) $
+            maybeSaveList "lsrecent" cpath cp args 
+                          (map (\(_, _, i) -> i)) $ results
 
 lsrecent_help =
  "Usage: twidge lsrecent [options]\n\n"
