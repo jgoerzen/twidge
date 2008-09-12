@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Update(update) where
+module Commands.Update(update, dmsend) where
 import Utils
 import System.Log.Logger
 import Types
@@ -40,19 +40,37 @@ update_worker x cp ([], []) =
     do l <- getLine
        update_worker x cp ([], [l])
 update_worker _ cp ([], [status]) =
-    do poststatus <- case get cp "update" "shortenurls" of
-                       Right True -> shortenUrls status
-                       _ -> return status
-       when (length status > 140)
-                (permFail $ "Your status update was " ++ 
-                          show (length poststatus) ++
-                          " characters; max length 140")
+    do poststatus <- procStatus cp "update"
        xmlstr <- sendAuthRequest cp "/statuses/update.xml" [] 
                  [("source", "Twidge"), ("status", poststatus)]
        debugM "update" $ "Got doc: " ++ xmlstr
-       
 update_worker _ _ _ =
     permFail "update: syntax error; see twidge update --help"
+
+procStatus cp status =
+    do poststatus <- case get cp "update" "shortenurls" of
+                       Right True -> shortenUrls status
+                       _ -> return status
+       when (length poststatus > 140)
+                (permFail $ "Your status update was " ++ 
+                          show (length poststatus) ++
+                          " characters; max length 140")
+       return poststatus
+
+dmsend = simpleCmd "dmsend" "Send direct message"
+         dmsend_help
+         []
+         dmsend_worker
+
+dmsend_worker x cp ([], [r]) =
+    do l <- getLine
+       dmsend_worker x cp ([], [r, l])
+dmsend_worker x cp ([], [recipient, status]) =
+    do poststatus <- procStatus cp "dmsend"
+       xmlstr <- sendAuthRequest cp "/direct_messages/new.xml" []
+                 [("source", "Twidge"), 
+                  ("text", poststatus), ("user", recipient)]
+       debugM "dmsend" $ "Got doc: " ++ xmlstr
 
 shortenUrls "" = return ""
 shortenUrls status = 
@@ -80,3 +98,12 @@ update_help =
  \You can also omit the status, in which case a single line will be read\n\
  \from stdin and taken as your update.  Example:\n\n\
  \  date | twidge update\n"
+
+dmsend_help =
+ "Usage: twidge dmsend recipient [status]\n\n\
+ \Sends a direct message to the given recipient.  You will most likely need\n\
+ \to quote this to prevent interference from the shell.  For instance:\n\n\
+ \  twidge dmsend unixtwidge \"At home, baking.\"\n\n\
+ \You can also omit the status, in which case a single line will be read\n\
+ \from stdin and taken as your update.  Example:\n\n\
+ \  date | twidge dmsend unixtwidge\n"

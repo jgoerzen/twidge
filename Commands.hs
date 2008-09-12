@@ -45,7 +45,8 @@ import qualified Commands.Update
 
 --allCommands :: [(String, Command)]
 allCommands = 
-    [Commands.Follow.follow,
+    [Commands.Update.dmsend,
+     Commands.Follow.follow,
      Commands.Ls.lsarchive,
      lscommands,
      Commands.Ls.lsdm,
