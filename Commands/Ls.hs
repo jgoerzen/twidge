@@ -187,13 +187,13 @@ lsdmarchive_help =
  \refer to the examples under twidge lsrecent --help, which also pertain\n\
  \to lsdmarchive.\n"
 
-handleStatus = handleGeneric (map procStatuses . getStatuses)
-handleDM = handleGeneric (map procDM . getDMs)
+handleStatus = handleGeneric (map procStatuses . getStatuses) printStatus
+handleDM = handleGeneric (map procDM . getDMs) printDM
 
-handleGeneric pfunc section cp args xmlstr = 
+handleGeneric pfunc printfunc section cp args xmlstr = 
     let doc = getContent . xmlParse section . stripUnicodeBOM $ xmlstr
         statuses = pfunc doc
-    in do mapM_ (printStatus section cp args) statuses
+    in do mapM_ (printfunc section cp args) statuses
           return statuses
 
 procStatuses :: Content -> Message
@@ -215,7 +215,7 @@ procDM item =
              sDate = s (tag "created_at") item}
 
 getStatuses = tag "statuses" /> tag "status"
-getDMs = tag "direct_message" /> tag "direct-messages"
+getDMs = tag "direct-messages" /> tag "direct_message"
 
 longStatus :: Message -> String
 longStatus m = printf "%s\t%s\t%s\t%s\t%s\t\n"
@@ -238,7 +238,7 @@ shortDM m =
 printStatus section cp args m = 
     printGeneric shortStatus longStatus section cp args m
 
-printDm section cp args m =
+printDM section cp args m =
     printGeneric shortDM longStatus section cp args m
 
 printGeneric shortfunc longfunc section cp args m =
