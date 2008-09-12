@@ -20,8 +20,13 @@
     <cmdsynopsis>
       <command>twidge</command>
       <arg choice="opt">-d</arg>
-      <arg choice="opt"><replaceable>command</replaceable></arg>
+      <arg choice="opt">-c <replaceable>FILE</replaceable></arg>
+      <arg choice="plain"><replaceable>command</replaceable></arg>
       <arg choice="opt"><replaceable>command_args</replaceable></arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>twidge</command>
+      <arg choice="plain">--help</arg>
     </cmdsynopsis>
   </refsynopsisdiv>
 
@@ -41,13 +46,13 @@
       To listen to podcasts, you need a program to download the
       podcast's episodes from the Internet.  Such a program is
       called a podcatcher (or sometimes a podcast aggregator).
-      &hpodder; is this program.
+      &twidge; is this program.
     </para>
 
     <para>
       If you'd like to get going RIGHT NOW, skip on down to the
       Quick Start section.  Otherwise, let's take a look at the
-      features of &hpodder;.
+      features of &twidge;.
     </para>
 
     <refsect2 id="hpodder.features">
@@ -67,7 +72,7 @@
 
         <listitem><para>Conversion tools to convert your existing
             feed list and history from other applications to
-            &hpodder;.  Supported applications and formats include:
+            &twidge;.  Supported applications and formats include:
             castpodder and ipodder.
           </para>
         </listitem>
@@ -83,7 +88,7 @@
             other podcatchers.</para>
         </listitem>
 
-        <listitem><para>&hpodder; operations can be easily scripted
+        <listitem><para>&twidge; operations can be easily scripted
             or scheduled using regular operating system tools.</para>
         </listitem>
 
@@ -104,7 +109,7 @@
 
         <listitem><para>Power users and developers can interact
             directly with the embedded Sqlite3 database used by
-            &hpodder;.  The database has a simple schema that is
+            &twidge;.  The database has a simple schema that is
             developer-friendly.</para>
         </listitem>
 
@@ -112,7 +117,7 @@
             of podcasts</para>
         </listitem>
 
-        <listitem><para>&hpodder; is SAFE and is designed with data
+        <listitem><para>&twidge; is SAFE and is designed with data
             integrity in mind from the beginning.  It should be
             exceedingly difficult to lose a podcast episode, even in the
             event of a power failure.
@@ -125,20 +130,20 @@
     <refsect2 id="hpodder.mo">
       <title>Method of Operation</title>
       <para>
-        The basic pattern of operation with &hpodder; is to set up
+        The basic pattern of operation with &twidge; is to set up
         each podcast you want to receive.  Each day (or hour, or
-        whatever), &hpodder; will go out and update its database by
+        whatever), &twidge; will go out and update its database by
         pulling in the latest episode lists from the podcast feed.
-        Then, &hpodder; will proceed to download any episodes that
+        Then, &twidge; will proceed to download any episodes that
         you haven't already downloaded.  After each episode is
-        downloaded, &hpodder; will note that fact so it isn't ever
+        downloaded, &twidge; will note that fact so it isn't ever
         downloaded again.
       </para>
       <para>
         Let's look at this in a bit more detail.
       </para>
       <para>
-        &hpodder; maintains two tables in a database.  One table
+        &twidge; maintains two tables in a database.  One table
         lists all the podcasts you know about, as well as where the
         podcast's feed is to be downloaded from.  The feed is a file
         that the podcast's author publishes.  It lists all the
@@ -156,7 +161,7 @@
         <command>hpodder catchup</command>.
       </para>
       <para>
-        When you first fire up &hpodder;, it will read its
+        When you first fire up &twidge;, it will read its
         configuration file from
         <filename>~/.hpodder/hpodder.conf</filename>.
         What happens next depends on the command.
@@ -177,7 +182,7 @@
         will then update the episode's ID3 tags based on the podcast
         feed.  Finally, it will move the episode in-place
         atomically.  Only after all that has been done will
-        &hpodder; mark the episode as Downloaded in the database.
+        &twidge; mark the episode as Downloaded in the database.
         In this way, no episode is visible to outside tools until it
         is completely downloaded in its final form, so you can
         safely play any visible program in your download directory
@@ -190,9 +195,9 @@
   <refsect1 id="hpodder.quickstart">
     <title>Quick Start</title>
     <para>
-      This section will describe how a first-time &hpodder; user can
+      This section will describe how a first-time &twidge; user can
       get up and running quickly.  It assumes you already have
-      &hpodder; compiled or installed on your system.  If not,
+      &twidge; compiled or installed on your system.  If not,
       please follow the instructions in the
       <filename>INSTALL</filename>
       file in the
@@ -200,7 +205,7 @@
     </para>
     <para>
       To get started, simply run <command>hpodder</command> at your
-      shell prompt.  &hpodder; will lead you through the first-time
+      shell prompt.  &twidge; will lead you through the first-time
       configuration -- which is only two questions and completely
       self-explanatory!
     </para>
@@ -209,7 +214,7 @@
       for your podcast, just run <command>hpodder</command> again.
     </para>
     <para>
-      At some point, you'll want to add more podcasts to &hpodder;.
+      At some point, you'll want to add more podcasts to &twidge;.
       To do that, just run a command such as:
     </para>
     <para><command>hpodder add
@@ -222,7 +227,7 @@
       all.  In that case, run <command>hpodder catchup
         <replaceable>id</replaceable></command>, where
       <replaceable>id</replaceable> is the podcast number that
-      &hpodder; gave your new podcast when you added it.
+      &twidge; gave your new podcast when you added it.
     </para>
     <para>
       Again, from here on, you can just run
@@ -234,12 +239,12 @@
     <indexterm><primary>Options (command-line)</primary></indexterm>
     <title>Options</title>
     <para>
-      &hpodder; always is invoked with the name of a specific
+      &twidge; always is invoked with the name of a specific
       operation, such as <option>update</option> or
-      <option>add</option>.  In &hpodder;, these operations are
+      <option>add</option>.  In &twidge;, these operations are
       called <emphasis>commands</emphasis>.  Each command has its
       own options, which are given after the command on the
-      &hpodder; command line.  A full summary of each command's
+      &twidge; command line.  A full summary of each command's
       options is given later in this manual.
     </para>
     
@@ -260,7 +265,7 @@
         <varlistentry><term>-d</term><term>--debug</term>
           <listitem><para>
               Enables debugging output.  This verbose output helps you
-              learn what &hpodder; is doing every step of the way and
+              learn what &twidge; is doing every step of the way and
               diagnose any problems you may encounter.
             </para>
           </listitem>
@@ -274,7 +279,7 @@
     <indexterm><primary>Commands</primary></indexterm>
     <title>Commands in hpodder</title>
     <para>
-      &hpodder; has many different commands.  If you do not specify a
+      &twidge; has many different commands.  If you do not specify a
       command, the <command>fetch</command> command is automatically
       selected for you.  This section will discuss each command in
       detail.  Note that all commands are case-sensitive and should be
@@ -297,7 +302,7 @@
         <arg choice="plain"><replaceable>URL</replaceable></arg>
       </cmdsynopsis>
       <para>
-        This command is used to add a new podcast to &hpodder;.  You
+        This command is used to add a new podcast to &twidge;.  You
         can must provide the URL (link) to the podcast you want to add
         to this command.  For example:
       </para>
@@ -317,12 +322,11 @@
       <cmdsynopsis>
         <command>hpodder catchup</command>
         <arg choice="opt">-n <replaceable>number</replaceable></arg>
-        &arg.castid;
       </cmdsynopsis>
       <para>
-        Running <command>catchup</command> will cause &hpodder; to
+        Running <command>catchup</command> will cause &twidge; to
         mark all but the most recent episodes as Skipped.  This will
-        prevent &hpodder; from automatically downloading such
+        prevent &twidge; from automatically downloading such
         episodes.
       </para>
       <variablelist>
@@ -338,7 +342,6 @@
           </listitem>
         </varlistentry>
 
-        &var.castid;
       </variablelist>
     </refsect2>
 
@@ -361,7 +364,7 @@
         This can be useful if you want to stop following a podcast for
         awhile, but think you may want to come back to it in the
         future.  The podcast URL and your download history will remain
-        in the &hpodder; database, unlike with <command>hpodder
+        in the &twidge; database, unlike with <command>hpodder
         rm</command>.
       </para>
       <para>
@@ -380,7 +383,6 @@
       <title>download</title>
       <cmdsynopsis>
         <command>hpodder download</command>
-        &arg.castid;
       </cmdsynopsis>
       <para>
         The <command>download</command> command is used to actually
@@ -390,7 +392,6 @@
         process; if you do, all available episodes for only those
         podcasts will be downloaded.
       </para>
-      <variablelist>&var.castid;</variablelist>
     </refsect2>
 
     <refsect2 id="hpodder.commands.enable">
@@ -417,24 +418,23 @@
       <indexterm><primary>Podcasts</><secondary>Updating</></>
       <indexterm><primary>Episodes</><secondary>Downloading</></>
       <title>fetch</title>
-      <cmdsynopsis><command>hpodder fetch</command>&arg.castid;</cmdsynopsis>
+      <cmdsynopsis><command>hpodder fetch</command></cmdsynopsis>
       <para>
         The <command>fetch</command> is the main worker command for
-        &hpodder;.  It is simply equivolent to <command>hpodder
+        &twidge;.  It is simply equivolent to <command>hpodder
         update</command> followed by <command>hpodder
         download</command>.  That is, it will scan all podcasts for
         new episodes, then download any pending episodes.
       </para>
       <para>
         This command is the default command if no command is given on
-        the &hpodder; command line.
+        the &twidge; command line.
       </para>
       <para>
         As a special feature, the first time that
         <command>fetch</command> is invoked, it will execute the new
         user setup procedure.
       </para>
-      <variablelist>&var.castid;</variablelist>
     </refsect2>
 
     <refsect2 id="hpodder.commands.import-ipodder">
@@ -445,20 +445,20 @@
         <arg
       choice="opt">--from=<replaceable>PATH</replaceable></arg></cmdsynopsis>
       <para>
-        With this command, &hpodder; can import both your podcast list
+        With this command, &twidge; can import both your podcast list
         and your download history from ipodder or CastPodder.
-        &hpodder; will import all podcasts referenced there, with the
-        exception that any podcasts that are already in &hpodder;'s
+        &twidge; will import all podcasts referenced there, with the
+        exception that any podcasts that are already in &twidge;'s
         database will be entirely untouched.
       </para>
       <variablelist>
         <varlistentry><term>--from=<replaceable>PATH</replaceable></term>
-          <listitem><para>By default, &hpodder; will look for the ipodder
+          <listitem><para>By default, &twidge; will look for the ipodder
             database in the <filename>.ipodder</filename> directory in
             the user's home directory.  This may not always be correct:
             for instance, on non-Unix platforms or when using
             CastPodder, this directory will be different.  With this
-            option, you can tell &hpodder; where to find the
+            option, you can tell &twidge; where to find the
             ipodder/CastPodder database.
             </para></listitem>
         </varlistentry>
@@ -473,9 +473,9 @@
         <arg choice="opt">-l</arg></cmdsynopsis>
       <para>
         This command will display all podcasts that are configured
-        within &hpodder;.  For each podcast, you will see the podcast
+        within &twidge;.  For each podcast, you will see the podcast
         ID, the number of pending downloads, the total number of
-        episodes ever seen by &hpodder;, and the title of the podcast.
+        episodes ever seen by &twidge;, and the title of the podcast.
       </para>
       <variablelist>
         <varlistentry><term>-l</term>
@@ -493,7 +493,7 @@
       <title>lscommands</title>
       <cmdsynopsis><command>hpodder lscommands</command></cmdsynopsis>
       <para>
-        This command will display a list of all available &hpodder;
+        This command will display a list of all available &twidge;
         commands along with a brief description of each.
       </para>
     </refsect2>
@@ -504,14 +504,14 @@
       <indexterm><primary>Episodes</><secondary>Listing</></>
       <title>lsepisodes / lseps</title>
       <cmdsynopsis><command>hpodder lsepisodes</command>
-        <arg choice="opt">-l</arg>&arg.castid;
+        <arg choice="opt">-l</arg>
       </cmdsynopsis>
       <cmdsynopsis><command>hpodder lseps</command>
-        <arg choice="opt">-l</arg>&arg.castid;
+        <arg choice="opt">-l</arg>
       </cmdsynopsis>
       <para>
         The <command>lsepisodes</command> command will display a list
-        of every episode known to &hpodder;.  The output will include
+        of every episode known to &twidge;.  The output will include
         the ID of the podcast to which the episode belongs, the
         episode ID, the status of the episode, and the title of the
         episode.
@@ -526,7 +526,6 @@
               If you add the <option>-l</option> option, then
           <command>lsepisodes</command> includes the download URL for
           each episode in its output.</para></listitem></varlistentry>
-        &var.castid;
       </variablelist>
     </refsect2>
     
@@ -545,7 +544,7 @@
       <para>
         One or more podcast IDs are required; see the section below on
         specifying podcast IDs for more details.  Unlike most other
-        &hpodder; commands that accept an empty podcast ID list to
+        &twidge; commands that accept an empty podcast ID list to
         mean all podcasts, <command>rm</command> does not because of
         the destructive potential of such a request.
       </para>
@@ -587,7 +586,7 @@
       </cmdsynopsis>
       <para>
         The <command>settitle</command> is used to manually set the
-        title of a given podcast.  Normally, &hpodder; will
+        title of a given podcast.  Normally, &twidge; will
         automatically get the title from the podcast's XML feed.
         Sometimes the XML feed for the podcast may not provide a
         useful title.  In those situations, you can use
@@ -604,17 +603,16 @@
       <indexterm><primary>Commands</><secondary>update</></>
       <indexterm><primary>Podcasts</><secondary>Updating</></>
       <title>update</title>
-      <cmdsynopsis><command>hpodder update</command>&arg.castid;</>
+      <cmdsynopsis><command>hpodder update</command></>
       <para>
-        The update command will cause &hpodder; to look at each
+        The update command will cause &twidge; to look at each
         podcast feed.  It will download the latest copy of the feed
         and compare the episodes mentioned in the feed to its internal
         database of episodes.  For any episode mentioned in the feed
         that is not already in the internal database of episodes,
-        &hpodder; will add it to its database and set its status to
+        &twidge; will add it to its database and set its status to
         Pending.
       </para>
-      <variablelist>&var.castid;</variablelist>
     </refsect2>
         
   </refsect1>
@@ -624,8 +622,8 @@
     <title>Specifying podcast IDs</title>
     <indexterm><primary>Podcasts</><secondary>IDs</></>
     <para>
-      Each podcast in &hpodder; gets a numeric ID.  This ID is
-      automatically assigned by &hpodder; and is not changable.  The
+      Each podcast in &twidge; gets a numeric ID.  This ID is
+      automatically assigned by &twidge; and is not changable.  The
       ID is given out when a podcast is added with the
       <command>add</command> command, or with the
       <command>lscasts</command> or <command>lsepisodes</command>
@@ -655,8 +653,8 @@
     <indexterm><primary>Episodes</><secondary>Status Flags</></>
     <title>Status Flags in hpodder</title>
     <para>
-      Several places in this manual, you've seen &hpodder; statuses
-      mentioned.  Each episode in &hpodder; has an associated status.
+      Several places in this manual, you've seen &twidge; statuses
+      mentioned.  Each episode in &twidge; has an associated status.
       The statuses are:
     </para>
     <variablelist>
@@ -666,7 +664,7 @@
       </varlistentry>
       <varlistentry><term>Downloaded</term>
         <listitem><para>The given episode has already been
-        downloaded by &hpodder;</para></listitem>
+        downloaded by &twidge;</para></listitem>
       </varlistentry>
       <varlistentry><term>Error</term>
         <listitem><para>An error occured while downloading this
@@ -693,24 +691,24 @@
     </para>
     <para>
       People that track many podcasts over a long time will probably find it
-      annoying to have &hpodder; attempt to download invalid feeds or
-      episodes over and over again.  For that reason, &hpodder; 1.0.0
+      annoying to have &twidge; attempt to download invalid feeds or
+      episodes over and over again.  For that reason, &twidge; 1.0.0
       introduced automatic error handling.
     </para>
     <para>
       Once a podcast feed or episode has failed at least 15 times, 
       it's been at least 21 days since the first download attempt (episodes)
-      or last update (feeds), &hpodder; will automatically mark the item to
-      be skipped in future runs.  For podcast feeds, &hpodder; disabled the
+      or last update (feeds), &twidge; will automatically mark the item to
+      be skipped in future runs.  For podcast feeds, &twidge; disabled the
       podcast; this status will appear in <command>hpodder lscasts</>.
-      For episodes, &hpodder; sets the status to Error; this will appear
+      For episodes, &twidge; sets the status to Error; this will appear
       in <command>hpodder lseps</>.  Both can be changed later, with
       <command>hpodder enable</> or <command>hpodder setstatus</>,
       respectively.
     </para>
     <para>
       The default minimums of 15 attempts and 21 days may be adjusted in
-      the &hpodder; configuration file, either globally or on a per-podcast
+      the &twidge; configuration file, either globally or on a per-podcast
       basis.
     </para>
     <para>
@@ -727,7 +725,7 @@
     <indexterm><primary>Configuration File</><secondary>hpodder</></>
     <title>hpodder Configuration File</title>
     <para>
-      &hpodder; has a configuration file in which you can set various
+      &twidge; has a configuration file in which you can set various
       options.  This file normally lives under
       <filename>~/.hpodder/hpodder.conf</filename>.
     </para>
@@ -779,7 +777,7 @@ podcastfaildays = 5
       represented: <option>31</option> and <option>DEFAULT</option>.
     </para>
     <para>
-      Whenever &hpodder; looks for information about a particular
+      Whenever &twidge; looks for information about a particular
       podcast, it first checks to see if it can find that option in a
       section for that podcast.  If not, it checks the
       <option>DEFAULT</option> section.  If it still doesn't find an
@@ -800,7 +798,7 @@ podcastfaildays = 5
         <varlistentry><term>maxthreads</term>
           <listitem><para>The maximum number of simultaneous download
               threads that will be active at any given time.
-              &hpodder; can download multiple files at once, and this
+              &twidge; can download multiple files at once, and this
               options says how many it can download simultaneously.
               It defaults to 2.
             </para></listitem>
@@ -809,12 +807,12 @@ podcastfaildays = 5
           <listitem><para>How frequently to update the status bar on
           the screen, in seconds.  It defaults to 1, which will update
           the status every second.  Raise it if you are running
-          &hpodder; over a very low-bandwidth link and are concerned
+          &twidge; over a very low-bandwidth link and are concerned
           about flooding it with status updates.</para></listitem>
         </varlistentry>
         <varlistentry><term>showintro</term>
           <listitem><para>The first time you run
-              <command>fetch</command>, &hpodder; automatically writes a
+              <command>fetch</command>, &twidge; automatically writes a
               configuration file for you that sets this option to
               <option>no</option>.  This prevents you from having to
               do the new user intro more than once.
@@ -836,7 +834,7 @@ podcastfaildays = 5
       <variablelist>
         <varlistentry><term>downloaddir</term>
           <listitem><para>The main directory into which all podcasts
-              should be stored.  It will be created by &hpodder; when
+              should be stored.  It will be created by &twidge; when
               necessary if it does not already exist.  The default is
             <filename>~/podcasts</filename></para></listitem>
         </varlistentry>
@@ -1062,7 +1060,7 @@ podcastfaildays = 5
                 This option governs the automatic renaming of
                 downloaded files.  Some servers do not present files
                 with proper extensions to match their file type.  This
-                can confuse various software and devices.  &hpodder;
+                can confuse various software and devices.  &twidge;
                 can automatically fix up extensions on such files.
                 Each entry in the list in a MIME type, a colon, and
                 the desired filename suffix.  Note that no whitespace
@@ -1084,9 +1082,9 @@ podcastfaildays = 5
     <indexterm><primary>Configuration File</><secondary>Curl</></>
     <title>Curl Configuration File</title>
     <para>
-      Internally, &hpodder; uses the Curl application to perform
+      Internally, &twidge; uses the Curl application to perform
       downloads across the Internet.  Curl is a remarkably flexible
-      application, and &hpodder; takes advantage of that to provide
+      application, and &twidge; takes advantage of that to provide
       you with quite a few options.
     </para>
     <para>
@@ -1104,7 +1102,7 @@ podcastfaildays = 5
   <refsect1 id="hpodder.tips">
     <title>Tips & Hints</title>
     <para>
-      Here are a few tips and hints to make &hpodder; more pleasant
+      Here are a few tips and hints to make &twidge; more pleasant
       for you.
     </para>
     <refsect2 id="hpodder.tips.proxy">
@@ -1124,7 +1122,7 @@ podcastfaildays = 5
       <title>Limiting Your Download Speed</title>
       <indexterm><primary>Download Rate</><secondary>Limiting</></>
       <para>
-        Sometimes, you may not want &hpodder; to use all of your
+        Sometimes, you may not want &twidge; to use all of your
         available bandwidth.  Perhaps you don't want it to slow down
         other activities too much.  To do this, just create a
         <filename>~/.hpodder/curlrc</filename> file.  Put in it
@@ -1146,12 +1144,12 @@ podcastfaildays = 5
     <title>Environment</title>
     <indexterm><primary>Environment Variables</></>
     <para>
-      &hpodder; does not read any environment variables directly.
+      &twidge; does not read any environment variables directly.
       However, it does pass on the environment to the
       programs it calls, such as Curl.  This can be useful for
       specifying proxies.  Please see
       <application>curl</application>(1) for more details.
-      As specified in the Per-Podcast Command Options section, &hpodder;
+      As specified in the Per-Podcast Command Options section, &twidge;
       will also set certain variables for post-processing of
       downloaded files.
     </para>
@@ -1176,7 +1174,7 @@ podcastfaildays = 5
     <title>Copyright</title>
     <indexterm><primary>Copyright</></>
     <para>
-      &hpodder;, all code, documentation, files, and build scripts are
+      &twidge;, all code, documentation, files, and build scripts are
       Copyright &copy; 2006 John Goerzen.  All code, documentation,
       sripts, and files are under the following license unless
       otherwise noted:
@@ -1214,7 +1212,7 @@ podcastfaildays = 5
   <refsect1 id="hpodder.author">
     <title>Author</title>
     <para>
-      &hpodder;, its modules, documentation, executables, and all
+      &twidge;, its modules, documentation, executables, and all
       included files, except where noted, was written by
       John Goerzen <email>jgoerzen@complete.org</email> and
       copyright is held as stated in the COPYRIGHT section.
@@ -1228,7 +1226,7 @@ podcastfaildays = 5
       <application>id3v2</application>(1)
     </para>
     <para>
-      The &hpodder; homepage at <ulink
+      The &twidge; homepage at <ulink
       url="http://quux.org/devel/hpodder"></>,
       a general description of podcasting at
       <ulink url="http://en.wikipedia.org/wiki/Podcast"></>
