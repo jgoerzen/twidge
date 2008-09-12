@@ -1,15 +1,13 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
   <!ENTITY index SYSTEM "index/index.sgml">
-  <!ENTITY man.hpodder SYSTEM "hpodder-manpage.sgml">
-  <!ENTITY hpodder "<application>hpodder</application>">
-<!ENTITY arg.castid "<arg rep='repeat' choice='opt'><replaceable>castid</replaceable></arg>">
-<!ENTITY var.castid "<varlistentry><term><replaceable>castid ...</replaceable></term><listitem><para>By default, this command will operate on all podcasts.  You can limit the podcasts on which it operates with this option.  See specifying podcast IDs later in this manual for more information.</para></listitem></varlistentry>">
+  <!ENTITY man.twidge SYSTEM "twidge-manpage.sgml">
+  <!ENTITY twidge "<application>twidge</application>">
 
 ]>
 
-<book id="hpodder">
+<book id="twidge">
   <bookinfo>
-    <title>Using the hpodder podcast aggregator</title>
+    <title>Using the twidge microblogger client aggregator</title>
     <author>
       <firstname>John</firstname> <surname>Goerzen</surname>
     </author>
@@ -24,8 +22,8 @@
   </bookinfo>
 
   <reference>
-    <title>hpodder Manual</title>
-     &man.hpodder;
+    <title>twidge Manual</title>
+     &man.twidge;
   </reference>
 
   &index;

@@ -17,13 +17,13 @@
 
 env = Environment()
 env.Export("env")
-env.Append(MASTERBASE = 'hpodder', TOPNODE = 'hpodder', DOINDEX = 1,
+env.Append(MASTERBASE = 'twidge', TOPNODE = 'twidge', DOINDEX = 1,
         PDFARGS = '-s local=printlocal')
 
 execfile('sgml-common/SConstruct')
 
 manpages = []
-for manpage in ['hpodder']:
+for manpage in ['twidge']:
     manpages.append(env.MAN('%s.1' % manpage, 'man.%s.sgml' % manpage))
 env.Alias('manpages', manpages)
 

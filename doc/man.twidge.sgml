@@ -1,15 +1,13 @@
 <!DOCTYPE reference PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
-<!ENTITY hpodder "<application>hpodder</application>">
-<!ENTITY man.hpodder SYSTEM "hpodder-manpage.sgml">
-<!ENTITY arg.castid "<arg rep='repeat' choice='opt'><replaceable>castid</replaceable></arg>">
-<!ENTITY var.castid "<varlistentry><term><replaceable>castid ...</replaceable></term><listitem><para>By default, this command will operate on all podcasts.  You can limit the podcasts on which it operates with this option.  See specifying podcast IDs later in this manual for more information.</para></listitem></varlistentry>">
+<!ENTITY twidge "<application>twidge</application>">
+<!ENTITY man.twidge SYSTEM "twidge-manpage.sgml">
 
     ]>
 
     <reference>
-  <title>hpodder Manual</title>
+  <title>twidge Manual</title>
   
-  &man.hpodder;
+  &man.twidge;
 
     </reference>
 
