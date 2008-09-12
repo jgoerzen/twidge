@@ -193,8 +193,9 @@ mailto section cp args (name, text, updid) recipient =
           subject = take 30 text ++ "... (twidge " ++ section ++ ")"
           message = unlines $ 
                     (case get cp section "mailfrom" of
-                      Left _ -> []
-                      Right x -> ["From: " ++ name ++ " <" ++ x ++ ">"]
+                      Left _ -> ["Subject: " ++ name ++ ": " ++ subject]
+                      Right x -> ["From: " ++ name ++ " <" ++ x ++ ">",
+                                  "Subject: " ++ subject]
                     ) ++ 
                     ["Message-ID: " ++ msgid,
                      "X-Twidge-urlbase: " ++ forceEither (get cp "DEFAULT" "urlbase"),
@@ -203,7 +204,6 @@ mailto section cp args (name, text, updid) recipient =
                      "X-Twidge-update-id: " ++ updid,
                      "X-Twidge-update-name: " ++ name,
                      "To: " ++ recipient,
-                     "Subject: " ++ subject,
                      "",
                      text,
                      "",

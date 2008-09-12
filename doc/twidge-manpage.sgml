@@ -624,7 +624,8 @@ lastid = 914881241
             </para>
             <para>
               When given, Twidge uses the nickname and this address
-              for the From line.
+              for the From line.  When not given, the nickname is
+              prepended to the Subject line.
             </para>
           </listitem>
         </varlistentry>
