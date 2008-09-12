@@ -394,8 +394,8 @@
     <refsect2 id="twidge.commands.follow">
       <title>follow</title>
       <cmdsynopsis>
-        <command>twidge follow <arg
-        choice="plain"><replaceable>username</replaceable></arg></command>
+        <command>twidge follow</command>
+        <arg choice="plain"><replaceable>username</replaceable></arg>
       </cmdsynopsis>
       <para>
         This command will cause &twidge; to request that the
@@ -416,8 +416,8 @@
     <refsect2 id="twidge.commands.unfollow">
       <title>unfollow</title>
       <cmdsynopsis>
-        <command>twidge unfollow <arg
-        choice="plain"><replaceable>username</replaceable></arg></command>
+        <command>twidge unfollow</command>
+        <arg choice="plain"><replaceable>username</replaceable></arg>
       </cmdsynopsis>
       <para>
         This command will cause &twidge; to request that the
@@ -430,8 +430,8 @@
     <refsect2 id="twidge.commands.update">
       <title>update</title>
       <cmdsynopsis>
-        <command>twidge update <arg
-        choice="opt"><replaceable>status</replaceable></arg></command>
+        <command>twidge update</command>
+        <arg choice="opt"><replaceable>status</replaceable></arg>
       </cmdsynopsis>
       <para>
         Causes &twidge; to post a new status to the server.  If a
