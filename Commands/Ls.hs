@@ -138,8 +138,7 @@ statuses_worker section command cpath cp (args, _) page =
        debugM section $ "Got doc: " ++ xmlstr
        results <- handleStatus section cp args xmlstr
        when (page == 1) $
-            maybeSaveList section cpath cp args 
-                          ((map (\(_, _, i) -> i)) results)
+            maybeSaveList section cpath cp args (map sId results)
        return results
 
 lsrecent_help =
@@ -191,13 +190,14 @@ handleStatus section cp args xmlstr =
     in do mapM_ (printStatus section cp args) statuses
           return statuses
 
-procStatuses :: Content -> (String, String, String)
+procStatuses :: Content -> Message
 procStatuses item = 
-    (sanitize $ contentToString 
-      (keep /> tag "user" /> tag "screen_name" /> txt $ item),
-     sanitize $ contentToString (keep /> tag "text" /> txt $ item),
-     sanitize $ contentToString (keep /> tag "id" /> txt $ item)
-    )
+    Message {sId = s (tag "id"),
+             sSender = s (tag "user" /> tag "screen_name"),
+             sRecipient = "",
+             sText = s (tag "text"),
+             sDate = s (tag "created_at")}
+    where s f = sanitize $ contentToString (keep /> f /> txt $ item)
 
 getStatuses = tag "statuses" /> tag "status"
 getDMs = tag "direct_message" /> tag "direct-messages"
@@ -213,7 +213,7 @@ shortStatus m =
     where wrappedtext = wrapText (80 - 22 - 2) (words (sText m))
 
 printStatus section cp args m = 
-    printGeneric shortStatus longStatus cp args m
+    printGeneric shortStatus longStatus section cp args m
 
 printGeneric shortfunc longfunc section cp args m =
     case (lookup "m" args) of
