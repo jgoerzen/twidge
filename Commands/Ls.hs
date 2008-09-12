@@ -194,13 +194,20 @@ mailto section cp args (name, text, updid) recipient =
           message = unlines $ 
                     (case get cp section "mailfrom" of
                       Left _ -> []
-                      Right x -> ["From: " ++ x]
+                      Right x -> ["From: " ++ name ++ " <" ++ x ++ ">"]
                     ) ++ 
                     ["Message-ID: " ++ msgid,
+                     "X-Twidge-urlbase: " ++ forceEither (get cp "DEFAULT" "urlbase"),
+                     "X-Twidge-server-base: " ++ serverHost cp,
+                     "X-Twidge-command: " ++ section,
+                     "X-Twidge-update-id: " ++ updid,
+                     "X-Twidge-update-name: " ++ name,
                      "To: " ++ recipient,
                      "Subject: " ++ subject,
                      "",
-                     text]
+                     text,
+                     "",
+                     "(from " ++ name ++ ")"]
 
 --------------------------------------------------
 -- lsfollowing
