@@ -459,54 +459,12 @@
     </refsect2>
   </refsect1>
 
-  <refsect1 id="hpodder.error">
-    <indexterm><primary>Errors</></>
-    <title>Automatic Error Handling</title>
-    <para>
-      For whatever reason, podcast feeds or individual episodes sometimes
-      fail to download.  The reasons for this range from the podcast being
-      taken down by its author to the network being disconnected from the
-      local computer.
-    </para>
-    <para>
-      People that track many podcasts over a long time will probably find it
-      annoying to have &twidge; attempt to download invalid feeds or
-      episodes over and over again.  For that reason, &twidge; 1.0.0
-      introduced automatic error handling.
-    </para>
-    <para>
-      Once a podcast feed or episode has failed at least 15 times, 
-      it's been at least 21 days since the first download attempt (episodes)
-      or last update (feeds), &twidge; will automatically mark the item to
-      be skipped in future runs.  For podcast feeds, &twidge; disabled the
-      podcast; this status will appear in <command>hpodder lscasts</>.
-      For episodes, &twidge; sets the status to Error; this will appear
-      in <command>hpodder lseps</>.  Both can be changed later, with
-      <command>hpodder enable</> or <command>hpodder setstatus</>,
-      respectively.
-    </para>
-    <para>
-      The default minimums of 15 attempts and 21 days may be adjusted in
-      the &twidge; configuration file, either globally or on a per-podcast
-      basis.
-    </para>
-    <para>
-      If you wish to disable checking entirely, you can put lines such as
-      <literal>epfaildays = 123456789</literal> and
-      <literal>podcastfaildays = 123456789</literal> in your <literal>DEFAULT</>
-      section in <filename>~/.hpodder/hpodder.conf</>.  Of course, if you
-      have podcasts that still fail after 338,237 years, you could be in
-      trouble.
-    </para>
-  </refsect1>
-
-  <refsect1 id="hpodder.config">
-    <indexterm><primary>Configuration File</><secondary>hpodder</></>
-    <title>hpodder Configuration File</title>
+  <refsect1 id="twidge.config">
+    <title>twidge Configuration File</title>
     <para>
       &twidge; has a configuration file in which you can set various
       options.  This file normally lives under
-      <filename>~/.hpodder/hpodder.conf</filename>.
+      <filename>~/.twidgerc</filename>.
     </para>
     <para>
       The configuration file has multiple sections.  Each section has
@@ -516,7 +474,9 @@
     <para>
       The section named DEFAULT is special in that it provides
       defaults that will be used whenever an option can't be found
-      under a different section.
+      under a different section.  If you specify no section names,
+      DEFAULT is the assumed section.  Some items, such as username,
+      password, and urlbase are assumed to be in DEFAULT.
     </para>
     <para>
       Let's start by looking at an example file, and then proceed to
@@ -525,334 +485,76 @@
     <programlisting><![CDATA[
 [DEFAULT]
 
-; Most podcasts are downloaded to here
-downloaddir = /home/jgoerzen/podcasts
+; Username and password
+username = ilovetwidge
 
-namingpatt = %(safecasttitle)s/%(safefilename)s
+password = secret
 
-; Don't disable a podcast due to errors unless it's been at least 20
-; days since the last (or first) attempt
-podcastfaildays = 20
+; If your password contains a percent sign (%), list it twice (%%)
 
-[general]
+; Path to server API interface -- no trailing slash
+urlbase = https://twitter.com
 
-; The following line tells hpodder that
-; you have already gone through the intro.
-showintro = no
+; Last IDs seen by different commands.  Written to with -s.
 
-maxthreads = 2
-progressinterval = 1
+[lsarchive]
+lastid = 917383569
 
-[31]
-; Store this particular podcast somewhere else
-downloaddir = /nfs/remote/podcasts
-
-; And we don't care as much about disabling it
-podcastfaildays = 5
+[lsrecent]
+lastid = 914881241
 ]]></programlisting>
     <para>
-      In this example, you saw some "general" options, such as
-      <option>showintro</option>.  There are two other sections
-      represented: <option>31</option> and <option>DEFAULT</option>.
-    </para>
-    <para>
       Whenever &twidge; looks for information about a particular
-      podcast, it first checks to see if it can find that option in a
-      section for that podcast.  If not, it checks the
+      option, it first checks to see if it can find that option in a
+      section for that option.  If not, it checks the
       <option>DEFAULT</option> section.  If it still doesn't find an
-      answer, it consults its built-in defaults.
+      answer, it consults its built-in defaults.  The only built-in
+      default at present is urlbase.
     </para>
-    <para>
-      In this example, all podcasts share the same naming scheme.  All
-      podcasts except podcast 31 are downloaded to the same place.
-      That podcast goes elsewhere because its
-      <option>downloaddir</option> overrides the default.
-    </para>
-    <refsect2 id="hpodder.config.general">
+    <refsect2 id="twidge.config.general">
       <title>General Options</title>
-      <para>These are specified in the <option>general</option>
+      <para>These are specified in the <option>DEFAULT</option>
         section.
       </para>
       <variablelist>
-        <varlistentry><term>maxthreads</term>
-          <listitem><para>The maximum number of simultaneous download
-              threads that will be active at any given time.
-              &twidge; can download multiple files at once, and this
-              options says how many it can download simultaneously.
-              It defaults to 2.
+        <varlistentry><term>username</term>
+          <listitem><para>
+              Your username on the microblogging site.  No default.
             </para></listitem>
         </varlistentry>
-        <varlistentry><term>progressinterval</term>
-          <listitem><para>How frequently to update the status bar on
-          the screen, in seconds.  It defaults to 1, which will update
-          the status every second.  Raise it if you are running
-          &twidge; over a very low-bandwidth link and are concerned
-          about flooding it with status updates.</para></listitem>
+        <varlistentry><term>password</term>
+          <listitem><para>
+              Your password on the microblogging site.  No default.
+            </para></listitem>
         </varlistentry>
-        <varlistentry><term>showintro</term>
-          <listitem><para>The first time you run
-              <command>fetch</command>, &twidge; automatically writes a
-              configuration file for you that sets this option to
-              <option>no</option>.  This prevents you from having to
-              do the new user intro more than once.
+        <varlistentry><term>urlbase</term>
+          <listitem><para>
+              The URL to access the API of the microblogging site.
+              The default, <literal>https://twitter.com</literal> is
+              for Twitter.  To use Identica, you would specify
+              <literal>http://identi.ca/api</literal>.  Do not put a
+              trailing slash on this option.
             </para></listitem>
         </varlistentry>
       </variablelist>
     </refsect2>              
 
-    <refsect2 id="hpodder.config.podcast">
-      <title>Per-Podcast Options</title>
+    <refsect2 id="twidge.config.options">
+      <title>Per-Command Options</title>
       <para>
         These options may be specified in <option>DEFAULT</option> or
-        in a per-podcast section.  If placed in
-        <option>DEFAULT</option>, they will apply to all podcasts
+        in a per-option section.  If placed in
+        <option>DEFAULT</option>, they will apply to all relevant options
         unless overridden.
       </para>
-      <refsect3 id="hpodder.config.podcast.basic">
-        <title>Basic Per-Podcast Options</title>
       <variablelist>
-        <varlistentry><term>downloaddir</term>
-          <listitem><para>The main directory into which all podcasts
-              should be stored.  It will be created by &twidge; when
-              necessary if it does not already exist.  The default is
-            <filename>~/podcasts</filename></para></listitem>
-        </varlistentry>
-        <varlistentry><term>epfailattempts</term>
+        <varlistentry><term>lastid</term>
           <listitem><para>
-            The minimum number of attempts to download this episode before
-            the episode will be considered to be marked Error.  Default is
-            15.
-          </para></listitem>
+              Stores the last ID seen for commands that support -s or
+          -u.
+            </para></listitem>
         </varlistentry>
-        <varlistentry><term>epfaildays</term>
-          <listitem><para>
-            The minimum number of days that must have elapsed between the
-            first attempt to download the episode and the present time before
-            the episode will be considered to be marked Error.  Default is
-            21.
-            </para>
-            </listitem>
-            </varlistentry>
-        <varlistentry><term>namingpatt</term>
-          <listitem><para>How to name downloaded files.  This pattern
-          is relative to the <option>downloaddir</option>.  The
-          default is
-          <filename>%(safecasttitle)s/%(safefilename)s</filename>
-            </para>
-            <para>
-              This option will be provided with several replaceable
-              tokens.  Tokens have the form
-              <option>%(<replaceable>tokname</replaceable>)s</option>.
-              That is, the percent sign, the token name in
-              perenthesis, and then an "s" character.  The tokens made
-              available for this option are:
-            </para>
-            <variablelist>
-              <varlistentry><term>castid</term>
-                <listitem><para>The numeric ID for this
-                podcast</para>
-                </listitem></varlistentry>
-              
-              <varlistentry><term>epid</term>
-                <listitem><para>The numeric ID for this
-                episode
-                  </para>
-                </listitem>
-              </varlistentry>
-
-                <varlistentry><term>safecasttitle</term>
-                  <listitem><para>The title of the podcast, as specified
-                      in the feed.  Special characters, such as spaces or
-                      exclamation marks, are converted to
-                      underscores.</para></listitem>
-                </varlistentry>
-
-                <varlistentry><term>safeeptitle</term>
-                  <listitem><para>The title of this episode, as
-                      specified in the podcast's feed, with special
-                      characters converted to underscores.
-                    </para></listitem></varlistentry>
-
-                <varlistentry><term>safefilename</term>
-                  <listitem><para>The component from the URL for this
-                      episode after the last slash in the URL, with special
-                      characters converted to underscores.
-                    </para>
-                  </listitem>
-                </varlistentry>
-              </variablelist>
-            </listitem>
-          </varlistentry>
-          <varlistentry><term>podcastfailattempts</term>
-            <listitem><para>
-                The minimum number of attempts to download this podcast before
-                the episode will be considered to be marked disabled.  Default is
-                15.
-              </para></listitem>
-          </varlistentry>
-          <varlistentry><term>podcastfaildays</term>
-            <listitem><para>
-                The minimum number of days that must have elapsed between the
-                last successful download of the podcast's feed
-                and the present time before
-                the podcast will be considered to be marked disabled.  Default is
-                21.
-              </para>
-            </listitem>
-          </varlistentry>
-        </variablelist>
-      </refsect3>
-      <refsect3 id="hpodder.config.podcast.processing">
-        <title>Per-Podcast Command Options</title>
-        <para>
-          These are external commands that will be run in certain
-          situations.  For each of the commands, several environment
-          variables are set.  These variables are not pre-sanitized
-          and may contain whitespace or special characters.  
-          <emphasis>Extreme
-          caution must be exercized to properly quote these variables
-          when using them in shell commands or scripts.</emphasis>
-          The following
-          environment variables are set:
-        </para>
-        <variablelist>
-          <varlistentry><term>CASTID</term>
-            <listitem><para>The numeric ID for this podcast</para>
-            </listitem>
-          </varlistentry>
-          
-          <varlistentry><term>CASTTITLE</term>
-            <listitem><para>The title of the podcast,
-            verbatim</para></listitem>
-          </varlistentry>
-
-          <varlistentry><term>EPFILENAME</term>
-            <listitem><para>The on-disk filename where this episode
-            has been stored</para></listitem></varlistentry>
-
-          <varlistentry><term>EPID</term>
-            <listitem><para>The numeric epidose ID for this
-            episode</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry><term>EPTITLE</term>
-            <listitem><para>The title of this episode, as specified in
-            the podcast's feed.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry><term>EPURL</term>
-            <listitem><para>The URL of this episode.</para></listitem>
-          </varlistentry>
-
-          <varlistentry><term>FEEDURL</term>
-            <listitem><para>The URL of the podcast's
-            feed.</para></listitem>
-          </varlistentry>
-
-
-          <varlistentry><term>SAFECASTTITLE</term>
-            <listitem><para>The title of the podcast, as specified in
-            the feed.  Special characters, such as spaces or
-            exclamation marks, are converted to
-            underscores.</para></listitem>
-          </varlistentry>
-
-          <varlistentry><term>SAFEEPTITLE</term>
-            <listitem><para>The title of this episode, as specified in
-            the podcast's feed, with special characters converted to
-            underscores.
-              </para></listitem></varlistentry>
-        </variablelist>
-        <para>
-          Here are the supported commands:
-        </para>
-        <variablelist>
-          <varlistentry><term>gettypecommand</term>
-            <listitem><para>This command is intended to analyze the
-                content of the file and return the true MIME type of the
-                file, based on the on-disk content.  If this command exits
-                with an error, the MIME type given in the podcast feed will
-                be used.  If you want to always use the MIME type in the
-                podcast feed, you can set this to
-                <literal>/bin/false</literal> or the empty string.
-              </para>
-              <para>The default value is: <literal>file -b -i "${EPFILENAME}"</literal>
-              </para>
-              <para>
-                It is expected that this program will write its result
-                to standard output.  The first token of the output is
-                taken to be the MIME type.  The remainder will be
-                discarded.  For instance, for the output
-                <literal>text/x-pascal; charset=us-ascii</literal>,
-                the type will be taken to be
-                <literal>text/x-pascal</literal>.  If the program
-                exits with a nonzero exit code, its output will not be used.
-              </para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry><term>postproccommand</term>
-            <listitem><para>This command provides a user-configurable
-                post-processing hook for downloaded podcasts.  It is only
-                invoked on files whose type matches the
-                <option>postproctypes</option> list.  This command is the
-                very last step in the downloading process.
-              </para>
-              <para>
-                The default value adds ID3 tags to MP3 files.  It is:
-                <literal>id3v2 -T "${EPID}" -A "${CASTTITLE}" -t "${EPTITLE}" --WOAF
-                  "${EPURL}" --WOAS "${FEEDURL}" "${EPFILENAME}"</literal>
-              </para>
-            </listitem>
-          </varlistentry>
-        </variablelist>
-      </refsect3>
-
-      <refsect3 id="hpodder.config.podcast.types">
-        <title>Per-Podcast Type Processing Lists</title>
-        <para>
-          These options govern what types of files are processed in
-          different ways.  The types used here are MIME types.  They
-          will be the actual type determined by
-          <option>gettypecommand</option>, or if that command is
-          unable to determine a useful type, the MIME type given by
-          the podcast's RSS feed.  Items in these lists are to be
-          separated by commas.
-        </para>
-        <variablelist>
-          <varlistentry><term>postproctypes</term>
-            <listitem>
-              <para>
-                This is the comma-separated list of MIME types on
-                which <option>postproccommand</option> will operate.
-                The special single token <literal>ALL</literal> means
-                to operate on all types.  To disable post-processing
-                entirely, you can set this to the empty string.
-                The default is: <literal>audio/mpeg, audio/mp3,
-                x-audio/mp3</literal>
-              </para></listitem></varlistentry>
-
-          <varlistentry><term>renametypes</term>
-            <listitem><para>
-                This option governs the automatic renaming of
-                downloaded files.  Some servers do not present files
-                with proper extensions to match their file type.  This
-                can confuse various software and devices.  &twidge;
-                can automatically fix up extensions on such files.
-                Each entry in the list in a MIME type, a colon, and
-                the desired filename suffix.  Note that no whitespace
-                is allowed around the colon.
-              </para>
-              <para>
-                The default is: <literal>audio/mpeg:.mp3,
-                audio/mp3:.mp3, x-audio/mp3:.mp3</literal>
-              </para>
-            </listitem>
-          </varlistentry>
-        </variablelist>
-      </refsect3>
+      </variablelist>
 
     </refsect2>
   </refsect1>
