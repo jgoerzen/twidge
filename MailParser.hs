@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 module MailParser where
 import Text.ParserCombinators.Parsec
 import Data.String.Utils
-import Utils
+import FeedParser(sanitize)
 
 eol = (string "\r\n") <|> string "\n"
 
@@ -41,7 +41,7 @@ refHdr =
        c2 <- restOfHdr
        return (c ++ c2)
     where restOfHdr =
-              (do char ' '
+              (do oneOf " \t"
                   r <- line
                   n <- restOfHdr
                   return (r ++ n)) <|> return ""
@@ -63,4 +63,4 @@ message =
        h <- headers
        eol
        b <- body
-       return (strip (concat h), strip . sanitize_basic $ b)
+       return (strip (concat h), strip . sanitize $ b)
