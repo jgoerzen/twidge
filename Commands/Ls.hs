@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Ls(lsrecent, lsreplies, lsfollowing, lsfollowers, lsarchive) where
+module Commands.Ls(lsrecent, lsreplies, lsfollowing, lsfollowers, lsarchive, lsdm, lsdmarchive) where
 import Utils
 import System.Log.Logger
 import Types
@@ -108,19 +108,31 @@ sinceArgs section cp args =
 
 lsrecent = simpleCmd "lsrecent" "List recent updates from those you follow"
              lsrecent_help
-             (stdopts ++ sinceopts) (paginated (statuses_worker "lsrecent" "friends_timeline"))
+             (stdopts ++ sinceopts) (paginated (statuses_worker "lsrecent"
+                                                "/statuses/friends_timeline"))
 
 lsreplies = simpleCmd "lsreplies" "List recent replies to you"
             lsreplies_help
-            (stdopts ++ sinceopts) (paginated (statuses_worker "lsreplies" "replies"))
+            (stdopts ++ sinceopts) (paginated (statuses_worker "lsreplies" 
+                                               "/statuses/replies"))
 
 lsarchive = simpleCmd "lsarchive" "List recent status updates you posted yourself"
             lsarchive_help
-            (stdopts ++ sinceopts) (paginated (statuses_worker "lsarchive" "user_timeline"))
+            (stdopts ++ sinceopts) (paginated (statuses_worker "lsarchive"
+                                               "/statuses/user_timeline"))
 
+lsdm = simpleCmd "lsdm" "List recent direct messages to you"
+       lsdm_help
+       (stdopts ++ sinceopts) (paginated (statuses_worker "lsdm" 
+                                          "/direct_messages"))
+
+lsdmarchive = simpleCmd "lsdm" "List recent direct messages you sent"
+              lsdmarchive_help
+              (stdopts ++ sinceopts) (paginated (statuses_worker "lsdmarchive"
+                                                 "/direct_messages/sent"))
 
 statuses_worker section command cpath cp (args, _) page =
-    do xmlstr <- sendAuthRequest cp ("/statuses/" ++ command ++ ".xml")
+    do xmlstr <- sendAuthRequest cp (command ++ ".xml")
                  (("page", show page) : sinceArgs section cp args)
                  []
        debugM section $ "Got doc: " ++ xmlstr
@@ -156,6 +168,23 @@ lsarchive_help =
  \For more examples, including how to see only unseen updates, please\n\
  \refer to the examples under twidge lsrecent --help, which also pertain\n\
  \to lsarchive.\n"
+
+lsdm_help =
+ "Usage: twidge lsdm [options]\n\n\
+ \You can see the 20 most recent direct messages to you with:\n\n\
+ \   twidge lsdm\n\n\
+ \For more examples, including how to see only unseen updates, please\n\
+ \refer to the examples under twidge lsrecent --help, which also pertain\n\
+ \to lsdm.\n"
+ 
+lsdmarchive_help =
+ "Usage: twidge lsdmarchive [options]\n\n\
+ \You can see the 20 most recent direct messages you sent with:\n\n\
+ \   twidge lsdmarchive\n\n\
+ \For more examples, including how to see only unseen updates, please\n\
+ \refer to the examples under twidge lsrecent --help, which also pertain\n\
+ \to lsdmarchive.\n"
+ 
 
 handleStatus section cp args xmlstr = 
     let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr

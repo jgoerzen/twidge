@@ -48,6 +48,8 @@ allCommands =
     [Commands.Follow.follow,
      Commands.Ls.lsarchive,
      lscommands,
+     Commands.Ls.lsdm,
+     Commands.Ls.lsdmarchive,
      Commands.Ls.lsfollowers,
      Commands.Ls.lsfollowing,
      Commands.Ls.lsrecent,
