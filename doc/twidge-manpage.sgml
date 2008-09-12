@@ -79,6 +79,9 @@
             advanced things are possible)</para>
         </listitem>
 
+        <listitem><para>This extensive manual, and numerous examples
+        on the website</para></listitem>
+
         <listitem><para>Compatible with any microblogging service that
             implements the Twitter API.  Tested with Twitter and
             Identica (identi.ca).  Should be compatible with any other
@@ -175,13 +178,13 @@
     </para>
   </refsect1>
 
-  <refsect1 id="hpodder.options">
+  <refsect1 id="twidge.options">
     <indexterm><primary>Options (command-line)</primary></indexterm>
     <title>Options</title>
     <para>
       &twidge; always is invoked with the name of a specific
       operation, such as <option>update</option> or
-      <option>add</option>.  In &twidge;, these operations are
+      <option>lsrecent</option>.  In &twidge;, these operations are
       called <emphasis>commands</emphasis>.  Each command has its
       own options, which are given after the command on the
       &twidge; command line.  A full summary of each command's
@@ -189,19 +192,32 @@
     </para>
     
     <para>
-      You may obtain a list of all commands with <command>hpodder
+      You may obtain a list of all commands with <command>twidge
         lscommands</command>.  Help is available for any individual
-      command with <command>hpodder <replaceable>command</replaceable>
+      command with <command>twidge <replaceable>command</replaceable>
         --help</command>.  Global help is available with
-      <command>hpodder --help</command>.
+      <command>twidge --help</command>.
     </para>
-    <refsect2 id="hpodder.options.global">
-      <title>Global Option</title>
+    <refsect2 id="twidge.options.global">
+      <title>Global Options</title>
       <para>
-        This option may be specified <emphasis>before</emphasis> any
+        These options may be specified <emphasis>before</emphasis> any
         command.
       </para>
       <variablelist>
+        <varlistentry><term>-c <replaceable>FILE</replaceable></term>
+                      <term>--config=<replaceable>FILE</replaceable></term>
+          <listitem><para>
+              By default, &twidge; uses
+              <filename>~/.twidgerc</filename> for configuration.
+              With this option, you can specify an alternate file.
+              &twidge; will read configuration information
+              from it.  In certain cases, &twidge; will also write to
+              it, such as with the <command>twidge setup</command>
+              command, or the -s option to one of the ls commands.
+            </para>
+          </listitem>
+        </varlistentry>
         <varlistentry><term>-d</term><term>--debug</term>
           <listitem><para>
               Enables debugging output.  This verbose output helps you
@@ -215,9 +231,9 @@
 
   </refsect1>
 
-  <refsect1 id="hpodder.commands">
+  <refsect1 id="twidge.commands">
     <indexterm><primary>Commands</primary></indexterm>
-    <title>Commands in hpodder</title>
+    <title>Commands in Twidge</title>
     <para>
       &twidge; has many different commands.  If you do not specify a
       command, the <command>fetch</command> command is automatically
