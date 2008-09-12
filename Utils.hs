@@ -43,6 +43,7 @@ import System.IO
 import System.Posix.IO
 import Control.Exception(finally)
 import Data.ConfigFile
+import Text.Regex.Posix
 
 simpleCmd :: String             -- ^ Command name
           -> String             -- ^ Command description
@@ -113,3 +114,23 @@ permFail :: String -> IO a
 permFail msg =
     do hPutStrLn stderr msg
        exitWith (ExitFailure ex_permfail)
+
+serverHost cp = host
+    where urlbase = forceEither $ get cp "DEFAULT" "urlbase"
+          uri = forceMaybeMsg "genMsgId parseURI" $ parseURI urlbase
+          host = uriRegName . forceMaybeMsg "genMsgId uriauth" . 
+                 uriAuthority $ uri
+
+genMsgId tweetid username cp =
+    "<" ++ msgid ++ ">"
+    where msgid = tweetid ++ "." ++ username ++ "@" ++ serverHost cp
+                  ++ ".twidge"
+
+-- FIXME: escape periods in serverHost
+
+parseMsgId msgid cp =
+    case msgid =~ repat of
+      [[_, tweetid, user]] -> (tweetid, user)
+      x -> error $ "parseMsgId: unexpected result for regex match on " ++ show msgid ++ ": " show x
+    where expectedhost = "@" ++ serverHost cp ++ "\\.twidge"
+          repat = "^<([^.]+)\\.([^@]+)" ++ expectedhost ++ ">$"
