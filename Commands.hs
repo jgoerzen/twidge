@@ -47,11 +47,11 @@ import qualified Commands.Update
 allCommands = 
     [Commands.Follow.follow,
      Commands.Ls.lsarchive,
+     lscommands,
      Commands.Ls.lsfollowers,
      Commands.Ls.lsfollowing,
      Commands.Ls.lsrecent,
      Commands.Ls.lsreplies,
-     lscommands,
      Commands.Setup.setup,
      Commands.Follow.unfollow,
      Commands.Update.update

@@ -235,19 +235,191 @@
     <indexterm><primary>Commands</primary></indexterm>
     <title>Commands in Twidge</title>
     <para>
-      &twidge; has many different commands.  If you do not specify a
-      command, the <command>fetch</command> command is automatically
-      selected for you.  This section will discuss each command in
+      &twidge; has many different commands.  You must specify a
+      command when using &twidge;.
+      This section will discuss each command in
       detail.  Note that all commands are case-sensitive and should be
       <emphasis>given in lowercase</emphasis>.
     </para>
     <para>
-      All commands support the command <option>--help</option>.  Running
-      <command>hpodder <replaceable>command</replaceable>
+      All commands support the option <option>--help</option>.  Running
+      <command>twidge <replaceable>command</replaceable>
       --help</command> will display information about the command and
       its options.  Since all commands support this, it won't be
       explicitly listed for each command below.
     </para>
+
+  </refsect1>
+  <refsect1 id="twidge.commands.updatedisplay">
+    <title>Commands to Display Updates</title>
+    <cmdsynopsis>
+        <command>twidge ls<replaceable>*</replaceable></command>
+        <arg choice="opt">-a</arg>
+        <arg choice="opt">-l</arg>
+        <arg choice="opt">-s</arg>
+        <arg choice="opt">-u</arg>
+    </cmdsynopsis>
+    <para>
+      Several commands can display updates from yourself or others.
+      They all share a common syntax and common set of options.  The
+      commands are <command>lsarchive</command>,
+      <command>lsrecent</command>, and <command>lsreplies</command>.
+      Here are the common options:
+    </para>
+    
+    <variablelist>
+      <varlistentry><term>-a</term>
+        <term>--all</term>
+        <listitem><para>
+            Normally, microblogging sites return one "page" of results
+            -- typically, 20 or 100 results, depending on the
+            operation.  Specifying --all requests &twidge; to
+            continually send requests to the microblogging site until
+            it receives an entire set of information.  Normally this
+            is a bad idea, but when used in combination with -u --
+            especially if you have used -s before -- it can be a
+            useful way to poll for all new updates.
+          </para>
+          <para>
+            If not used carefully, this command can generate many
+            requests to the server and can use a significant amount of
+            bandwidth.  Microblogging sites have traffic limits, and
+            will not take kindly to this.  Be careful when you use
+            --all.
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry><term>-l</term>
+        <term>--long</term>
+        <listitem><para>
+            The default output format shows a nickname and a message,
+            formatted nicely for display.  Using this option adds the
+            internal microblogging site's ID for the specific message,
+            and formats the output suitable for machine parsing.  The
+            horizontal tab character \t separates the three columns,
+            and is guaranteed to appear nowhere else.  It is also
+            guaranteed that \n will appear nowhere within a line when
+            using -l.
+          </para></listitem>
+      </varlistentry>
+      
+      <varlistentry><term>-s</term>
+        <term>--saveid</term>
+        <listitem><para>
+            Saves the ID of the most recent fetched message for future
+            use with -u.  Requires write access to your configuration
+            file.
+          </para></listitem>
+      </varlistentry>
+
+      <varlistentry><term>-u</term>
+        <term>--unseen</term>
+        <listitem><para>
+            Causes the command to show only items since the last use
+            of -s with this particular command.  If -s has never
+            before been used with this command, has no effect.
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <refsect2 id="twidge.commands.lsarchive">
+      <title>lsarchive</title>
+      <para>
+        Lists your own posts.
+      </para>
+    </refsect2>
+
+    <refsect2 id="twidge.commands.lsrecent">
+      <title>lsrecent</title>
+      <para>
+        Lists recent posts made by you or the people you follow.
+      </para>
+    </refsect2>
+
+    <refsect2 id="twidge.commands.lsreplies">
+      <title>lsreplies</title>
+      <para>
+        Lists recent replies made by anyone on the microblogging site
+        to you.
+      </para>
+    </refsect2>
+  </refsect1>
+
+  <refsect1 id="twidge.commands.displayinfo">
+    <title>Commands to Display Other Information</title>
+    <para>
+      These commands honor --all and --long like the other commands,
+      but do not honor --saveid or --unseen, as these options make no
+      sense.
+    </para>
+
+    <refsect2 id="twidge.commands.lsfollowers">
+      <title>lsfollowers</title>
+      <cmdsynopsis>
+        <command>twidge lsfollowers
+          <arg choice="opt"><replaceable>options</replaceable></arg>
+          <arg choice="opt"><replaceable>username</replaceable></arg>
+        </command>
+      </cmdsynopsis>
+      <para>
+        Will slow a list of people following you.  If given an
+        optional username, shows the people that follow that user.  If
+        given --long, shows the IDs for each person.  You may need to
+        use --all to get a complete list, but again this may generate
+        significant traffic.
+      </para>
+    </refsect2>
+
+    <refsect2 id="twidge.commands.lsfollowing">
+      <title>lsfollowing</title>
+      <cmdsynopsis>
+        <command>twidge lsfollowing
+          <arg choice="opt"><replaceable>options</replaceable></arg>
+          <arg choice="opt"><replaceable>username</replaceable></arg>
+        </command>
+      </cmdsynopsis>
+      <para>
+        Shows a list of the people you follow.  Arguments and actions
+        are the same as with lsfollowers.
+      </para>
+    </refsect2>
+  </refsect1>
+
+  <refsect1 id="twidge.commands.action">
+    <title>Action Commands</title>
+    <para>
+      These commands perform an action on the server.
+    </para>
+
+    <refsect2 id="twidge.commands.follow">
+      <title>follow</title>
+      <cmdsynopsis>
+        <command>twidge follow <arg
+        choice="plain"><replaceable>username</replaceable></arg></command>
+      </cmdsynopsis>
+      <para>
+        This command will cause &twidge; to request that the
+        microblogging site add the given username to the list of
+        people you follow.  It is considered an error to attempt to
+        add someone you already follow.
+      </para>
+    </refsect2>
+
+    <refsect2 id="twidge.commands.unfollow">
+      <title>unfollow</title>
+      <cmdsynopsis>
+        <command>twidge unfollow <arg
+        choice="plain"><replaceable>username</replaceable></arg></command>
+      </cmdsynopsis>
+      <para>
+        This command will cause &twidge; to request that the
+        microblogging site remove the given username from the list of
+        people you follow.  It is considered an error to attempt to
+        remove someone you do not follow.
+      </para>
+    </refsect2>
 
     <refsect2 id="hpodder.commands.add">
       <indexterm><primary>Commands</primary><secondary>add</></>
