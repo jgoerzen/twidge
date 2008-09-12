@@ -324,14 +324,25 @@
         <term>--long</term>
         <listitem><para>
             The default output format shows a nickname and a message,
-            formatted nicely for display.  Using this option adds the
-            internal microblogging site's ID for the specific message,
-            and formats the output suitable for machine parsing.  The
-            horizontal tab character \t separates the three columns,
+            formatted nicely for display.  Using this option causes
+            output to include these columns: message ID, sender nick,
+            recipient nick (empty unless a direct message), update
+            text, and date created.
+            The output format is suitable for machine parsing. 
+            horizontal tab character \t separates the columns,
             and is guaranteed to appear nowhere else.  It is also
             guaranteed that \n will appear nowhere within a line when
             using -l.
-          </para></listitem>
+          </para>
+          <para>
+            The columns as presented are anticipated to remain
+            stable.  However, additional columns could be added to the
+            right of these columns in future versions of &twidge;.
+            Well-behaved parsers should be prepared to discard any
+            surplus columns to the right of those specified in this
+            document.
+          </para>
+        </listitem>
         </varlistentry>
 
       <varlistentry>
@@ -457,6 +468,35 @@
       These commands perform an action on the server.
     </para>
 
+
+    <refsect2 id="twidge.commands.dmsend">
+      <title>dmsend</title>
+      <cmdsynopsis>
+        <command>twidge dmsend</command>
+        <arg choice="plain"><replaceable>recipient</replaceable></arg>
+        <arg choice="opt"><replaceable>status</replaceable></arg>
+      </cmdsynopsis>
+      <para>
+        Causes &twidge; to send a new direct message to the designated
+        recipient.  If a
+        status is given on the command line, it must be presented as a
+        single argument to &twidge; by the use of shell quoting if
+        needed.  If no status is given on the command line, a single
+        line will be read from stdin and used as the status.
+      </para>
+      <para>
+        The maximum length of updates on various microblogging sites
+        is 140 characters.  Twidge will abort with an error if your
+        update attempt exceeds that length.
+      </para>
+      <para>
+        By default, Twidge will attempt to shorten URLs in your
+        updates via the TinyURL.com service.  You can disable this by
+        setting shortenurls = no in the [DEFAULT] or [dmsend] section of your
+        configuration file.
+      </para>
+    </refsect2>
+
     <refsect2 id="twidge.commands.follow">
       <title>follow</title>
       <cmdsynopsis>
@@ -514,7 +554,7 @@
       <para>
         By default, Twidge will attempt to shorten URLs in your
         updates via the TinyURL.com service.  You can disable this by
-        setting shortenurls = no in the [update] section of your
+        setting shortenurls = no in the [DEFAULT] or [update] section of your
         configuration file.
       </para>
     </refsect2>
@@ -570,7 +610,6 @@ password = secret
 ; Path to server API interface -- no trailing slash
 urlbase = https://twitter.com
 
-[update]
 shortenurls = yes
 
 ; Last IDs seen by different commands.  Written to with -s.
@@ -660,19 +699,23 @@ lastid = 914881241
               [DEFAULT] so as to impact all commands.  Defaults to
               /usr/sbin/sendmail.
             </para></listitem>
+        </varlistentry>
+        
+        <varlistentry><term>shortenurls</term>
+          <listitem>
+            <para>
+              You may specify <literal>shortenurls</literal> in the
+              <literal>[update]</literal> section.  It defaults to yes.  If
+              set to no, will cause &twidge; to omit its attempt to shorten
+              URLs in your updates via <literal>tinyurl.com</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
       </variablelist>
 
     </refsect2>
 
-    <refsect2 id="twidge.options.update">
-      <title>Update option</title>
-      <para>
-        You may specify <literal>shortenurls</literal> in the
-        <literal>[update]</literal> section.  It defaults to yes.  If
-        set to no, will cause &twidge; to omit its attempt to shorten
-        URLs in your updates via <literal>tinyurl.com</literal>.
-      </para>
-    </refsect2>
   </refsect1>
               
 
