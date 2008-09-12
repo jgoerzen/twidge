@@ -198,21 +198,21 @@ handleGeneric pfunc section cp args xmlstr =
 
 procStatuses :: Content -> Message
 procStatuses item = 
-    Message {sId = s (tag "id"),
-             sSender = s (tag "user" /> tag "screen_name"),
+    Message {sId = s (tag "id") item,
+             sSender = s (tag "user" /> tag "screen_name") item,
              sRecipient = "",
-             sText = s (tag "text"),
-             sDate = s (tag "created_at")}
+             sText = s (tag "text") item,
+             sDate = s (tag "created_at") item}
 
 s f item = sanitize $ contentToString (keep /> f /> txt $ item)
 
 procDM :: Content -> Message
 procDM item =
-    Message {sId = s (tag "id"),
-             sSender = s (tag "sender_screen_name"),
-             sRecipient = s (tag "recipient_screen_name"),
-             sText = s (tag "text"),
-             sDate = s (tag "created_at")}
+    Message {sId = s (tag "id") item,
+             sSender = s (tag "sender_screen_name") item,
+             sRecipient = s (tag "recipient_screen_name") item,
+             sText = s (tag "text") item,
+             sDate = s (tag "created_at") item}
 
 getStatuses = tag "statuses" /> tag "status"
 getDMs = tag "direct_message" /> tag "direct-messages"
