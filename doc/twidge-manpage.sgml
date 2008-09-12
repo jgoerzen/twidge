@@ -352,6 +352,13 @@
             generated and included.  In addition, headers beginning
             with X-Twidge- will be added, with various metadata.
           </para>
+          <para>
+            It should be noted that a simple script could be used with
+            --exec to achieve this same purpose, but with greater
+            flexibility.
+            The functionality is built into &twidge; as well for
+            convenience.
+          </para>
         </listitem>
       </varlistentry>
 
