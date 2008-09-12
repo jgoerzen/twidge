@@ -407,6 +407,14 @@
       </para>
     </refsect2>
 
+    <refsect2 id="twidge.commands.setop">
+      <title>setup</title>
+      <cmdsynopsis><command>twidge setup</command></cmdsynopsis>
+      <para>
+        Enters the interactive first-time setup tool.
+      </para>
+    </refsect2>
+
     <refsect2 id="twidge.commands.unfollow">
       <title>unfollow</title>
       <cmdsynopsis>
@@ -421,391 +429,34 @@
       </para>
     </refsect2>
 
-    <refsect2 id="hpodder.commands.add">
-      <indexterm><primary>Commands</primary><secondary>add</></>
-      <indexterm><primary>Podcasts</><secondary>Adding to hpodder</></>
-      <title>add</title>
+    <refsect2 id="twidge.commands.update">
+      <title>update</title>
       <cmdsynopsis>
-        <command>hpodder add</command>
-        <arg choice="plain"><replaceable>URL</replaceable></arg>
+        <command>twidge update <arg
+        choice="opt"><replaceable>status</replaceable></arg></command>
       </cmdsynopsis>
       <para>
-        This command is used to add a new podcast to &twidge;.  You
-        can must provide the URL (link) to the podcast you want to add
-        to this command.  For example:
-      </para>
-      <para><command>hpodder add
-      http://soundofhistory.complete.org/files_soh/podcast.xml</command></para>
-      <para>
-        A podcast can be later removed with <command>hpodder
-        rm</command>.  You can adjust its URL later with
-        <command>hpodder mv</command>.
+        Causes &twidge; to post a new status to the server.  If a
+        status is given on the command line, it must be presented as a
+        single argument to &twidge; by the use of shell quoting if
+        needed.  If no status is given on the command line, a single
+        line will be read from stdin and used as the status.
       </para>
     </refsect2>
+  </refsect1>
+
+  <refsect1 id="twidge.commands.other">
+    <title>Other Command</title>
     
-    <refsect2 id="hpodder.commands.catchup">
-      <indexterm><primary>Commands</><secondary>catchup</></>
-      <indexterm><primary>Episodes</><secondary>Skipping</></>
-      <title>catchup</title>
-      <cmdsynopsis>
-        <command>hpodder catchup</command>
-        <arg choice="opt">-n <replaceable>number</replaceable></arg>
-      </cmdsynopsis>
-      <para>
-        Running <command>catchup</command> will cause &twidge; to
-        mark all but the most recent episodes as Skipped.  This will
-        prevent &twidge; from automatically downloading such
-        episodes.
-      </para>
-      <variablelist>
-        <varlistentry><term>-n <replaceable>NUM</replaceable></term>
-          <term>--number-eps=<replaceable>NUM</replaceable></term>
-          <listitem><para>
-              By default, only the single most recent episode is exempted
-              from being "caught up".  If you want to exclude more
-              episodes from being "caught up" -- and thus allow more
-              to be downloaded -- use this option to allow more
-              episodes to remain downloadable.
-            </para>
-          </listitem>
-        </varlistentry>
-
-      </variablelist>
-    </refsect2>
-
-    <refsect2 id="hpodder.commands.disable">
-      <indexterm><primary>Commands</><secondary>disable</></>
-      <title>disable</title>
-      <cmdsynopsis>
-        <command>hpodder disable</command>
-        <arg choice="plain" rep="repeat">castid</>
-      </cmdsynopsis>
-      <para>
-        This command will flag podcasts as disabled.  Podcasts flagged
-        disabled will be skipped during an <command>update</command>,
-        <command>download</command>, or <command>fetch</command>.
-        They will still participate with all other commands.
-        <command>hpodder lscasts</command> will notify you of which
-        podcasts are disabled.
-      </para>
-      <para>
-        This can be useful if you want to stop following a podcast for
-        awhile, but think you may want to come back to it in the
-        future.  The podcast URL and your download history will remain
-        in the &twidge; database, unlike with <command>hpodder
-        rm</command>.
-      </para>
-      <para>
-        Disabled podcasts can be re-enabled with <command>hpodder
-        enable</command>.
-      </para>
-      <para>
-        One or more podcast IDs are required; see the section below on
-        specifying podcast IDs for more details.
-      </para>
-    </refsect2>
-
-    <refsect2 id="hpodder.commands.download">
-      <indexterm><primary>Commands</><secondary>download</></>
-      <indexterm><primary>Episodes</><secondary>Downloading</></>
-      <title>download</title>
-      <cmdsynopsis>
-        <command>hpodder download</command>
-      </cmdsynopsis>
-      <para>
-        The <command>download</command> command is used to actually
-        perform the download of podcasts to your system.  By default,
-        <command>download</command> will download all available
-        episodes.  You can, however, specify only certain podcasts to
-        process; if you do, all available episodes for only those
-        podcasts will be downloaded.
-      </para>
-    </refsect2>
-
-    <refsect2 id="hpodder.commands.enable">
-      <indexterm><primary>Commands</><secondary>enable</></>
-      <title>enable</title>
-      <cmdsynopsis>
-        <command>hpodder enable</command>
-        <arg choice="plain" rep="repeat">castid</>
-      </cmdsynopsis>
-      <para>
-        This command will flag podcasts as enabled.  This is the
-        default state.  See <command>hpodder disable</command> for
-        information on manually disabling podcasts and what it means
-        to be disabled.
-      </para>
-      <para>
-        One or more podcast IDs are required; see the section below on
-        specifying podcast IDs for more details.
-      </para>
-    </refsect2>
-
-    <refsect2 id="hpodder.commands.fetch">
-      <indexterm><primary>Commands</><secondary>fetch</></>
-      <indexterm><primary>Podcasts</><secondary>Updating</></>
-      <indexterm><primary>Episodes</><secondary>Downloading</></>
-      <title>fetch</title>
-      <cmdsynopsis><command>hpodder fetch</command></cmdsynopsis>
-      <para>
-        The <command>fetch</command> is the main worker command for
-        &twidge;.  It is simply equivolent to <command>hpodder
-        update</command> followed by <command>hpodder
-        download</command>.  That is, it will scan all podcasts for
-        new episodes, then download any pending episodes.
-      </para>
-      <para>
-        This command is the default command if no command is given on
-        the &twidge; command line.
-      </para>
-      <para>
-        As a special feature, the first time that
-        <command>fetch</command> is invoked, it will execute the new
-        user setup procedure.
-      </para>
-    </refsect2>
-
-    <refsect2 id="hpodder.commands.import-ipodder">
-      <indexterm><primary>Commands</><secondary>import-ipodder</></>
-      <indexterm><primary>ipodder</><secondary>Converting From</></>
-      <title>import-ipodder</title>
-      <cmdsynopsis><command>hpodder import-ipodder</command>
-        <arg
-      choice="opt">--from=<replaceable>PATH</replaceable></arg></cmdsynopsis>
-      <para>
-        With this command, &twidge; can import both your podcast list
-        and your download history from ipodder or CastPodder.
-        &twidge; will import all podcasts referenced there, with the
-        exception that any podcasts that are already in &twidge;'s
-        database will be entirely untouched.
-      </para>
-      <variablelist>
-        <varlistentry><term>--from=<replaceable>PATH</replaceable></term>
-          <listitem><para>By default, &twidge; will look for the ipodder
-            database in the <filename>.ipodder</filename> directory in
-            the user's home directory.  This may not always be correct:
-            for instance, on non-Unix platforms or when using
-            CastPodder, this directory will be different.  With this
-            option, you can tell &twidge; where to find the
-            ipodder/CastPodder database.
-            </para></listitem>
-        </varlistentry>
-      </variablelist>
-    </refsect2>
-
-    <refsect2 id="hpodder.commands.lscasts">
-      <indexterm><primary>Commands</><secondary>lscasts</></>
-      <indexterm><primary>Podcasts</><secondary>Listing</></>
-      <title>lscasts</title>
-      <cmdsynopsis><command>hpodder lscasts</command>
-        <arg choice="opt">-l</arg></cmdsynopsis>
-      <para>
-        This command will display all podcasts that are configured
-        within &twidge;.  For each podcast, you will see the podcast
-        ID, the number of pending downloads, the total number of
-        episodes ever seen by &twidge;, and the title of the podcast.
-      </para>
-      <variablelist>
-        <varlistentry><term>-l</term>
-          <listitem><para>
-              If you add the <option>-l</option> option, then
-          <command>lscasts</command> will also display the feed URL
-          for each podcast.
-            </para></listitem>
-        </varlistentry>
-      </variablelist>
-    </refsect2>
-
-    <refsect2 id="hpodder.commands.lscommands">
+    <refsect2 id="twidge.commands.lscommands">
       <indexterm><primary>Commands</><secondary>lscommands</></>
       <title>lscommands</title>
-      <cmdsynopsis><command>hpodder lscommands</command></cmdsynopsis>
+      <cmdsynopsis><command>twidge lscommands</command></cmdsynopsis>
       <para>
         This command will display a list of all available &twidge;
         commands along with a brief description of each.
       </para>
     </refsect2>
-
-    <refsect2 id="hpodder.commands.lsepisodes">
-      <indexterm><primary>Commands</><secondary>lsepisodes</></>
-      <indexterm><primary>Commands</><secondary>lseps</></>
-      <indexterm><primary>Episodes</><secondary>Listing</></>
-      <title>lsepisodes / lseps</title>
-      <cmdsynopsis><command>hpodder lsepisodes</command>
-        <arg choice="opt">-l</arg>
-      </cmdsynopsis>
-      <cmdsynopsis><command>hpodder lseps</command>
-        <arg choice="opt">-l</arg>
-      </cmdsynopsis>
-      <para>
-        The <command>lsepisodes</command> command will display a list
-        of every episode known to &twidge;.  The output will include
-        the ID of the podcast to which the episode belongs, the
-        episode ID, the status of the episode, and the title of the
-        episode.
-      </para>
-      <para>
-        <command>lseps</command> is simply an alias for
-        <command>lsepisodes</command> and performs in the same manner.
-      </para>
-      <variablelist>
-        <varlistentry><term>-l</term>
-          <listitem><para>
-              If you add the <option>-l</option> option, then
-          <command>lsepisodes</command> includes the download URL for
-          each episode in its output.</para></listitem></varlistentry>
-      </variablelist>
-    </refsect2>
-    
-    <refsect2 id="hpodder.commands.rm">
-      <indexterm><primary>Commands</><secondary>rm</></>
-      <indexterm><primary>Podcasts</><secondary>Removing</></>
-      <title>rm</title>
-      <cmdsynopsis><command>hpodder rm</command>
-        <arg choice="plain" rep="repeat">castid</>
-      </cmdsynopsis>
-      <para>
-        This command will remove all knowledge about a given podcast
-        from hpodder, including all entries about that podcast in the
-        episode database.
-      </para>
-      <para>
-        One or more podcast IDs are required; see the section below on
-        specifying podcast IDs for more details.  Unlike most other
-        &twidge; commands that accept an empty podcast ID list to
-        mean all podcasts, <command>rm</command> does not because of
-        the destructive potential of such a request.
-      </para>
-    </refsect2>
-
-    <refsect2 id="hpodder.commands.setstatus">
-      <indexterm><primary>Commands</><secondary>setstatus</></>
-      <indexterm><primary>Episodes</><secondary>Status Flags</><tertiary>Updating</></>
-      <title>setstatus</title>
-      <cmdsynopsis><command>hpodder setstatus</command>
-        <arg choice="plain">--castid=<replaceable>ID</replaceable></arg>
-        <arg choice="plain">--status=<replaceable>STATUS</replaceable></arg>
-        <arg choice="plain" rep="repeat">epid</arg></cmdsynopsis>
-      <para>
-        The <command>setstatus</command> command is used to manually
-        adjust the status flags on individual episodes.  You can use
-        it to flag individual episodes for downloading (or not).
-      </para>
-      <para>
-        You must specify at least one episode ID.  <emphasis>Note that
-        the plain IDs given to this command are episode IDs</emphasis>, and not
-        podcast IDs like other commands.
-      </para>
-      <para>
-        Statuses are case-sensitive and must be given with a leading
-        uppercase letter and trailing lowercase letters.  Available
-        status are given later in this manual.
-      </para>
-        
-    </refsect2>
-
-    <refsect2 id="hpodder.commands.settitle">
-      <indexterm><primary>Commands</><secondary>settitle</></>
-      <indexterm><primary>Podcasts</><secondary>Title</></>
-      <title>settitle</title>
-      <cmdsynopsis><command>hpodder settitle</command>
-        <arg choice="plain">--castid=<replaceable>ID</replaceable></arg>
-        <arg choice="plain">--title=<replaceable>TITLE</replaceable></arg>
-      </cmdsynopsis>
-      <para>
-        The <command>settitle</command> is used to manually set the
-        title of a given podcast.  Normally, &twidge; will
-        automatically get the title from the podcast's XML feed.
-        Sometimes the XML feed for the podcast may not provide a
-        useful title.  In those situations, you can use
-        <command>settitle</command> to manually override the title.
-      </para>
-      <para>
-        Please note that if you want to set the title to a name that
-        contains spaces, you will need to quote it for the shell.
-      </para>
-    </refsect2>
-
-
-    <refsect2 id="hpodder.commands.update">
-      <indexterm><primary>Commands</><secondary>update</></>
-      <indexterm><primary>Podcasts</><secondary>Updating</></>
-      <title>update</title>
-      <cmdsynopsis><command>hpodder update</command></>
-      <para>
-        The update command will cause &twidge; to look at each
-        podcast feed.  It will download the latest copy of the feed
-        and compare the episodes mentioned in the feed to its internal
-        database of episodes.  For any episode mentioned in the feed
-        that is not already in the internal database of episodes,
-        &twidge; will add it to its database and set its status to
-        Pending.
-      </para>
-    </refsect2>
-        
-  </refsect1>
-
-  
-  <refsect1 id="hpodder.castids">
-    <title>Specifying podcast IDs</title>
-    <indexterm><primary>Podcasts</><secondary>IDs</></>
-    <para>
-      Each podcast in &twidge; gets a numeric ID.  This ID is
-      automatically assigned by &twidge; and is not changable.  The
-      ID is given out when a podcast is added with the
-      <command>add</command> command, or with the
-      <command>lscasts</command> or <command>lsepisodes</command>
-      commands.
-    </para>
-    <para>
-      The ID is designed as a constant way to refer to a particular
-      podcast.  A podcast's title may change, or even its feed URL,
-      but the ID of a podcast will never change.  It also is short and
-      easy to type on the command line.
-    </para>
-    <para>
-      Several commands can take a list of podcast IDs.  If no IDs are
-      given, the commands will default to operating on all podcasts.
-      One or more IDs can be given, separated by spaces.  If IDs are
-      given, then the commands will operate only on the podcasts with
-      the given IDs.
-    </para>
-    <para>
-      The special keyword <option>all</option> may be given, which
-      tells the system to operate on all podcasts.  This yields the
-      same result as giving no IDs at all.
-    </para>
-  </refsect1>
-
-  <refsect1 id="hpodder.statuses">
-    <indexterm><primary>Episodes</><secondary>Status Flags</></>
-    <title>Status Flags in hpodder</title>
-    <para>
-      Several places in this manual, you've seen &twidge; statuses
-      mentioned.  Each episode in &twidge; has an associated status.
-      The statuses are:
-    </para>
-    <variablelist>
-      <varlistentry><term>Pending</term>
-        <listitem><para>The given episode is ready to
-        download</para></listitem>
-      </varlistentry>
-      <varlistentry><term>Downloaded</term>
-        <listitem><para>The given episode has already been
-        downloaded by &twidge;</para></listitem>
-      </varlistentry>
-      <varlistentry><term>Error</term>
-        <listitem><para>An error occured while downloading this
-        episode.  It will not be downloaded again unless the flag is
-        set back to Pending.</para></listitem>
-      </varlistentry>
-      <varlistentry><term>Skipped</term>
-        <listitem><para>The user has requested that this episode not
-        be downloaded.  Commands such as <command>catchup</command> or
-            <command>import-ipodder</command> could cause this.
-          </para></listitem>
-      </varlistentry>
-    </variablelist>
   </refsect1>
 
   <refsect1 id="hpodder.error">
