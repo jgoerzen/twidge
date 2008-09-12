@@ -265,6 +265,7 @@
       Several commands can display updates from yourself or others.
       They all share a common syntax and common set of options.  The
       commands are <command>lsarchive</command>,
+      <command>lsdm</command>, <command>lsdmarchive</command>,
       <command>lsrecent</command>, and <command>lsreplies</command>.
       Here are the common options:
     </para>

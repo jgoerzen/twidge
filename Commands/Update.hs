@@ -40,15 +40,15 @@ update_worker x cp ([], []) =
     do l <- getLine
        update_worker x cp ([], [l])
 update_worker _ cp ([], [status]) =
-    do poststatus <- procStatus cp "update"
+    do poststatus <- procStatus cp "update" status
        xmlstr <- sendAuthRequest cp "/statuses/update.xml" [] 
                  [("source", "Twidge"), ("status", poststatus)]
        debugM "update" $ "Got doc: " ++ xmlstr
 update_worker _ _ _ =
     permFail "update: syntax error; see twidge update --help"
 
-procStatus cp status =
-    do poststatus <- case get cp "update" "shortenurls" of
+procStatus cp section status =
+    do poststatus <- case get cp section "shortenurls" of
                        Right True -> shortenUrls status
                        _ -> return status
        when (length poststatus > 140)
@@ -66,7 +66,7 @@ dmsend_worker x cp ([], [r]) =
     do l <- getLine
        dmsend_worker x cp ([], [r, l])
 dmsend_worker x cp ([], [recipient, status]) =
-    do poststatus <- procStatus cp "dmsend"
+    do poststatus <- procStatus cp "dmsend" status
        xmlstr <- sendAuthRequest cp "/direct_messages/new.xml" []
                  [("source", "Twidge"), 
                   ("text", poststatus), ("user", recipient)]

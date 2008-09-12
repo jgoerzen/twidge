@@ -126,7 +126,7 @@ lsdm = simpleCmd "lsdm" "List recent direct messages to you"
        (stdopts ++ sinceopts) (paginated (dm_worker "lsdm" 
                                           "/direct_messages"))
 
-lsdmarchive = simpleCmd "lsdm" "List recent direct messages you sent"
+lsdmarchive = simpleCmd "lsdmarchive" "List recent direct messages you sent"
               lsdmarchive_help
               (stdopts ++ sinceopts) (paginated (dm_worker "lsdmarchive"
                                                  "/direct_messages/sent"))
