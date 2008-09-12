@@ -27,6 +27,8 @@ import Text.XML.HaXml hiding (when)
 import Download
 import FeedParser
 import Control.Monad(when)
+import Text.Regex.Posix
+import Data.ConfigFile
 
 i = infoM "update"
 
@@ -41,12 +43,33 @@ update_worker _ cp ([], [status]) =
     do when (length status > 140)
             (permFail $ "Your status update was " ++ show (length status) ++
                       " characters; max length 140")
+       poststatus <- case get cp "update" "shortenurls" of
+                       Right True -> shortenUrls status
+                       _ -> return status
        xmlstr <- sendAuthRequest cp "/statuses/update.xml" [] 
-                 [("source", "Twidge", ("status", status)]
+                 [("source", "Twidge"), ("status", poststatus)]
        debugM "update" $ "Got doc: " ++ xmlstr
        
 update_worker _ _ _ =
     permFail "update: syntax error; see twidge update --help"
+
+shortenUrls "" = return ""
+shortenUrls status = 
+ do debugM "update" $ "shortenUrls considering: " ++ show status
+    if match == ""
+       then return before       -- No match means no "after"
+       else do tiny <- mkTinyURL match
+               debugM "update" $ "Got tinyurl: " ++ show tiny
+               rest <- shortenUrls after
+               return $ 
+                      before ++ (if (length tiny < length match)
+                                    then tiny else match)
+                             ++ rest
+    where (before, match, after) = status =~ pat
+          pat = "(http|ftp)://[^ ]+"
+
+mkTinyURL url = 
+    simpleDownload $ "http://tinyurl.com/api-create.php?url=" ++ url
 
 update_help =
  "Usage: twidge update [status]\n\n\

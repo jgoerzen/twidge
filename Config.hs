@@ -40,10 +40,10 @@ import System.Posix.Files(rename)
 
 getDefaultCP =
     do return $ forceEither $ 
-              do -- cp <- add_section startingcp "general"
-                 -- cp <- set cp "general" "showintro" "yes"
-                 cp <- set startingcp "DEFAULT" "urlbase" "https://twitter.com"
+              do cp <- set startingcp "DEFAULT" "urlbase" "https://twitter.com"
                  cp <- set cp "DEFAULT" "sendmail" "/usr/sbin/sendmail"
+                 cp <- add_section cp "update"
+                 cp <- set cp "update" "shortenurls" "yes"
                  return cp
 
 startingcp = emptyCP {accessfunc = interpolatingAccess 10}

@@ -29,7 +29,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 -}
 
-module Download(sendAuthRequest) where
+module Download(sendAuthRequest, simpleDownload) where
 import System.Cmd.Utils
 import System.Posix.Process
 import Config
@@ -54,6 +54,9 @@ curlopts = ["-A", "twidge v1.0.0; Haskell; GHC", -- Set User-Agent
             "--retry", "2",     -- Retry twice
             "-f"                -- Fail on server errors
            ]
+
+simpleDownload :: String -> IO String
+simpleDownload url = run (curl, curlopts ++ [url])
 
 sendAuthRequest :: ConfigParser -> String -> [(String, String)] -> [(String, String)] -> IO String
 sendAuthRequest cp url getopts postoptlist =
