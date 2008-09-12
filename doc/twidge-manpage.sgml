@@ -1,24 +1,24 @@
-  <refentry id="hpodder.man">
-  <indexterm><primary>hpodder</><secondary>Reference For</></>
+  <refentry id="twodge.man">
+  <indexterm><primary>twidge</><secondary>Reference For</></>
   <refentryinfo>
     <address><email>jgoerzen@complete.org</email></address>
     <author><firstname>John</firstname><surname>Goerzen</surname></author>
   </refentryinfo>
 
   <refmeta>
-    <refentrytitle>hpodder</refentrytitle>
+    <refentrytitle>twidge</refentrytitle>
     <manvolnum>1</manvolnum>
     <refmiscinfo>John Goerzen</refmiscinfo>
   </refmeta>
 
   <refnamediv>
-    <refname>hpodder</refname>
-    <refpurpose>Scan and download podcasts</refpurpose>
+    <refname>twidge</refname>
+    <refpurpose>Microblogging client for Twitter, Identica</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>hpodder</command>
+      <command>twidge</command>
       <arg choice="opt">-d</arg>
       <arg choice="opt"><replaceable>command</replaceable></arg>
       <arg choice="opt"><replaceable>command_args</replaceable></arg>
