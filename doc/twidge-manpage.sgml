@@ -351,6 +351,12 @@
       </varlistentry>
     </variablelist>
 
+    <para>
+      Some of these options don't make sense together; for instance,
+      --long, --exec, and --mailto are mutually exclusive.  Results
+      are undefined if you use such options simultaneously.
+    </para>
+
     <refsect2 id="twidge.commands.lsarchive">
       <title>lsarchive</title>
       <para>
