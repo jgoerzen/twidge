@@ -30,32 +30,48 @@
     </cmdsynopsis>
   </refsynopsisdiv>
 
-  <refsect1 id="hpodder.description">
+  <refsect1 id="twidge.description">
     <title>Description</title>
-    <indexterm><primary>Podcasts</primary></indexterm>
-    <indexterm><primary>Podcatcher</primary></indexterm>
     <para>
-      Podcasting
-      is a method of publishing radio-like programs on the
-      Internet.  Through podcasting, almost anyone can produce their
-      own audio program, and publish episodes of it as often or as
-      rarely as they like.
+      &twidge; is a client for microblogging sites such as 
+      <ulink url="http://twitter.com/">Twitter</ulink> and
+      <ulink url="http://identi.ca/">Identica</ulink> (identi.ca).
+      Microblogging sites let you post short one-paragraph updates,
+      follow the updates that your friends post, and interact with
+      everyone in the site in a conversation style.
+    </para>
+    <para>
+      &twidge; is a client to make working with microblogging sites
+      faster and easier.  It is extremely versatile, and can be
+      customized to work the way you want to work, and combined with
+      other tools to do just about anything.
+    </para>
+    <para>
+      &twidge; can be used quite nicely interactively from the shell.
+      It is useful directly as-is, and with simple shell aliases can
+      make a highly efficient system to do exactly what you want.  It
+      is perfectly capable of being your only client for
+      microblogging.
+    </para>
+    <para>
+      &twidge; also can be used in an automated way, via
+      <command>cron(1)</command>, or it can even integrate with your
+      email system.
+    </para>
+    <para>
+      A full list of &twidge; features, along with numerous
+      suggestions on how to use it, can be found at the &twidge;
+      website at <ulink
+      url="http://software.complete.org/twidge"></ulink>.
+    </para>
+    
+    <para>
+      But, if you'd like to get going RIGHT NOW, skip to the Quick
+      Start section below.  For now, I'll summarize a few &twidge;
+      features; a more comprehensive list is on the website.
     </para>
 
-    <para>
-      To listen to podcasts, you need a program to download the
-      podcast's episodes from the Internet.  Such a program is
-      called a podcatcher (or sometimes a podcast aggregator).
-      &twidge; is this program.
-    </para>
-
-    <para>
-      If you'd like to get going RIGHT NOW, skip on down to the
-      Quick Start section.  Otherwise, let's take a look at the
-      features of &twidge;.
-    </para>
-
-    <refsect2 id="hpodder.features">
+    <refsect2 id="twidge.features">
       <title>Feature List</title>
       <itemizedlist>
         <listitem><para>Convenient, easy to learn, and fast command-line
@@ -63,136 +79,52 @@
             advanced things are possible)</para>
         </listitem>
 
-        <listitem><para>Automatic discovery of feed metadata such as title</para>
-        </listitem>
+        <listitem><para>Compatible with any microblogging service that
+            implements the Twitter API.  Tested with Twitter and
+            Identica (identi.ca).  Should be compatible with any other
+            system.
+          </para></listitem>
 
-        <listitem><para>Full history database for accurate
-            prevention of duplicate downloads and tracking of new episodes</para>
-        </listitem>
+        <listitem><para>Full support for reading the activity of your
+            friends, replies to you, and your own
+            activity.</para></listitem>
 
-        <listitem><para>Conversion tools to convert your existing
-            feed list and history from other applications to
-            &twidge;.  Supported applications and formats include:
-            castpodder and ipodder.
-          </para>
-        </listitem>
+        <listitem><para>Optional capability to remember what you have
+            seen already and suppress those updates in future
+            runs.</para></listitem>
 
-        <listitem><para>Most operations can work fully automatically
-            across your entire podcast database, or they can work
-            manually as well.</para>
-        </listitem>
+        <listitem><para>Optional integration with your email system --
+            send and receive updates via email.</para></listitem>
 
-        <listitem><para>Automatic updating of ID3 (v1 and v2) tags
-            based on metadata in the podcast itself.  This important
-            feature is available through iTunes but is often missed by
-            other podcatchers.</para>
-        </listitem>
+        <listitem><para>Specifically designed to be friendly to use in
+            shell scripts.</para></listitem>
 
-        <listitem><para>&twidge; operations can be easily scripted
-            or scheduled using regular operating system tools.</para>
-        </listitem>
-
-        <listitem><para>Fully customizable naming scheme for
-            downloaded episodes, including a name collision detection
-            and workaround algorithm.</para>
-        </listitem>
-
-        <listitem><para>Automatic support for appending .mp3
-            extensions to MP3 files that lack it.</para>
-        </listitem>
-
-        <listitem><para>Numerous database and history inquiry tools</para>
-        </listitem>
+        <listitem><para>Shell scripting makes it easy to do many
+            things, such as scheduling future updates (with
+            <command>at</command>), ignoring certain updates
+            (with <command>grep</command>), etc.</para></listitem>
+        
+        <listitem><para>Easy use of multiple accounts by having
+            multiple configuration profiles.   Mechanism lends itself
+            to shell aliases and tools.</para></listitem>
 
         <listitem><para>Small, minimalist footprint</para>
         </listitem>
 
-        <listitem><para>Power users and developers can interact
-            directly with the embedded Sqlite3 database used by
-            &twidge;.  The database has a simple schema that is
-            developer-friendly.</para>
-        </listitem>
+        <listitem><para>Output formats are easily parsed.  Input
+            formats are easily generated.  Configuration file format is
+            liberal and easy to generate.
+          </para></listitem>
 
-        <listitem><para>Support for resuming interrupted downloads
-            of podcasts</para>
-        </listitem>
-
-        <listitem><para>&twidge; is SAFE and is designed with data
-            integrity in mind from the beginning.  It should be
-            exceedingly difficult to lose a podcast episode, even in the
-            event of a power failure.
-          </para>
-        </listitem>
-
+        <listitem><para>Robust error detection and recovery
+        throughout.
+          </para></listitem>
       </itemizedlist>
-    </refsect2>
-
-    <refsect2 id="hpodder.mo">
-      <title>Method of Operation</title>
-      <para>
-        The basic pattern of operation with &twidge; is to set up
-        each podcast you want to receive.  Each day (or hour, or
-        whatever), &twidge; will go out and update its database by
-        pulling in the latest episode lists from the podcast feed.
-        Then, &twidge; will proceed to download any episodes that
-        you haven't already downloaded.  After each episode is
-        downloaded, &twidge; will note that fact so it isn't ever
-        downloaded again.
-      </para>
-      <para>
-        Let's look at this in a bit more detail.
-      </para>
-      <para>
-        &twidge; maintains two tables in a database.  One table
-        lists all the podcasts you know about, as well as where the
-        podcast's feed is to be downloaded from.  The feed is a file
-        that the podcast's author publishes.  It lists all the
-        current episodes of the podcast, and some information about
-        them.  Data is added to this table with the <command>hpodder
-          add</command> command.
-      </para>
-      <para>
-        The second table lists each episode for a given podcast,
-        along with the location from which the episode can be
-        downloaded and some other information about the episode
-        (such as its title).  Information in this table is added by
-        <command>hpodder update</command> and updated by
-        <command>hpodder download</command> or 
-        <command>hpodder catchup</command>.
-      </para>
-      <para>
-        When you first fire up &twidge;, it will read its
-        configuration file from
-        <filename>~/.hpodder/hpodder.conf</filename>.
-        What happens next depends on the command.
-      </para>
-      <para>
-        For <command>hpodder update</command>, the program will read
-        information about all your podcasts.  It will download each
-        feed.  Once it has the feed, it will look at each episode
-        and compare them to the database.  If a given episode is
-        already in the database, it is ignored.  Any new episodes
-        are recorded in the database, and set to Pending so they
-        will be downloaded on the next download run.
-      </para>
-      <para>
-        For <command>hpodder download</command>, the program will
-        read information about all your episodes.  For each episode
-        marked Pending, the program will download the episode.  It
-        will then update the episode's ID3 tags based on the podcast
-        feed.  Finally, it will move the episode in-place
-        atomically.  Only after all that has been done will
-        &twidge; mark the episode as Downloaded in the database.
-        In this way, no episode is visible to outside tools until it
-        is completely downloaded in its final form, so you can
-        safely play any visible program in your download directory
-        even as downloads are happening.
-      </para>
     </refsect2>
 
   </refsect1>
 
-  <refsect1 id="hpodder.quickstart">
+  <refsect1 id="twidge.quickstart">
     <title>Quick Start</title>
     <para>
       This section will describe how a first-time &twidge; user can
@@ -204,34 +136,42 @@
       source distribution.
     </para>
     <para>
-      To get started, simply run <command>hpodder</command> at your
+      To get started, simply run <command>twidge setup</command> at your
       shell prompt.  &twidge; will lead you through the first-time
       configuration -- which is only two questions and completely
       self-explanatory!
     </para>
     <para>
-      After this, whenever you want to download the latest episodes
-      for your podcast, just run <command>hpodder</command> again.
+      Now, let's start exploring.  <command>twidge lsrecent
+      -su</command> will show you the 20 most recent updates from the
+      people you follow.  After the first time, it will remember what
+      you've seen and only show you new updates.  In place of
+      <command>lsrecent</command>, you could substitue
+      <command>lsreplies</command> to replies to you.  You can also
+      run <command>twidge lsrecent --help</command>, or refer to this
+      document, for more details on the command.  In short, -s tells
+      the system to save what you've seen, and -u tells it to only
+      show you unseen items.
     </para>
     <para>
-      At some point, you'll want to add more podcasts to &twidge;.
-      To do that, just run a command such as:
-    </para>
-    <para><command>hpodder add
-        <replaceable>http://www.example.com/feed.xml</replaceable></command></para>
-    <para>
-      Just replace the example.com URL here with the real URL of the
-      feed you want to add.  Then run <command>hpodder
-        update</command>.  If the podcast you've just added has a
-      whole bunch of episodes, you may not want to download them
-      all.  In that case, run <command>hpodder catchup
-        <replaceable>id</replaceable></command>, where
-      <replaceable>id</replaceable> is the podcast number that
-      &twidge; gave your new podcast when you added it.
+      You can subscribe to updates from friends by running
+      <command>twidge follow
+      <replaceable>nick</replaceable></command>.  To subscribe to
+      updates for &twidge; itself, you'd run <command>twidge follow
+      unixtwidge</command>.  If you've had enough of updates from
+      someone, just use the <command>twidge unfollow</command> command.
     </para>
     <para>
-      Again, from here on, you can just run
-      <command>hpodder</command> to download all your new episodes.
+      Now, how about posting your own updates?  Just type
+      <command>twidge update</command>.  Type your update, and press
+      Enter when done.  Your update may scroll past the end of the
+      screen; don't worry about it.  Just don't hit Enter until you're
+      done.  You can also pass your update on the command line, taking
+      care to quote it if it contains spaces or shell characters.
+    </para>
+    <para>
+      That's the quick tour.  For many more examples, refer to the
+      website.
     </para>
   </refsect1>
 
