@@ -358,10 +358,9 @@
     <refsect2 id="twidge.commands.lsfollowers">
       <title>lsfollowers</title>
       <cmdsynopsis>
-        <command>twidge lsfollowers
-          <arg choice="opt"><replaceable>options</replaceable></arg>
-          <arg choice="opt"><replaceable>username</replaceable></arg>
-        </command>
+        <command>twidge lsfollowers</command>
+        <arg choice="opt"><replaceable>options</replaceable></arg>
+        <arg choice="opt"><replaceable>username</replaceable></arg>
       </cmdsynopsis>
       <para>
         Will slow a list of people following you.  If given an
@@ -375,10 +374,9 @@
     <refsect2 id="twidge.commands.lsfollowing">
       <title>lsfollowing</title>
       <cmdsynopsis>
-        <command>twidge lsfollowing
-          <arg choice="opt"><replaceable>options</replaceable></arg>
-          <arg choice="opt"><replaceable>username</replaceable></arg>
-        </command>
+        <command>twidge lsfollowing</command>
+        <arg choice="opt"><replaceable>options</replaceable></arg>
+        <arg choice="opt"><replaceable>username</replaceable></arg>
       </cmdsynopsis>
       <para>
         Shows a list of the people you follow.  Arguments and actions
@@ -559,104 +557,53 @@ lastid = 914881241
     </refsect2>
   </refsect1>
               
-  <refsect1 id="hpodder.curl.config">
-    <indexterm><primary>Configuration File</><secondary>Curl</></>
-    <title>Curl Configuration File</title>
-    <para>
-      Internally, &twidge; uses the Curl application to perform
-      downloads across the Internet.  Curl is a remarkably flexible
-      application, and &twidge; takes advantage of that to provide
-      you with quite a few options.
-    </para>
-    <para>
-      You can customize Curl as much as you like by creating a Curl
-      configuration file in <filename>~/.hpodder/curlrc</filename>.
-      Please see <application>curl</application>(1) for more details
-      on the content of that file.
-    </para>
-    <para>Some things you can do with this file include restricting
-    the maximum download rate, suppressing or adjusting the progress
-    meter, configuring proxies, etc.
-    </para>
-  </refsect1>
 
-  <refsect1 id="hpodder.tips">
+  <refsect1 id="twidge.tips">
     <title>Tips & Hints</title>
     <para>
       Here are a few tips and hints to make &twidge; more pleasant
       for you.
     </para>
-    <refsect2 id="hpodder.tips.proxy">
+    <refsect2 id="twidge.tips.proxy">
       <title>Going Through a Proxy</title>
-      <indexterm><primary>Proxy</><secondary>Using with hpodder</></>
       <para>
-        If your connections must go through a proxy, you have two
-        options: set an environment varilable or configure the proxy
-        in your <filename>~/.hpodder/curlrc</filename>.  If you use an
-        environment variable, your settings will also impact other
+        If your connections must go through a proxy, you'll need to
+        set an environment variable.
+        If you use an
+        environment variable, your settings may will also impact other
         applications -- and that's probably what you want.  See the
         Environment section later for tips on doing that.
       </para>
     </refsect2>
 
-    <refsect2 id="hpodder.tips.ratelimit">
-      <title>Limiting Your Download Speed</title>
-      <indexterm><primary>Download Rate</><secondary>Limiting</></>
-      <para>
-        Sometimes, you may not want &twidge; to use all of your
-        available bandwidth.  Perhaps you don't want it to slow down
-        other activities too much.  To do this, just create a
-        <filename>~/.hpodder/curlrc</filename> file.  Put in it
-        something like this:
-      </para>
-      <programlisting>limit-rate=20k</programlisting>
-      <para>
-        This will limit the download rate to 20 KB/sec.
-      </para>
-      <para>
-        This rate limitation is imperfect and may not do well during
-        <command>update</command>, but it should do exactly what you
-        want during <command>download</command>.
-      </para>
-    </refsect2>
   </refsect1>
 
-  <refsect1 id="hpodder.environment">
+  <refsect1 id="twidge.environment">
     <title>Environment</title>
-    <indexterm><primary>Environment Variables</></>
     <para>
       &twidge; does not read any environment variables directly.
       However, it does pass on the environment to the
       programs it calls, such as Curl.  This can be useful for
       specifying proxies.  Please see
       <application>curl</application>(1) for more details.
-      As specified in the Per-Podcast Command Options section, &twidge;
-      will also set certain variables for post-processing of
-      downloaded files.
     </para>
   </refsect1>
 
-  <refsect1 id="hpodder.conforming">
+  <refsect1 id="twidge.conforming">
     <title>Conforming To</title>
     <itemizedlist>
       <listitem><para>The <ulink
       url="http://www.w3.org/XML/">Extensible Markup Language
             (XML)</ulink> standard (W3C)</para></listitem>
-      <listitem><para><ulink
-      url="http://blogs.law.harvard.edu/tech/rss">RSS 2.0</ulink>
-      (Harvard Law)</para></listitem>
-      <listitem><para>HTTP 1.1, FTP, plus SSL/TLS and any other
-      protocols supported by Curl</para></listitem>
-      <listitem><para>ID3 v1 and v2</para></listitem>
       </itemizedlist>
   </refsect1>
 
-  <refsect1 id="hpodder.copyright">
+  <refsect1 id="twidge.copyright">
     <title>Copyright</title>
     <indexterm><primary>Copyright</></>
     <para>
       &twidge;, all code, documentation, files, and build scripts are
-      Copyright &copy; 2006 John Goerzen.  All code, documentation,
+      Copyright &copy; 2006-2008 John Goerzen.  All code, documentation,
       sripts, and files are under the following license unless
       otherwise noted:
     </para>
@@ -690,7 +637,7 @@ lastid = 914881241
     </para>
   </refsect1>
   
-  <refsect1 id="hpodder.author">
+  <refsect1 id="twidge.author">
     <title>Author</title>
     <para>
       &twidge;, its modules, documentation, executables, and all
@@ -700,17 +647,14 @@ lastid = 914881241
     </para>
   </refsect1>
 
-  <refsect1 id="dfs.seealso">
+  <refsect1 id="twidge.seealso">
     <title>See Also</title>
     <para>
-      <application>curl</application>(1),
-      <application>id3v2</application>(1)
+      <application>curl</application>(1)
     </para>
     <para>
       The &twidge; homepage at <ulink
-      url="http://quux.org/devel/hpodder"></>,
-      a general description of podcasting at
-      <ulink url="http://en.wikipedia.org/wiki/Podcast"></>
+      url="http://software.complete.org/twidge"></>.
     </para>
   </refsect1>
   
