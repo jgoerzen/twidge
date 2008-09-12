@@ -121,7 +121,7 @@ statuses_worker section command cpath cp (args, _) page =
                  (("page", show page) : sinceArgs section cp args)
                  []
        debugM section $ "Got doc: " ++ xmlstr
-       results <- handleStatus cp args xmlstr
+       results <- handleStatus section cp args xmlstr
        when (page == 1) $
             maybeSaveList section cpath cp args 
                           ((map (\(_, _, i) -> i)) results)
@@ -154,10 +154,10 @@ lsarchive_help =
  \refer to the examples under twidge lsrecent --help, which also pertain\n\
  \to lsarchive.\n"
 
-handleStatus cp args xmlstr = 
+handleStatus section cp args xmlstr = 
     let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
         statuses = map procStatuses . getStatuses $ doc
-    in do mapM_ (printStatus cp args) statuses
+    in do mapM_ (printStatus section cp args) statuses
           return statuses
 
 procStatuses :: Content -> (String, String, String)
@@ -169,16 +169,35 @@ procStatuses item =
     )
 
 getStatuses = tag "statuses" /> tag "status"
-printStatus cp args (name, text, updid) =
-    case (lookup "e" args, lookup "l" args) of
-      (Just cmd, _) ->
-          runIO $ (cmd, [updid, name, msgid, text])
-      (Nothing, Nothing) -> 
-          do printf "%-22s %s\n" ("<" ++ name ++ ">") (head wrappedtext)
-             mapM_ (printf "%-22s %s\n" "") (tail wrappedtext)
-      (Nothing, Just _) ->  printf "%s\t%s\t%s\n" updid name text
+printStatus section cp args (name, text, updid) =
+    case (lookup "m" args) of
+      Nothing -> 
+          case (lookup "e" args, lookup "l" args) of
+            (Just cmd, _) ->
+                runIO $ (cmd, [updid, name, msgid, text])
+            (Nothing, Nothing) -> 
+                do printf "%-22s %s\n" ("<" ++ name ++ ">") (head wrappedtext)
+                   mapM_ (printf "%-22s %s\n" "") (tail wrappedtext)
+            (Nothing, Just _) ->  printf "%s\t%s\t%s\n" updid name text
+      Just recipient -> mailto section cp args (name, text, updid) recipient
     where wrappedtext = wrapText (80 - 22 - 2) (words text)
           msgid = genMsgId updid name cp
+
+mailto section cp args (name, text, updid) recipient =
+    runIO $ echo (message ++ "\n") -|- (sendmail, ["-t"])
+    where sendmail = (forceEither $ get cp section "sendmail")::String
+          msgid = genMsgId updid name cp
+          subject = take 30 text ++ "... (twidge " ++ section ++ ")"
+          message = unlines $ 
+                    (case get cp section "mailfrom" of
+                      Left _ -> []
+                      Right x -> ["From: " ++ x]
+                    ) ++ 
+                    ["Message-ID: " ++ msgid,
+                     "To: " ++ recipient,
+                     "Subject: " ++ subject,
+                     "",
+                     text]
 
 --------------------------------------------------
 -- lsfollowing

@@ -43,6 +43,7 @@ getDefaultCP =
               do -- cp <- add_section startingcp "general"
                  -- cp <- set cp "general" "showintro" "yes"
                  cp <- set startingcp "DEFAULT" "urlbase" "https://twitter.com"
+                 cp <- set cp "DEFAULT" "sendmail" "/usr/sbin/sendmail"
                  return cp
 
 startingcp = emptyCP {accessfunc = interpolatingAccess 10}
