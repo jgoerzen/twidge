@@ -42,7 +42,7 @@ update_worker _ cp ([], [status]) =
             (permFail $ "Your status update was " ++ show (length status) ++
                       " characters; max length 140")
        xmlstr <- sendAuthRequest cp "/statuses/update.xml" [] 
-                 [("status", status)]
+                 [("source", "Twidge", ("status", status)]
        debugM "update" $ "Got doc: " ++ xmlstr
        
 update_worker _ _ _ =
