@@ -185,14 +185,6 @@ lsdmarchive_help =
  \refer to the examples under twidge lsrecent --help, which also pertain\n\
  \to lsdmarchive.\n"
 
-data Message = Message {
-      sId :: String,
-      sSender :: String,
-      sRecipient :: String,
-      sText :: String,
-      sDate :: String
-    } deriving (Eq, Read, Show, Ord)
-
 handleStatus section cp args xmlstr = 
     let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
         statuses = map procStatuses . getStatuses $ doc
@@ -223,39 +215,41 @@ shortStatus m =
 printStatus section cp args m = 
     printGeneric shortStatus longStatus cp args m
 
-printStatus shortfunc longfunc section cp args (name, text, updid) =
+printGeneric shortfunc longfunc section cp args m =
     case (lookup "m" args) of
       Nothing -> 
           case (lookup "e" args, lookup "l" args) of
             (Just cmd, _) ->
-                runIO $ (cmd, [updid, name, msgid, text])
+                runIO $ (cmd, [sId m, sSender m, sRecipient m, 
+                               sText m, sDate m])
             (Nothing, Nothing) -> putStr (shortfunc m)
             (Nothing, Just _) -> putStr (longfunc m)
       Just recipient -> mailto section cp args m recipient
-    where msgid = genMsgId updid name cp
+    where msgid = genMsgId section m cp
 
 mailto section cp args m recipient =
     runIO $ echo (message ++ "\n") -|- (sendmail, ["-t"])
     where sendmail = (forceEither $ get cp section "sendmail")::String
-          msgid = genMsgId updid name cp
+          msgid = genMsgId section m cp
           subject = take 30 (sText m) ++ "... (twidge " ++ section ++ ")"
           message = unlines $ 
                     (case get cp section "mailfrom" of
-                      Left _ -> ["Subject: " ++ name ++ ": " ++ subject]
-                      Right x -> ["From: " ++ name ++ " <" ++ x ++ ">",
+                      Left _ -> ["Subject: " ++ (sSender m) ++ ": " ++ subject]
+                      Right x -> ["From: " ++ (sSender m) ++ " <" ++ x ++ ">",
                                   "Subject: " ++ subject]
                     ) ++ 
                     ["Message-ID: " ++ msgid,
                      "X-Twidge-urlbase: " ++ forceEither (get cp "DEFAULT" "urlbase"),
                      "X-Twidge-server-base: " ++ serverHost cp,
                      "X-Twidge-command: " ++ section,
-                     "X-Twidge-update-id: " ++ updid,
-                     "X-Twidge-update-name: " ++ name,
+                     "X-Twidge-update-id: " ++ sId m,
+                     "X-Twidge-update-sender: " ++ sSender m,
+                     "X-Twidge-update-recipient: " ++ sRecipient m,
                      "To: " ++ recipient,
                      "",
-                     text,
+                     sText m,
                      "",
-                     "(from " ++ name ++ ")"]
+                     "(from " ++ sSender m ++ ")"]
 
 --------------------------------------------------
 -- lsfollowing
