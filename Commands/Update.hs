@@ -40,12 +40,13 @@ update_worker x cp ([], []) =
     do l <- getLine
        update_worker x cp ([], [l])
 update_worker _ cp ([], [status]) =
-    do when (length status > 140)
-            (permFail $ "Your status update was " ++ show (length status) ++
-                      " characters; max length 140")
-       poststatus <- case get cp "update" "shortenurls" of
+    do poststatus <- case get cp "update" "shortenurls" of
                        Right True -> shortenUrls status
                        _ -> return status
+       when (length status > 140)
+                (permFail $ "Your status update was " ++ 
+                          show (length poststatus) ++
+                          " characters; max length 140")
        xmlstr <- sendAuthRequest cp "/statuses/update.xml" [] 
                  [("source", "Twidge"), ("status", poststatus)]
        debugM "update" $ "Got doc: " ++ xmlstr
