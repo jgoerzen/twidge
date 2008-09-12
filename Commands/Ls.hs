@@ -32,6 +32,8 @@ import Config
 import Data.Either.Utils(forceEither)
 import Control.Monad(when)
 import Distribution.Simple.Utils(wrapText)
+import HSH
+import System.Console.GetOpt.Utils
 
 i = infoM "ls"
 
@@ -44,6 +46,13 @@ stdopts = [Option "a" ["all"] (NoArg ("a", ""))
                       \tab-separated columns"]
 
 sinceopts = [
+           Option "e" ["exec"] (ReqArg (stdRequired "e") "COMMAND")
+                  "Suppress normal output, and instead call COMMAND\n\
+                  \once for each output item.  The command will be\n\
+                  \passed exactly four arguments: update ID,\n\
+                  \username, suggested Message-ID, and update\n\
+                  \content.  These arguments may contain shell\n\
+                  \metacharacters.",
            Option "s" ["saveid"] (NoArg ("s", ""))
                       "Save topmost ID for future use with --unseen.\n\
                       \Will write the ID to your config file.",
@@ -112,7 +121,7 @@ statuses_worker section command cpath cp (args, _) page =
                  (("page", show page) : sinceArgs section cp args)
                  []
        debugM section $ "Got doc: " ++ xmlstr
-       results <- handleStatus args xmlstr
+       results <- handleStatus cp args xmlstr
        when (page == 1) $
             maybeSaveList section cpath cp args 
                           ((map (\(_, _, i) -> i)) results)
@@ -145,10 +154,10 @@ lsarchive_help =
  \refer to the examples under twidge lsrecent --help, which also pertain\n\
  \to lsarchive.\n"
 
-handleStatus args xmlstr = 
+handleStatus cp args xmlstr = 
     let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
         statuses = map procStatuses . getStatuses $ doc
-    in do mapM_ (printStatus args) statuses
+    in do mapM_ (printStatus cp args) statuses
           return statuses
 
 procStatuses :: Content -> (String, String, String)
@@ -160,13 +169,16 @@ procStatuses item =
     )
 
 getStatuses = tag "statuses" /> tag "status"
-printStatus args (name, text, updid) =
-    case lookup "l" args of
-      Nothing -> 
+printStatus cp args (name, text, updid) =
+    case (lookup "e" args, lookup "l" args) of
+      (Just cmd, _) ->
+          runIO $ (cmd, [updid, name, msgid, text])
+      (Nothing, Nothing) -> 
           do printf "%-22s %s\n" ("<" ++ name ++ ">") (head wrappedtext)
              mapM_ (printf "%-22s %s\n" "") (tail wrappedtext)
-      Just _ ->  printf "%s\t%s\t%s\n" updid name text
+      (Nothing, Just _) ->  printf "%s\t%s\t%s\n" updid name text
     where wrappedtext = wrapText (80 - 22 - 2) (words text)
+          msgid = genMsgId updid name cp
 
 --------------------------------------------------
 -- lsfollowing
