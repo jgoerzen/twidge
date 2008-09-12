@@ -408,6 +408,24 @@
       </para>
     </refsect2>
 
+    <refsect2 id="twidge.commands.lsdm">
+      <title>lsdm</title>
+      <para>
+        Lists direct messages sent to you.  Note: identi.ca does not
+        support direct messages, and this will cause an error with
+        that service.
+      </para>
+    </refsect2>
+
+    <refsect2 id="twidge.commands.lsdmarchive">
+      <title>lsdmarchive</title>
+      <para>
+        Lists direct messages you have sent.  Note: identi.ca does not
+        support direct messages, and this command will cause an error
+        with that service.
+      </para>
+    </refsect2>
+
     <refsect2 id="twidge.commands.lsrecent">
       <title>lsrecent</title>
       <para>
