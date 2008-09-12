@@ -123,20 +123,23 @@ lsarchive = simpleCmd "lsarchive" "List recent status updates you posted yoursel
 
 lsdm = simpleCmd "lsdm" "List recent direct messages to you"
        lsdm_help
-       (stdopts ++ sinceopts) (paginated (statuses_worker "lsdm" 
+       (stdopts ++ sinceopts) (paginated (dm_worker "lsdm" 
                                           "/direct_messages"))
 
 lsdmarchive = simpleCmd "lsdm" "List recent direct messages you sent"
               lsdmarchive_help
-              (stdopts ++ sinceopts) (paginated (statuses_worker "lsdmarchive"
+              (stdopts ++ sinceopts) (paginated (dm_worker "lsdmarchive"
                                                  "/direct_messages/sent"))
 
-statuses_worker section command cpath cp (args, _) page =
+statuses_worker = generic_worker handleStatus
+dm_worker = generic_worker handleDM
+
+generic_worker procfunc section command cpath cp (args, _) page =
     do xmlstr <- sendAuthRequest cp (command ++ ".xml")
                  (("page", show page) : sinceArgs section cp args)
                  []
        debugM section $ "Got doc: " ++ xmlstr
-       results <- handleStatus section cp args xmlstr
+       results <- procfunc section cp args xmlstr
        when (page == 1) $
             maybeSaveList section cpath cp args (map sId results)
        return results
@@ -184,9 +187,12 @@ lsdmarchive_help =
  \refer to the examples under twidge lsrecent --help, which also pertain\n\
  \to lsdmarchive.\n"
 
-handleStatus section cp args xmlstr = 
-    let doc = getContent . xmlParse "lsrecent" . stripUnicodeBOM $ xmlstr
-        statuses = map procStatuses . getStatuses $ doc
+handleStatus = handleGeneric (map procStatuses . getStatuses)
+handleDM = handleGeneric (map procDM . getDMs)
+
+handleGeneric pfunc section cp args xmlstr = 
+    let doc = getContent . xmlParse section . stripUnicodeBOM $ xmlstr
+        statuses = pfunc doc
     in do mapM_ (printStatus section cp args) statuses
           return statuses
 
@@ -197,14 +203,23 @@ procStatuses item =
              sRecipient = "",
              sText = s (tag "text"),
              sDate = s (tag "created_at")}
-    where s f = sanitize $ contentToString (keep /> f /> txt $ item)
+
+s f item = sanitize $ contentToString (keep /> f /> txt $ item)
+
+procDM :: Content -> Message
+procDM item =
+    Message {sId = s (tag "id"),
+             sSender = s (tag "sender_screen_name"),
+             sRecipient = s (tag "recipient_screen_name"),
+             sText = s (tag "text"),
+             sDate = s (tag "created_at")}
 
 getStatuses = tag "statuses" /> tag "status"
 getDMs = tag "direct_message" /> tag "direct-messages"
 
 longStatus :: Message -> String
-longStatus m = printf "%s\t%s\t%s\t%s\t"
-               (sId m) (sSender m) (sText m) (sDate m)
+longStatus m = printf "%s\t%s\t%s\t%s\t%s\t\n"
+               (sId m) (sSender m) (sRecipient m) (sText m) (sDate m)
 shortStatus :: Message -> String
 shortStatus m = 
     (printf "%-22s %s\n" ("<" ++ sSender m ++ ">")
@@ -212,8 +227,19 @@ shortStatus m =
     concatMap (printf "%-22s %s\n" "") (tail wrappedtext)
     where wrappedtext = wrapText (80 - 22 - 2) (words (sText m))
 
+shortDM :: Message -> String
+shortDM m =
+     (printf "%-22s %-22s %s\n" ("<" ++ sSender m ++ ">")
+                                 ("<" ++ sRecipient m ++ ">")
+                                 (head wrappedtext)) ++
+     concatMap (printf "%-22s %-22s %s\n" "" "") (tail wrappedtext)
+     where wrappedtext = wrapText (80 - 22 - 22 - 3) (words (sText m))
+
 printStatus section cp args m = 
     printGeneric shortStatus longStatus section cp args m
+
+printDm section cp args m =
+    printGeneric shortDM longStatus section cp args m
 
 printGeneric shortfunc longfunc section cp args m =
     case (lookup "m" args) of
