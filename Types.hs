@@ -35,3 +35,12 @@ data Command =
     Command {cmdname :: String,
              cmddescrip :: String,
              execcmd :: [String] -> Maybe FilePath -> ConfigParser -> IO ()}
+
+data Message = Message {
+      sId :: String,
+      sSender :: String,
+      sRecipient :: String,
+      sText :: String,
+      sDate :: String
+    } deriving (Eq, Read, Show, Ord)
+

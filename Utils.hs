@@ -47,6 +47,7 @@ import Text.Regex.Posix
 import Data.Either.Utils(forceEither)
 import Network.URI
 import Data.Maybe.Utils
+import Text.Printf
 
 simpleCmd :: String             -- ^ Command name
           -> String             -- ^ Command description
@@ -124,16 +125,20 @@ serverHost cp = host
           host = uriRegName . forceMaybeMsg "genMsgId uriauth" . 
                  uriAuthority $ uri
 
-genMsgId tweetid username cp =
-    "<" ++ msgid ++ ">"
-    where msgid = tweetid ++ "." ++ username ++ "@" ++ serverHost cp
-                  ++ ".twidge"
-
+genMsgId :: String -> Message -> ConfigParser -> String
+genMsgId section m cp =
+    printf "<%s.%s.%s@%s.%s.twidge>" (sId m) (sSender m) (sRecipient m)
+               section (serverHost cp) 
 -- FIXME: escape periods in serverHost
 
-parseMsgId msgid cp =
+{- | Parses a message id, returning (Message, host, section).
+The sText and sDate fiels will be empty. -}
+parseMsgId :: String -> (Message, String, String)
+parseMsgId msgid =
     case msgid =~ repat of
-      [[_, tweetid, user]] -> (tweetid, user)
+      [[_, id, sender, recipient, section, host]] -> 
+          (Message {sId = id, sSender = sender, sRecipient = recipient, 
+                    sText = "", sDate = ""},
+           host, section)
       x -> error $ "parseMsgId: unexpected result for regex match on " ++ show msgid ++ ": " ++ show x
-    where expectedhost = "@" ++ serverHost cp ++ "\\.twidge"
-          repat = "^<([^.]+)\\.([^@]+)" ++ expectedhost ++ ">$"
+    where repat = "^<([^.@]+)\\.([^.@]+)\\.([^@.]*)@([^.]+)\\.(.+)\\.twidge>"
