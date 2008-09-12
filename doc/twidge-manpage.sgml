@@ -290,6 +290,33 @@
         </listitem>
       </varlistentry>
 
+      <varlistentry><term>-e <replaceable>command</replaceable></term>
+        <term>--exec=<replaceable>command</replaceable></term>
+        <listitem><para>
+            Causes any normal output to be suppressed.  Instead, for
+            each item that is retrieved, call the given command.  The
+            command will be passed exactly four arguments.  Care
+            should be exercised when using them in shell scripts due
+            to the likelihood of the presence of shell
+            metacharacters.  The arguments are:
+          </para>
+          <orderedlist>
+            <listitem><para>
+                The update ID for the given update.
+              </para></listitem>
+            <listitem><para>
+                The username that created the update</para></listitem>
+            <listitem><para>
+                A suggested Message-ID for representing the update in
+                email.  Contains the enclosing angle brackets.
+              </para></listitem>
+            <listitem><para>
+                The update text itself.  Likely contains spaces and
+                other shell metacharacters.
+              </para></listitem>
+          </orderedlist>
+        </listitem>
+
       <varlistentry><term>-l</term>
         <term>--long</term>
         <listitem><para>
