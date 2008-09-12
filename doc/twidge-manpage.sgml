@@ -96,6 +96,8 @@
             seen already and suppress those updates in future
             runs.</para></listitem>
 
+        <listitem><para>Optional automatic shortening of long URLs via tinyurl.com</para></listitem>
+        
         <listitem><para>Optional integration with your email system --
             send and receive updates via email.</para></listitem>
 
@@ -504,6 +506,17 @@
         needed.  If no status is given on the command line, a single
         line will be read from stdin and used as the status.
       </para>
+      <para>
+        The maximum length of updates on various microblogging sites
+        is 140 characters.  Twidge will abort with an error if your
+        update attempt exceeds that length.
+      </para>
+      <para>
+        By default, Twidge will attempt to shorten URLs in your
+        updates via the TinyURL.com service.  You can disable this by
+        setting shortenurls = no in the [update] section of your
+        configuration file.
+      </para>
     </refsect2>
   </refsect1>
 
@@ -556,6 +569,9 @@ password = secret
 
 ; Path to server API interface -- no trailing slash
 urlbase = https://twitter.com
+
+[update]
+shortenurls = yes
 
 ; Last IDs seen by different commands.  Written to with -s.
 
@@ -646,6 +662,16 @@ lastid = 914881241
             </para></listitem>
       </variablelist>
 
+    </refsect2>
+
+    <refsect2 id="twidge.options.update">
+      <title>Update option</title>
+      <para>
+        You may specify <literal>shortenurls</literal> in the
+        <literal>[update]</literal> section.  It defaults to yes.  If
+        set to no, will cause &twidge; to omit its attempt to shorten
+        URLs in your updates via <literal>tinyurl.com</literal>.
+      </para>
     </refsect2>
   </refsect1>
               
