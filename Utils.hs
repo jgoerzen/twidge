@@ -44,6 +44,9 @@ import System.Posix.IO
 import Control.Exception(finally)
 import Data.ConfigFile
 import Text.Regex.Posix
+import Data.Either.Utils(forceEither)
+import Network.URI
+import Data.Maybe.Utils
 
 simpleCmd :: String             -- ^ Command name
           -> String             -- ^ Command description
@@ -131,6 +134,6 @@ genMsgId tweetid username cp =
 parseMsgId msgid cp =
     case msgid =~ repat of
       [[_, tweetid, user]] -> (tweetid, user)
-      x -> error $ "parseMsgId: unexpected result for regex match on " ++ show msgid ++ ": " show x
+      x -> error $ "parseMsgId: unexpected result for regex match on " ++ show msgid ++ ": " ++ show x
     where expectedhost = "@" ++ serverHost cp ++ "\\.twidge"
           repat = "^<([^.]+)\\.([^@]+)" ++ expectedhost ++ ">$"
