@@ -53,6 +53,9 @@ sinceopts = [
                   \username, suggested Message-ID, and update\n\
                   \content.  These arguments may contain shell\n\
                   \metacharacters.",
+           Option "m" ["mailto"] (ReqArg (stdRequired "m") "ADDRESS")
+                  "Suppress normal output, and instead generate an\n\
+                  \email with the data and send it to ADDRESS.",
            Option "s" ["saveid"] (NoArg ("s", ""))
                       "Save topmost ID for future use with --unseen.\n\
                       \Will write the ID to your config file.",
