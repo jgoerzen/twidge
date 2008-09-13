@@ -1,0 +1,10 @@
+Sorry, need more here...
+
+Try:
+
+ghc --make -o setup Setup.lhs
+./setup configure
+./setup build
+./setup install
+
+To run, you will need to have curl installed
