@@ -82,7 +82,7 @@ lock func =
                setLock lockfd (Unlock, AbsoluteSeek, 0, 0)
                closeFd lockfd
           errorhandler _ =
-              do putStrLn "Aborting because another hpodder is already running"
+              do putStrLn "Aborting because another twidge is already running"
                  exitFailure
 -}
 
