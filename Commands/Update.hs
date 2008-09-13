@@ -20,12 +20,9 @@ module Commands.Update(update, dmsend) where
 import Utils
 import System.Log.Logger
 import Types
-import Text.Printf
 import System.Console.GetOpt
 import Data.List
-import Text.XML.HaXml hiding (when)
 import Download
-import FeedParser
 import Control.Monad(when)
 import Text.Regex.Posix
 import Data.ConfigFile
@@ -97,6 +94,7 @@ dmsend_worker x cp ([], [recipient, status]) =
                  [("source", "Twidge"), 
                   ("text", poststatus), ("user", recipient)]
        debugM "dmsend" $ "Got doc: " ++ xmlstr
+dmsend_worker _ _ _ = permFail "Syntax error; see twidge dmsend --help"
 
 shortenUrls "" = return ""
 shortenUrls status = 

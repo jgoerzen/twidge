@@ -19,12 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 module Commands.Setup(setup) where
 import Utils
 import System.Log.Logger
-import Types
-import Text.Printf
-import System.Console.GetOpt
 import Data.List
-import Download
-import FeedParser
 import Data.ConfigFile
 import System.IO
 import Data.Either.Utils

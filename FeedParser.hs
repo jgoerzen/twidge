@@ -30,13 +30,8 @@ Written by John Goerzen, jgoerzen\@complete.org
 -}
 module FeedParser where
 
-import Types
 import Text.XML.HaXml
-import Text.XML.HaXml.Parse
-import Utils
-import Data.Maybe.Utils
 import Data.Char
-import Data.Either.Utils
 import Data.List
 import Data.String.Utils(strip)
 

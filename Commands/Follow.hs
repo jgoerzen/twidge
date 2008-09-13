@@ -19,13 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 module Commands.Follow(follow, unfollow) where
 import Utils
 import System.Log.Logger
-import Types
-import Text.Printf
-import System.Console.GetOpt
 import Data.List
-import Text.XML.HaXml
 import Download
-import FeedParser
 
 i = infoM "follow"
 

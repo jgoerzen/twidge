@@ -30,11 +30,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 -}
 
 module Download(sendAuthRequest, simpleDownload) where
-import System.Cmd.Utils
-import System.Posix.Process
-import Config
 import System.Log.Logger
-import Text.Printf
 import Data.ConfigFile
 import HSH
 import Data.Either.Utils(forceEither)

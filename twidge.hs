@@ -32,7 +32,6 @@ Written by John Goerzen, jgoerzen\@complete.org
 import Config
 import System.Log.Logger
 import System.Log.Handler.Simple
-import System.IO(stdout, stderr)
 import System.Console.GetOpt.Utils
 import System.Console.GetOpt
 import System.Environment
@@ -41,7 +40,6 @@ import System.Exit
 import Commands
 import Types
 import Control.Monad
-import Utils
 import Data.ConfigFile(emptyCP)
 import System.IO
 

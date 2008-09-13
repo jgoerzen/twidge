@@ -30,13 +30,10 @@ Written by John Goerzen, jgoerzen\@complete.org
 -}
 module Commands where
 
-import Data.List
 import Text.Printf
 import Utils
 import Types
 import Config
-import Data.ConfigFile
-import Data.Either.Utils
 
 import qualified Commands.Follow
 import qualified Commands.Ls

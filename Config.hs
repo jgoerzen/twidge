@@ -34,7 +34,6 @@ import System.Directory
 import Data.ConfigFile
 import Control.Monad
 import Data.Either.Utils
-import System.Path
 import Data.String.Utils(strip, split)
 import System.Posix.Files(rename)
 
