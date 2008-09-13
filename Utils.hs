@@ -133,12 +133,12 @@ genMsgId section m cp =
 
 {- | Parses a message id, returning (Message, host, section).
 The sText and sDate fiels will be empty. -}
-parseMsgId :: String -> (Message, String, String)
+parseMsgId :: String -> Maybe (Message, String, String)
 parseMsgId msgid =
     case msgid =~ repat of
       [[_, id, sender, recipient, section, host]] -> 
-          (Message {sId = id, sSender = sender, sRecipient = recipient, 
-                    sText = "", sDate = ""},
-           host, section)
-      x -> error $ "parseMsgId: unexpected result for regex match on " ++ show msgid ++ ": " ++ show x
+          Just (Message {sId = id, sSender = sender, sRecipient = recipient, 
+                         sText = "", sDate = ""},
+                host, section)
+      _ -> Nothing
     where repat = "^<([^.@]+)\\.([^.@]+)\\.([^@.]*)@([^.]+)\\.(.+)\\.twidge>"

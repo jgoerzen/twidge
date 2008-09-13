@@ -34,8 +34,32 @@ i = infoM "update"
 
 update = simpleCmd "update" "Update your status"
              update_help
-             [] update_worker
+             [Option "r" ["recvmail"] (NoArg ("m", "")) 
+              "Receive update as body of email on stdin"]
+             update_worker
 
+update_worker x cp ([("m", "")], []) =
+    do c <- getContents
+       case parse message "(stdin)" c of
+         Left x -> permFail $ "Couldn't parse mail: " ++ show x
+         Right (refs, body) ->
+             let irt = case refs =~ "<([^>]+)>$" of
+                         "" -> []
+                         m -> case parseMsgId m of
+                                Nothing -> []
+                                Just (m, host, section) ->
+                                    if h == serverHost cp && 
+                                       section `elem` ["lsrecent", "lsarchive",
+                                                       "lsreplies"]
+                                       then [("in_reply_to_status_id",
+                                              sId m)]
+                                       else []
+                 status = b
+             in do poststatus <- procStatus cp "update" status
+                   xmlstr <- sendAuthRequest cp "/statuses/update.xml" []
+                             ([("source", "Twidge"), ("status", postatus)] ++
+                              irt)
+                   debugM "update" $ "Got doc: " ++ xmlstr
 update_worker x cp ([], []) =
     do l <- getLine
        update_worker x cp ([], [l])
