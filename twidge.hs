@@ -42,6 +42,8 @@ import Types
 import Control.Monad
 import Data.ConfigFile(emptyCP)
 import System.IO
+import Paths_twidge(version)
+import Data.Version
 
 main = 
     do updateGlobalLogger "" (setLevel INFO)
@@ -79,6 +81,8 @@ usageerror errormsg =
        putStrLn (usageInfo header options)
        putStrLn "Run \"twidge lscommands\" for a list of available commands.\n\
                 \Run \"twidge command --help\" for help on a particular command.\n"
+       putStr $ "This is Twidge, version " ++ showVersion version
+       putStrLn $ ".  Copyright (c) 2008 John Goerzen"
        exitFailure
 
 header = "Usage: twidge [global-options] command [command-options]\n\n\
