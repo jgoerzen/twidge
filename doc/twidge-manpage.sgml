@@ -558,6 +558,9 @@
         <command>twidge update</command>
         <arg choice="opt"><replaceable>status</replaceable></arg>
       </cmdsynopsis>
+      <cmdsynopsis>
+        <command>twidge update -r</command>
+      </cmdsynopsis>
       <para>
         Causes &twidge; to post a new status to the server.  If a
         status is given on the command line, it must be presented as a
@@ -575,6 +578,28 @@
         updates via the TinyURL.com service.  You can disable this by
         setting shortenurls = no in the [DEFAULT] or [update] section of your
         configuration file.
+      </para>
+      <para>
+        When -r is given, &twidge; expects to read an RFC2822 email
+        message in stdin.  The body of the message will be used as the
+        content of the update.  The References header of the message
+        will be briefly scanned, and if appropriate, the reply-to
+        attribute of the update will reflect the Message-ID referred
+        to therein.  This way, if you use <command>twidge lsrecent
+        --mailto</command> to email recent items to you, then use your
+        email reply button to reply to them, &twidge; will link the
+        two on Twitter.  This linkage can be done even if you omit
+        @reply, but will likely confuse many people because most other
+        clients can't do this.  You should still include @reply.
+      </para>
+      <para>
+        It should be noted that, in an effort to minimize size and
+        complexity, &twidge; has an extremely simple email parser.
+        You should send it only plain text messages.  Do not use HTML,
+        RTF, attachments, or anything that would cause MIME headers to
+        appear in the RFC2822 body.  You probably want to turn off
+        your signature as well. &twidge; will convert newline
+        characters to spaces when processing your message body.  
       </para>
     </refsect2>
   </refsect1>
