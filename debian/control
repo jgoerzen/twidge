@@ -1,11 +1,11 @@
-Source: hpodder
+Source: twidge
 Section: utils
 Priority: optional
 Maintainer: John Goerzen <jgoerzen@complete.org>
 Build-Depends: debhelper (>= 5), groff, docbook-utils, jade, lynx, scons, xpdf-utils, sgml2x, gtk-doc-tools, ghc6 (>= 6.8.2), haskell-devscripts (>= 0.6.6), cpphs, libghc6-missingh-dev (>= 1.0.0), libghc6-hdbc-dev (>= 1.1.0), libghc6-hdbc-sqlite3-dev (>= 1.1.4.0.1), libghc6-network-dev, libghc6-unix-dev, libghc6-mtl-dev, libghc6-haxml-dev (>= 1.13.2-3), libghc6-filepath-dev, libghc6-configfile-dev, libghc6-hslogger-dev
 Standards-Version: 3.7.2
 
-Package: hpodder
+Package: twidge
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${haskell:Depends}, curl, id3v2
 Description: Tool to scan and download podcasts (podcatcher)
@@ -16,9 +16,9 @@ Description: Tool to scan and download podcasts (podcatcher)
  .
  To listen to podcasts, you need a program to download the podcast's
  episodes from the Internet.  Such a program is called a podcatcher
- (or sometimes a podcast aggregator).  hpodder is this program.
+ (or sometimes a podcast aggregator).  twidge is this program.
  .
- hpodder's features include:
+ twidge's features include:
  .
  Convenient, easy to learn, and fast command-line interface.  It's
  simple to do simple things, and advanced things are possible.
@@ -29,7 +29,7 @@ Description: Tool to scan and download podcasts (podcatcher)
  downloads and tracking of new episodes
  .
  Conversion tools to convert your existing feed list and history from
- other applications to hpodder.  Supported applications and formats
+ other applications to twidge.  Supported applications and formats
  include: castpodder and ipodder.
  .
  Most operations can work fully automatically across your entire
@@ -39,7 +39,7 @@ Description: Tool to scan and download podcasts (podcatcher)
  podcast feed.  This important feature is available through iTunes but
  is often missed by other podcatchers.
  .
- hpodder operations can be easily scripted or scheduled using regular
+ twidge operations can be easily scripted or scheduled using regular
  operating system tools.
  .
  Fully customizable naming scheme for downloaded episodes, including a
@@ -53,11 +53,11 @@ Description: Tool to scan and download podcasts (podcatcher)
  Small, minimalist footprint
  .
  Power users and developers can interact directly with the embedded
- Sqlite3 database used by hpodder.  The database has a simple schema
+ Sqlite3 database used by twidge.  The database has a simple schema
  that is developer-friendly.
  .
  Support for resuming interrupted downloads of podcasts
  .
- hpodder is SAFE and is designed with data integrity in mind from the
+ twidge is SAFE and is designed with data integrity in mind from the
  beginning.  It should be exceedingly difficult to lose a podcast
  episode, even in the event of a power failure.

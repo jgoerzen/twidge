@@ -38,7 +38,7 @@ build-stamp: configure-stamp
 	cp -r doc debian/tmp-doc
 	cd debian/tmp-doc && scons pdf
 	cd debian/tmp-doc && scons manpages
-	#docbook-to-man debian/hpodder.sgml > hpodder.1
+	#docbook-to-man debian/twidge.sgml > hpodder.1
 
 	touch $@
 
@@ -59,9 +59,9 @@ install: build
 	dh_clean -k 
 	dh_installdirs
 
-	# Add here commands to install the package into debian/hpodder.
-	#$(MAKE) install DESTDIR=$(CURDIR)/debian/hpodder
-	cp dist/build/hpodder/hpodder debian/hpodder/usr/bin/
+	# Add here commands to install the package into debian/twidge.
+	#$(MAKE) install DESTDIR=$(CURDIR)/debian/twidge
+	cp dist/build/twidge/hpodder debian/hpodder/usr/bin/
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -85,7 +85,7 @@ binary-arch: build install
 #	dh_installinit
 #	dh_installcron
 #	dh_installinfo
-	dh_installman debian/tmp-doc/hpodder.1
+	dh_installman debian/tmp-doc/twidge.1
 	dh_link
 	dh_strip
 	dh_compress
