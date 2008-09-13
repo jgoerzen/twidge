@@ -29,6 +29,8 @@ import FeedParser
 import Control.Monad(when)
 import Text.Regex.Posix
 import Data.ConfigFile
+import MailParser(message)
+import Text.ParserCombinators.Parsec
 
 i = infoM "update"
 
@@ -48,16 +50,16 @@ update_worker x cp ([("m", "")], []) =
                          m -> case parseMsgId m of
                                 Nothing -> []
                                 Just (m, host, section) ->
-                                    if h == serverHost cp && 
+                                    if host == serverHost cp && 
                                        section `elem` ["lsrecent", "lsarchive",
                                                        "lsreplies"]
                                        then [("in_reply_to_status_id",
                                               sId m)]
                                        else []
-                 status = b
+                 status = body
              in do poststatus <- procStatus cp "update" status
                    xmlstr <- sendAuthRequest cp "/statuses/update.xml" []
-                             ([("source", "Twidge"), ("status", postatus)] ++
+                             ([("source", "Twidge"), ("status", poststatus)] ++
                               irt)
                    debugM "update" $ "Got doc: " ++ xmlstr
 update_worker x cp ([], []) =
