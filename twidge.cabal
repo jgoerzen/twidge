@@ -44,9 +44,9 @@ Build-Depends: network, unix, parsec, MissingH>=1.0.0,
 
 Executable: twidge
 Main-Is: twidge.hs
-Other-Modules: Commands, Config, Download, FeedParser,
-        Types, Utils, 
-        Commands.Ls
+Other-Modules: Commands, Commands.Follow, Commands.Ls,
+        Commands.Setup, Commands.Update, Config, Download, FeedParser,
+        MailParser, Types, Utils
 GHC-Options: -O2
 Extensions: ExistentialQuantification, OverlappingInstances,
     UndecidableInstances
