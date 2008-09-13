@@ -15,8 +15,8 @@ extra-source-files: COPYING, INSTALL, doc/SConstruct,
 homepage: http://software.complete.org/twidge
 Build-type: Simple
 Category: Network
-Synopsis: Twitter and Identica Client
-Description:  twidge is a client for microblogging sites such as Twitter and
+Synopsis: Unix Command-Line Twitter and Identica Client
+Description: twidge is a client for microblogging sites such as Twitter and
  Identica (identi.ca). Microblogging sites let you post short
  one-paragraph updates, follow the updates that your friends post, and
  interact with everyone in the site in a conversation style.
