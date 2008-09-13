@@ -228,7 +228,7 @@ shortStatus m =
     (printf "%-22s %s\n" ("<" ++ sSender m ++ ">")
                (head wrappedtext)) ++
     concatMap (printf "%-22s %s\n" "") (tail wrappedtext)
-    where wrappedtext = wrapLines (80 - 22 - 2) (words (sText m))
+    where wrappedtext = map unwords $ wrapLine (80 - 22 - 2) (words (sText m))
 
 shortDM :: Message -> String
 shortDM m =
@@ -236,7 +236,7 @@ shortDM m =
                                  ("<" ++ sRecipient m ++ ">")
                                  (head wrappedtext)) ++
      concatMap (printf "%-22s %-22s %s\n" "" "") (tail wrappedtext)
-     where wrappedtext = wrapLines (80 - 22 - 22 - 3) (words (sText m))
+     where wrappedtext = map unwords $ wrapLine (80 - 22 - 22 - 3) (words (sText m))
 
 printStatus section cp args m = 
     printGeneric shortStatus longStatus section cp args m
