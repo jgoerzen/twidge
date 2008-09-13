@@ -1,5 +1,5 @@
-{- hpodder component
-Copyright (C) 2006-2007 John Goerzen <jgoerzen@complete.org>
+{-
+Copyright (C) 2006-2008 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 {- |
    Module     : Utils
-   Copyright  : Copyright (C) 2006-2007 John Goerzen
+   Copyright  : Copyright (C) 2006-2008 John Goerzen
    License    : GNU GPL, version 2 or above
 
    Maintainer : John Goerzen <jgoerzen@complete.org>
@@ -30,18 +30,10 @@ Written by John Goerzen, jgoerzen\@complete.org
 -}
 
 module Utils where
-import System.Console.GetOpt.Utils
 import System.Console.GetOpt
 import Types
 import System.Exit
-import Config
-import System.Directory
-import Data.List.Utils
-import System.Time
-import System.Time.Utils
 import System.IO
-import System.Posix.IO
-import Control.Exception(finally)
 import Data.ConfigFile
 import Text.Regex.Posix
 import Data.Either.Utils(forceEither)
@@ -93,23 +85,6 @@ lock func =
               do putStrLn "Aborting because another hpodder is already running"
                  exitFailure
 -}
-
-sanitize_basic inp =
-    case filter (\c -> not (c `elem` "\n\r\t\0")) inp of
-      ('-':x) -> ('_':x)          -- Strip leading hyphen
-      x -> x
-
-sanitize_fn inp =
-    case map worker . sanitize_basic $ inp of
-      [] -> "UNKNOWN"
-      x -> x
-    where worker x = if x `elem` ";/|!`~ *?%^&(){}[]\\'\"<>:" 
-                         then '_'
-                         else x
-
-now :: IO Integer
-now = do ct <- getClockTime
-         return (clockTimeToEpoch ct)
 
 ex_tempfail = 75
 ex_permfail = 69
