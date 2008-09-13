@@ -1,33 +1,14 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
   <!ENTITY index SYSTEM "index/index.sgml">
   <!ENTITY man.twidge SYSTEM "twidge-manpage.sgml">
   <!ENTITY twidge "<application>twidge</application>">
 
 ]>
 
-<book id="twidge">
-  <bookinfo>
-    <title>Using the twidge microblogger client aggregator</title>
-    <author>
-      <firstname>John</firstname> <surname>Goerzen</surname>
-    </author>
-    <address><email>jgoerzen@complete.org</email></address>
-<!--
-    <legalnotice>
-      <para>
-        FIXME: add copyright here
-      </para>
-    </legalnotice>
--->
-  </bookinfo>
-
   <reference>
     <title>twidge Manual</title>
      &man.twidge;
   </reference>
-
-  &index;
-</book>
 
 <!--
 Local Variables:
