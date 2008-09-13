@@ -35,7 +35,7 @@ import Data.ConfigFile
 import Control.Monad
 import Data.Either.Utils
 import Data.String.Utils(strip, split)
-import System.Posix.Files(rename)
+import System.Posix.Files(rename, setFileCreationMask)
 
 getDefaultCP =
     do return $ forceEither $ 
@@ -67,6 +67,7 @@ writeCP cpgiven cp =
                    Nothing -> getCPName
                    Just x -> return x
        let tempname = cpname ++ ".write.tmp"
+       setFileCreationMask 0o0077
        writeFile tempname (to_string cp)
        rename tempname cpname
 
