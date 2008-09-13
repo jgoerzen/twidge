@@ -1,3 +1,10 @@
+twidge (0.99.2) unstable; urgency=low
+
+  * Now properly outputs UTF-8 strings for Unicode characters.
+  * Removed incompatibility with newer Cabal versions.
+
+ -- John Goerzen <jgoerzen@complete.org>  Sat, 13 Sep 2008 09:21:12 -0500
+
 twidge (0.99.1) unstable; urgency=low
 
   * Fixed a logic bug that made -su options not work after the first time.
