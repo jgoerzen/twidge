@@ -117,3 +117,33 @@ parseMsgId msgid =
                 host, section)
       _ -> Nothing
     where repat = "^<([^.@]+)\\.([^.@]+)\\.([^@.]*)@([^.]+)\\.(.+)\\.twidge>"
+
+----------------------------------------------------------------------
+-- Start of code from Cabal 1.4.0.2
+
+-- | Wraps text to the default line width. Existing newlines are preserved.
+wrapText :: String -> String
+wrapText = unlines
+         . concatMap (map unwords
+                    . wrapLine 79
+                    . words)
+         . lines
+
+-- | Wraps a list of words to a list of lines of words of a particular width.
+wrapLine :: Int -> [String] -> [[String]]
+wrapLine width = wrap 0 []
+  where wrap :: Int -> [String] -> [String] -> [[String]]
+        wrap 0   []   (w:ws)
+          | length w + 1 > width
+          = wrap (length w) [w] ws
+        wrap col line (w:ws)
+          | col + length w + 1 > width
+          = reverse line : wrap 0 [] (w:ws)
+        wrap col line (w:ws)
+          = let col' = col + length w + 1
+             in wrap col' (w:line) ws
+        wrap _ []   [] = []
+        wrap _ line [] = [reverse line]
+
+-- End of code from Cabal 1.4.0.2
+----------------------------------------------------------------------

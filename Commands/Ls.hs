@@ -31,9 +31,9 @@ import Data.String.Utils(strip)
 import Config
 import Data.Either.Utils(forceEither)
 import Control.Monad(when)
-import Distribution.Simple.Utils(wrapText)
 import HSH
 import System.Console.GetOpt.Utils
+import qualified System.IO.UTF8 as UTF8
 
 i = infoM "ls"
 
@@ -228,7 +228,7 @@ shortStatus m =
     (printf "%-22s %s\n" ("<" ++ sSender m ++ ">")
                (head wrappedtext)) ++
     concatMap (printf "%-22s %s\n" "") (tail wrappedtext)
-    where wrappedtext = wrapText (80 - 22 - 2) (words (sText m))
+    where wrappedtext = wrapLines (80 - 22 - 2) (words (sText m))
 
 shortDM :: Message -> String
 shortDM m =
@@ -236,7 +236,7 @@ shortDM m =
                                  ("<" ++ sRecipient m ++ ">")
                                  (head wrappedtext)) ++
      concatMap (printf "%-22s %-22s %s\n" "" "") (tail wrappedtext)
-     where wrappedtext = wrapText (80 - 22 - 22 - 3) (words (sText m))
+     where wrappedtext = wrapLines (80 - 22 - 22 - 3) (words (sText m))
 
 printStatus section cp args m = 
     printGeneric shortStatus longStatus section cp args m
@@ -251,8 +251,8 @@ printGeneric shortfunc longfunc section cp args m =
             (Just cmd, _) ->
                 runIO $ (cmd, [sId m, sSender m, sRecipient m, 
                                sText m, sDate m])
-            (Nothing, Nothing) -> putStr (shortfunc m)
-            (Nothing, Just _) -> putStr (longfunc m)
+            (Nothing, Nothing) -> UTF8.putStr (shortfunc m)
+            (Nothing, Just _) -> UTF8.putStr (longfunc m)
       Just recipient -> mailto section cp args m recipient
     where msgid = genMsgId section m cp
 
