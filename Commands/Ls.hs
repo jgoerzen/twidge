@@ -75,16 +75,19 @@ paginated workerfunc cppath cp (args, remainder)
 
 maybeSaveList section cpath cp args [] = return ()
 maybeSaveList section cpath cp args newids =
-    do debugM section $ "maybeSaveList called: " ++ show args ++ " " ++ show newids
+    do debugM section $ "maybeSaveList called for " ++ section ++ ": " 
+                  ++ show args ++ " " ++ show newids
        maybeSave section cpath cp args theid
     where theid = maximum . map (read::String -> Integer) $ newids
 
 maybeSave section cpath cp args newid =
     case (lookup "s" args, get cp section "lastid") of
-      (Nothing, _) -> return ()
-      (_, Left _) -> saveid
+      (Nothing, _) -> do debugM "maybeSave" "maybeSave: No -s in args"
+                         return ()
+      (_, Left _) -> do debugM "maybeSave" "maybeSave: Will add ID"
+                        saveid
       (_, Right x) ->
-          if (read x) < (newid::Integer)
+          if (read x) > (newid::Integer)
              then return ()
              else saveid
     where saveid = writeCP cpath newcp
