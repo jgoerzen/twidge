@@ -41,8 +41,6 @@ getDefaultCP =
     do return $ forceEither $ 
               do cp <- set startingcp "DEFAULT" "urlbase" "https://twitter.com"
                  cp <- set cp "DEFAULT" "sendmail" "/usr/sbin/sendmail"
-                 cp <- add_section cp "update"
-                 cp <- add_section cp "dmsend"
                  cp <- set cp "DEFAULT" "shortenurls" "yes"
                  return cp
 
