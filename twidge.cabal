@@ -1,5 +1,5 @@
 Name: twidge
-Version: 0.1.0
+Version: 0.99.0
 License: GPL
 Maintainer: John Goerzen <jgoerzen@complete.org>
 Author: John Goerzen
@@ -15,9 +15,29 @@ extra-source-files: COPYING, INSTALL, doc/SConstruct,
 homepage: http://software.complete.org/twidge
 Build-type: Simple
 Category: Network
-Synopsis: FIXME
-Description:  FIXME
- FIXME
+Synopsis: Twitter and Identica Client
+Description:  twidge is a client for microblogging sites such as Twitter and
+ Identica (identi.ca). Microblogging sites let you post short
+ one-paragraph updates, follow the updates that your friends post, and
+ interact with everyone in the site in a conversation style.
+ .
+ twidge is a client to make working with microblogging sites faster
+ and easier. It is extremely versatile, and can be customized to work
+ the way you want to work, and combined with other tools to do just
+ about anything.
+ .
+ twidge can be used quite nicely interactively from the shell. It is
+ useful directly as-is, and with simple shell aliases can make a
+ highly efficient system to do exactly what you want. It is perfectly
+ capable of being your only client for microblogging.
+ .
+ twidge also can be used in an automated way, via cron(1), or it can
+ even integrate with your email system.
+ .
+ A full list of twidge features, along with numerous suggestions on
+ how to use it, can be found at the twidge website at
+ http://software.complete.org/twidge.
+
 Build-Depends: network, unix, parsec, MissingH>=1.0.0,
  mtl, base, HaXml>=1.13.2, HaXml<1.19, hslogger,
  ConfigFile, directory, HSH, Cabal, regex-posix
