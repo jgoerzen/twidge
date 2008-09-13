@@ -392,6 +392,12 @@
             of -s with this particular command.  If -s has never
             before been used with this command, has no effect.
           </para>
+          <para>
+            As of September 2008, Identi.ca does not support the
+            since_id parameter that is required for this option to be
+            effective.  A future version of &twidge; may implement a
+            workaround.
+          </para>
         </listitem>
       </varlistentry>
     </variablelist>
