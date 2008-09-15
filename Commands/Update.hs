@@ -56,7 +56,7 @@ update_worker x cp ([("m", "")], []) =
                  status = body
              in do poststatus <- procStatus cp "update" status
                    xmlstr <- sendAuthRequest cp "/statuses/update.xml" []
-                             ([("source", "Twidge"), ("status", poststatus)] ++
+                             ([("source", "twidge"), ("status", poststatus)] ++
                               irt)
                    debugM "update" $ "Got doc: " ++ xmlstr
 update_worker x cp ([], []) =
