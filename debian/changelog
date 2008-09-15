@@ -1,3 +1,9 @@
+twidge (0.99.3) unstable; urgency=low
+
+  * Added official "source" paramter from Twitter.
+
+ -- John Goerzen <jgoerzen@complete.org>  Sun, 14 Sep 2008 22:10:07 -0500
+
 twidge (0.99.2) unstable; urgency=low
 
   * Now properly outputs UTF-8 strings for Unicode characters.
