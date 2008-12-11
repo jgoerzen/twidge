@@ -96,7 +96,7 @@
             seen already and suppress those updates in future
             runs.</para></listitem>
 
-        <listitem><para>Optional automatic shortening of long URLs via tinyurl.com</para></listitem>
+        <listitem><para>Optional automatic shortening of long URLs via is.gd</para></listitem>
         
         <listitem><para>Optional integration with your email system --
             send and receive updates via email.</para></listitem>
@@ -516,7 +516,7 @@
       </para>
       <para>
         By default, Twidge will attempt to shorten URLs in your
-        updates via the TinyURL.com service.  You can disable this by
+        updates via the is.gd service.  You can disable this by
         setting shortenurls = no in the [DEFAULT] or [dmsend] section of your
         configuration file.
       </para>
