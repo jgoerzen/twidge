@@ -1,3 +1,10 @@
+twidge (0.99.4) unstable; urgency=low
+
+  * Added build-dep on libghc6-hsh-dev.  Closes: #506543.
+  * Tightened build-deps.
+
+ -- John Goerzen <jgoerzen@complete.org>  Thu, 11 Dec 2008 03:33:17 -0600
+
 twidge (0.99.3) unstable; urgency=low
 
   * Added official "source" paramter from Twitter.

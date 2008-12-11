@@ -2,7 +2,7 @@ Source: twidge
 Section: utils
 Priority: optional
 Maintainer: John Goerzen <jgoerzen@complete.org>
-Build-Depends: debhelper (>= 5), groff, docbook-utils, jade, lynx, scons, xpdf-utils, sgml2x, gtk-doc-tools, ghc6 (>= 6.8.2), haskell-devscripts (>= 0.6.6), libghc6-missingh-dev (>= 1.0.0), libghc6-network-dev, libghc6-unix-dev, libghc6-mtl-dev, libghc6-haxml-dev (>= 1.13.2-3), libghc6-filepath-dev, libghc6-configfile-dev, libghc6-hslogger-dev, libghc6-regex-posix-dev, libghc6-utf8-string-dev, libghc6-hsh-dev
+Build-Depends: debhelper (>= 5), groff, docbook-utils, jade, lynx, scons, xpdf-utils, sgml2x, gtk-doc-tools, ghc6 (>= 6.8.2), haskell-devscripts (>= 0.6.6), libghc6-missingh-dev (>= 1.0.0), libghc6-network-dev, libghc6-unix-dev, libghc6-mtl-dev, libghc6-haxml-dev (>= 1.13.2-3), libghc6-filepath-dev, libghc6-configfile-dev (>= 1.0.4.5), libghc6-hslogger-dev (>= 1.0.7.1), libghc6-regex-posix-dev, libghc6-utf8-string-dev, libghc6-hsh-dev (>= 1.2.6.3)
 Standards-Version: 3.7.2
 Homepage: http://software.complete.org/twidge
 Vcs-Browser: http://git.complete.org/twidge
