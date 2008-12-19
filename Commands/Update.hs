@@ -109,7 +109,7 @@ shortenUrls status =
                                     then tiny else match)
                              ++ rest
     where (before, match, after) = status =~ pat
-          pat = "(http|https|ftp)\\://[a-zA-Z0-9\\-\\.]+(:[a-zA-Z0-9]*)?/?([-a-zA-Z0-9\\._\\?\\,\\'/\\\\\\+&%\\$#\\=~])*"
+          pat = "(http|https|ftp)\\://[a-zA-Z0-9\\-\\.]+(:[a-zA-Z0-9]*)?/?([-a-zA-Z0-9:\\._\\?\\,\\'/\\\\\\+&%\\$#\\=~])*"
 
 mkTinyURL url = 
     simpleDownload $ "http://is.gd/api.php?longurl=" ++ url
