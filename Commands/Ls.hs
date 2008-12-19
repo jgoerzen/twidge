@@ -37,13 +37,19 @@ import qualified System.IO.UTF8 as UTF8
 
 i = infoM "ls"
 
+defaultWidth = 80
+
 stdopts = [Option "a" ["all"] (NoArg ("a", "")) 
                       "Show ALL results, not just 1st page\n\
                       \WARNING: may generate excessive traffic.  \
                       \Use with caution!",
            Option "l" ["long"] (NoArg ("l", "")) 
                       "Long format output -- more info and \
-                      \tab-separated columns"]
+                      \tab-separated columns",
+           Option "w" ["width"] (ReqArg (stdRequired "w") "WIDTH")
+                      ("Set the margin at which word-wrapping occurs.\n\
+                       \Ignored in long format mode. Default is "
+                       ++ show defaultWidth ++ ".")]
 
 sinceopts = [
            Option "e" ["exec"] (ReqArg (stdRequired "e") "COMMAND")
@@ -223,20 +229,20 @@ getDMs = tag "direct-messages" /> tag "direct_message"
 longStatus :: Message -> String
 longStatus m = printf "%s\t%s\t%s\t%s\t%s\t\n"
                (sId m) (sSender m) (sRecipient m) (sText m) (sDate m)
-shortStatus :: Message -> String
-shortStatus m = 
+shortStatus :: Int -> Message -> String
+shortStatus width m = 
     (printf "%-22s %s\n" ("<" ++ sSender m ++ ">")
                (head wrappedtext)) ++
     concatMap (printf "%-22s %s\n" "") (tail wrappedtext)
-    where wrappedtext = map unwords $ wrapLine (80 - 22 - 2) (words (sText m))
+    where wrappedtext = map unwords $ wrapLine (width - 22 - 2) (words (sText m))
 
-shortDM :: Message -> String
-shortDM m =
+shortDM :: Int -> Message -> String
+shortDM width m =
      (printf "%-22s %-22s %s\n" ("<" ++ sSender m ++ ">")
                                  ("<" ++ sRecipient m ++ ">")
                                  (head wrappedtext)) ++
      concatMap (printf "%-22s %-22s %s\n" "" "") (tail wrappedtext)
-     where wrappedtext = map unwords $ wrapLine (80 - 22 - 22 - 3) (words (sText m))
+     where wrappedtext = map unwords $ wrapLine (width - 22 - 22 - 3) (words (sText m))
 
 printStatus section cp args m = 
     printGeneric shortStatus longStatus section cp args m
@@ -251,7 +257,9 @@ printGeneric shortfunc longfunc section cp args m =
             (Just cmd, _) ->
                 runIO $ (cmd, [sId m, sSender m, sRecipient m, 
                                sText m, sDate m])
-            (Nothing, Nothing) -> UTF8.putStr (shortfunc m)
+            (Nothing, Nothing) -> UTF8.putStr (shortfunc (case lookup "w" args of 
+                                                            Just ws -> read ws
+                                                            Nothing -> defaultWidth) m)
             (Nothing, Just _) -> UTF8.putStr (longfunc m)
       Just recipient -> mailto section cp args m recipient
     where msgid = genMsgId section m cp
