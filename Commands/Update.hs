@@ -112,7 +112,13 @@ shortenUrls status =
           pat = "(http|https|ftp)\\://[a-zA-Z0-9\\-\\.]+(:[a-zA-Z0-9]*)?/?([-a-zA-Z0-9:\\._\\?\\,\\'/\\\\\\+&%\\$#\\=~])*"
 
 mkTinyURL url = 
-    simpleDownload $ "http://is.gd/api.php?longurl=" ++ url
+    simpleDownload . concat $ "http://is.gd/api.php?longurl=" : map escapeHashes url
+    where
+      -- NOTE: This technique works with the is.gd "API"
+      -- but does not work with the tinyurl.com "API"
+      escapeHashes :: Char -> String
+      escapeHashes '#' = "%23"
+      escapeHashes c   = [c]
 
 update_help =
  "Usage: twidge update [status]\n\n\
