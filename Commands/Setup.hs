@@ -44,7 +44,7 @@ setup_worker cpath cp _ =
        hSetBuffering stdout NoBuffering
        putStrLn "\nWelcome to twidge.  We will now configure twidge for your"
        putStrLn "use with Twitter.  This will be quick and easy!\n"
-       putStrLn "First, what is your usename?\n"
+       putStrLn "First, what is your username?\n"
        putStr   "Username: "
        username <- getLine
        putStrLn $ "\nWelcome, " ++ username ++ "!  Now I'll need your password.\n"
