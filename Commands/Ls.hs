@@ -295,31 +295,7 @@ mailto section cp args m recipient =
 lsfollowing = simpleCmd "lsfollowing" "List people you are following"
              lsfollowing_help
              stdopts (paginated lsfollowing_worker)
-
-lsfollowing_worker _ cp (args, user) page =
-    do xmlstr <- sendAuthRequest cp url [("page", show page)] []
-       debugM "lsfollowing" $ "Got doc: " ++ xmlstr
-       let doc = getContent . xmlParse "lsfollowing" . stripUnicodeBOM $ xmlstr
-       let users = map procUsers . getUsers $ doc
-       mapM_ (printUser args) users
-       return users
-       
-    where url = case user of
-                  [] -> "/statuses/friends.xml"
-                  [x] -> "/statuses/friends/" ++ x ++ ".xml"
-                  _ -> error "Invalid args to lsfollowing; see twidge lsfollowing --help"
-
-printUser args (name, userid) = 
-    case lookup "l" args of
-      Nothing -> putStrLn name
-      Just _ -> printf "%s\t%s\n" userid name
-
-getUsers = tag "users" /> tag "user"
-
-procUsers :: Content -> (String, String)
-procUsers item =
-    (sanitize $ contentToString (keep /> tag "screen_name" /> txt $ item),
-     sanitize $ contentToString (keep /> tag "id" /> txt $ item))
+lsfollowing_worker = genericfb_worker "lsfollowing" "/statuses/friends"
 
 lsfollowing_help =
  "Usage: twidge lsfollowing [options] [username]\n\n\
@@ -333,21 +309,39 @@ lsfollowing_help =
 lsfollowers = simpleCmd "lsfollowers" "List people that follow you"
              lsfollowers_help
              stdopts (paginated lsfollowers_worker)
-
-lsfollowers_worker _ cp (args, user) page =
-    do xmlstr <- sendAuthRequest cp url [("page", show page)] []
-       debugM "lsfollowers" $ "Got doc: " ++ xmlstr
-       let doc = getContent . xmlParse "lsfollowers" . stripUnicodeBOM $ xmlstr
-       let users = map procUsers . getUsers $ doc
-       mapM_ (printUser args) users
-       return users
-       
-    where url = case user of
-                  [] -> "/statuses/followers.xml"
-                  [x] -> "/statuses/followers/" ++ x ++ ".xml"
-                  _ -> error "Invalid args to lsfollowers; see twidge lsfollowers --help"
+lsfollowers_worker = genericfb_worker "lsfollowers" "/statuses/followers"
 
 lsfollowers_help =
  "Usage: twidge lsfollowers [options] [username]\n\n\
  \If username is given, list the twitter accounts that follow the user.\n\
  \Otherwise, list the twitter accounts that follow you.\n"
+
+------------------------------------------------------------
+-- Generic follow/block support
+-- urlbase should be "/statuses/followers" or "/statuses/friends"
+------------------------------------------------------------
+
+genericfb_worker cmdname urlbase _ cp (args, user) page =
+    do xmlstr <- sendAuthRequest cp url [("page", show page)] []
+       debugM cmdname $ "Got doc: " ++ xmlstr
+       let doc = getContent . xmlParse cmdname . stripUnicodeBOM $ xmlstr
+       let users = map procUsers . getUsers $ doc
+       mapM_ (printUser args) users
+       return users
+       
+    where url = case user of
+                  [] -> urlbase ++ ".xml"
+                  [x] -> urlbase ++ "/" ++ x ++ ".xml"
+                  _ -> error $ "Invalid args to " ++ cmdname ++ 
+                       "; see twidge " ++ cmdname ++ " --help"
+          printUser args (name, userid) = 
+              case lookup "l" args of
+                Nothing -> putStrLn name
+                Just _ -> printf "%s\t%s\n" userid name
+
+          getUsers = tag "users" /> tag "user"
+
+          procUsers :: Content -> (String, String)
+          procUsers item =
+              (sanitize $ contentToString (keep /> tag "screen_name" /> txt $ item),
+               sanitize $ contentToString (keep /> tag "id" /> txt $ item))
