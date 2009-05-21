@@ -49,6 +49,7 @@ allCommands =
      lscommands,
      Commands.Ls.lsdm,
      Commands.Ls.lsdmarchive,
+     Commands.Ls.lsblocking,
      Commands.Ls.lsfollowers,
      Commands.Ls.lsfollowing,
      Commands.Ls.lsrecent,

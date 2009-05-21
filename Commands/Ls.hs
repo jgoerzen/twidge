@@ -16,7 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Ls(lsrecent, lsreplies, lsfollowing, lsfollowers, lsarchive, lsdm, lsdmarchive) where
+module Commands.Ls(lsrecent, lsreplies, lsblocking,
+                   lsfollowing, lsfollowers, lsarchive, lsdm, lsdmarchive) where
 import Utils
 import System.Log.Logger
 import Types
@@ -296,7 +297,6 @@ lsfollowing = simpleCmd "lsfollowing" "List people you are following"
              lsfollowing_help
              stdopts (paginated lsfollowing_worker)
 lsfollowing_worker = genericfb_worker "lsfollowing" "/statuses/friends"
-
 lsfollowing_help =
  "Usage: twidge lsfollowing [options] [username]\n\n\
  \If username is given, list the twitter accounts that user is following.\n\
@@ -310,11 +310,22 @@ lsfollowers = simpleCmd "lsfollowers" "List people that follow you"
              lsfollowers_help
              stdopts (paginated lsfollowers_worker)
 lsfollowers_worker = genericfb_worker "lsfollowers" "/statuses/followers"
-
 lsfollowers_help =
  "Usage: twidge lsfollowers [options] [username]\n\n\
  \If username is given, list the twitter accounts that follow the user.\n\
  \Otherwise, list the twitter accounts that follow you.\n"
+
+--------------------------------------------------
+-- lsblocking
+--------------------------------------------------
+
+lsblocking = simpleCmd "lsblocking" "List people you are blocking"
+             lsblocking_help
+             stdopts (paginated lsblocking_worker)
+lsblocking_worker = genericfb_worker "lsblocking" "/blocks/blocking"
+lsblocking_help =
+ "Usage: twidge lsblocking [options]\n\n\
+ \List the twitter accounts that your account is blocking.\n"
 
 ------------------------------------------------------------
 -- Generic follow/block support
