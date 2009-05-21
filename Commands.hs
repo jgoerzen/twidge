@@ -35,7 +35,7 @@ import Utils
 import Types
 import Config
 
-import qualified Commands.Follow
+import qualified Commands.FollowBlock
 import qualified Commands.Ls
 import qualified Commands.Setup
 import qualified Commands.Update
@@ -43,7 +43,8 @@ import qualified Commands.Update
 --allCommands :: [(String, Command)]
 allCommands = 
     [Commands.Update.dmsend,
-     Commands.Follow.follow,
+     Commands.FollowBlock.block,
+     Commands.FollowBlock.follow,
      Commands.Ls.lsarchive,
      lscommands,
      Commands.Ls.lsdm,
@@ -53,7 +54,8 @@ allCommands =
      Commands.Ls.lsrecent,
      Commands.Ls.lsreplies,
      Commands.Setup.setup,
-     Commands.Follow.unfollow,
+     Commands.FollowBlock.unblock,
+     Commands.FollowBlock.unfollow,
      Commands.Update.update
     ]
 
