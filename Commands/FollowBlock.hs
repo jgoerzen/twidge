@@ -48,17 +48,17 @@ unblock_help = generic_rm_help "block"
 
 generic_worker urlbase cmdname _ cp ([], [user]) =
     do xmlstr <- sendAuthRequest cp (urlbase ++ user ++ ".xml") [] [("id", user)]
-       debugM debugstr $ "Got doc: " ++ xmlstr
+       debugM cmdname $ "Got doc: " ++ xmlstr
        -- let doc = getContent . xmlParse "follow" . stripUnicodeBOM $ xmlstr
        -- return ()
        
 generic_worker _ cmdname _ _ _ =
-    permFail "follow: syntax error; see twidge " ++ cmdname ++ " --help"
+    permFail $ "follow: syntax error; see twidge " ++ cmdname ++ " --help"
 
 generic_add_help cmd = 
  "Usage: twidge " ++ cmd ++ " username\n\n\
  \will add username to your list of people you " ++ cmd ++ ".\n\n"
 
-generic_rm_help =
+generic_rm_help cmd =
  "Usage: twidge un" ++ cmd ++ " username\n\n\
  \will remove username from the list of people you " ++ cmd ++ ".\n"
