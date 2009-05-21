@@ -35,6 +35,7 @@ import Control.Monad(when)
 import HSH
 import System.Console.GetOpt.Utils
 import qualified System.IO.UTF8 as UTF8
+import Network.URI
 
 i = infoM "ls"
 
@@ -69,17 +70,6 @@ sinceopts = [
            Option "u" ["unseen"] (NoArg ("u", ""))
                       "Show only items since the last use of --saveid"]
 
-paginated workerfunc cppath cp (args, remainder)
-    | lookup "a" args == Nothing = 
-        do workerfunc cppath cp (args, remainder) 1
-           return ()
-    | otherwise = paginateloop 1
-    where paginateloop page =
-              do r <- workerfunc cppath cp (args, remainder) page
-                 if null r
-                     then return ()
-                     else paginateloop (page + 1)
-
 maybeSaveList section cpath cp args [] = return ()
 maybeSaveList section cpath cp args newids =
     do debugM section $ "maybeSaveList called for " ++ section ++ ": " 
@@ -113,7 +103,7 @@ sinceArgs section cp args =
           [("since_id", strip a)]
 
 --------------------------------------------------
--- lsrecent
+-- lsrecent & friends
 --------------------------------------------------
 
 lsrecent = simpleCmd "lsrecent" "List recent updates from those you follow"
@@ -287,7 +277,20 @@ mailto section cp args m recipient =
                      "",
                      sText m,
                      "",
-                     "(from " ++ sSender m ++ ")"]
+                     "(from " ++ sSender m ++ ")"
+                    ,""
+                    ,"Tweet URL: http://twitter.com/" ++ sSender m ++
+                     "/status/" ++ sId m
+                    ,"Reply URL: http://twitter.com/home?status=@" ++
+                     escapeURIString isUnreserved (sSender m ++ " ") ++
+                     "&in_reply_to_status_id=" ++ sId m ++ "&in_reply_to=" ++
+                     escapeURIString isUnreserved (sSender m)
+                    ,"User home: http://twitter.com/" ++ sSender m
+                    ]
+
+----------------------------------------------------------------------
+-- Follow/block type commands
+----------------------------------------------------------------------
 
 --------------------------------------------------
 -- lsfollowing
@@ -356,3 +359,26 @@ genericfb_worker cmdname urlbase _ cp (args, user) page =
           procUsers item =
               (sanitize $ contentToString (keep /> tag "screen_name" /> txt $ item),
                sanitize $ contentToString (keep /> tag "id" /> txt $ item))
+
+----------------------------------------------------------------------
+-- Generic Utilities
+----------------------------------------------------------------------
+
+{- | Calls the workerfunc once if --all wasn't given, to load page 1.
+
+Otherwise, calls workerfunc repeatedly to load all pages, one after another, as
+long as it continues to return data.
+
+Used to wrap around worker functions where multiple pages of data can be
+returned. -}
+paginated workerfunc cppath cp (args, remainder)
+    | lookup "a" args == Nothing = 
+        do workerfunc cppath cp (args, remainder) 1
+           return ()
+    | otherwise = paginateloop 1
+    where paginateloop page =
+              do r <- workerfunc cppath cp (args, remainder) page
+                 if null r
+                     then return ()
+                     else paginateloop (page + 1)
+
