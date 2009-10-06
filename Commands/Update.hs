@@ -72,7 +72,7 @@ update_worker _ _ _ =
 
 procStatus cp section status =
     do poststatus <- case get cp section "shortenurls" of
-                       Right True -> shortenUrls status
+                       Right True | length status > 140 -> shortenUrls status
                        _ -> return status
        when (length poststatus > 140)
                 (permFail $ "Your status update was " ++ 
