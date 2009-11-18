@@ -21,6 +21,7 @@ import Utils
 import System.Log.Logger
 import Types
 import System.Console.GetOpt
+import System.Console.GetOpt.Utils
 import Data.List
 import Download
 import Control.Monad(when)
@@ -34,7 +35,10 @@ i = infoM "update"
 update = simpleCmd "update" "Update your status"
              update_help
              [Option "r" ["recvmail"] (NoArg ("m", "")) 
-              "Receive update as body of email on stdin"]
+              "Receive update as body of email on stdin",
+              Option "i" ["inreplyto"] (ReqArg (stdRequired "i") "MSGID")
+              "Indicate this message is in reply to MSGID"
+             ]
              update_worker
 
 update_worker x cp ([("m", "")], []) =
@@ -59,9 +63,21 @@ update_worker x cp ([("m", "")], []) =
                              ([("source", "twidge"), ("status", poststatus)] ++
                               irt)
                    debugM "update" $ "Got doc: " ++ xmlstr
+
 update_worker x cp ([], []) =
     do l <- getLine
        update_worker x cp ([], [l])
+
+update_worker x cp ([("i", id )], []) =
+    do l <- getLine
+       update_worker x cp ([("i", id)], [l])
+
+update_worker _ cp ([("i", id)], [status]) =
+    do poststatus <- procStatus cp "update" status
+       xmlstr <- sendAuthRequest cp "/statuses/update.xml" [] 
+                 [("source", "Twidge"), ("status", poststatus), ("in_reply_to_status_id", id)]
+       debugM "update" $ "Got doc: " ++ xmlstr
+
 update_worker _ cp ([], [status]) =
     do poststatus <- procStatus cp "update" status
        xmlstr <- sendAuthRequest cp "/statuses/update.xml" [] 
