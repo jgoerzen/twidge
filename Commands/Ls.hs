@@ -36,6 +36,7 @@ import HSH
 import System.Console.GetOpt.Utils
 import qualified System.IO.UTF8 as UTF8
 import Network.URI
+import Data.Maybe (isJust)
 
 i = infoM "ls"
 
@@ -78,12 +79,14 @@ maybeSaveList section cpath cp args newids =
     where theid = maximum . map (read::String -> Integer) $ newids
 
 maybeSave section cpath cp args newid =
-    case (lookup "s" args, get cp section "lastid") of
-      (Nothing, _) -> do debugM "maybeSave" "maybeSave: No -s in args"
-                         return ()
-      (_, Left _) -> do debugM "maybeSave" "maybeSave: Will add ID"
-                        saveid
-      (_, Right x) ->
+    let sArg = isJust $ lookup "s" args
+        sConf = isRight True $ get cp "DEFAULT" "savelast"
+    in case (any id [sArg,sConf], get cp section "lastid") of
+      (False, _)     -> do debugM "maybeSave" "maybeSave: No -s nor savelast"
+                           return ()
+      (True, Left _) -> do debugM "maybeSave" "maybeSave: Will add ID"
+                           saveid
+      (True, Right x) ->
           if (read x) > (newid::Integer)
              then return ()
              else saveid
@@ -94,6 +97,8 @@ maybeSave section cpath cp args newid =
                                 else add_section cp section
                      cp2 <- set cp2 section "lastid" (show newid)
                      return cp2
+          isRight _  (Left _)   = False
+          isRight v1 (Right v2) = v1 == v2
 
 sinceArgs section cp args =
     case (lookup "u" args, get cp section "lastid") of
