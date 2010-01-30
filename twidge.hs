@@ -40,7 +40,7 @@ import System.Exit
 import Commands
 import Types
 import Control.Monad
-import Data.ConfigFile(emptyCP)
+import Data.ConfigFile(emptyCP,get)
 import System.IO
 import Paths_twidge(version)
 import Data.Version
@@ -58,6 +58,8 @@ options = [Option "d" ["debug"] (NoArg ("d", "")) "Enable debugging",
                   "Use specified config file",
            Option "" ["help"] (NoArg ("help", "")) "Display this help"]
 
+expandAlias cp cmd = either (const cmd) id $ get cp "alias" cmd
+
 worker args commandargs =
     do when (lookup "help" args == Just "") $ usageerror ""
        when (lookup "d" args == Just "") 
@@ -65,13 +67,17 @@ worker args commandargs =
        handler <- streamHandler stderr DEBUG -- stdout has issues with HSH
        updateGlobalLogger "" (setHandlers [handler])
        let commandname = head cmdargs
-       case lookup commandname allCommands of
-         Just command -> 
-             do cp <- if commandname `elem` ["lscommands", "setup"] -- no config file needed
-                      then return emptyCP
-                      else loadCP (lookup "c" args)
-                execcmd command (tail cmdargs) (lookup "c" args) cp
-         Nothing -> usageerror ("Invalid command name " ++ commandname)
+       cp <- if commandname `elem` ["lscommands", "setup"] -- no config file needed
+                then return emptyCP
+                else loadCP (lookup "c" args)
+       let cmdargs' = (words $ expandAlias cp commandname) ++ (tail cmdargs)
+       let commandname' = head cmdargs'
+       case lookup commandname' allCommands of
+         Just command -> execcmd command (tail cmdargs') (lookup "c" args) cp
+         Nothing -> if commandname == commandname'
+                      then usageerror ("Invalid command name " ++ commandname)
+                      else usageerror ("Invalid command name " ++ commandname
+                                      ++ " (aliased to " ++ commandname' ++ ")")
        where cmdargs = case commandargs of
                          [] -> ["help"]
                          x -> x

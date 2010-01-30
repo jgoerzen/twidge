@@ -21,6 +21,7 @@ import Utils
 import System.Log.Logger
 import Types
 import System.Console.GetOpt
+import System.Console.GetOpt.Utils
 import Data.List
 import Download
 import Control.Monad(when)
@@ -28,13 +29,26 @@ import Text.Regex.Posix
 import Data.ConfigFile
 import MailParser(message)
 import Text.ParserCombinators.Parsec
+import Network.Bitly (Account(..),bitlyAccount,jmpAccount,shorten)
+
+-- should work on GHC 6.10, probably an obsolete hack with GHC >= 6.12.1
+import Codec.Binary.UTF8.String (isUTF8Encoded, decodeString)
+
+utf8Decode :: String -> String
+utf8Decode s =
+  if isUTF8Encoded s
+    then decodeString s
+    else s
 
 i = infoM "update"
 
 update = simpleCmd "update" "Update your status"
              update_help
              [Option "r" ["recvmail"] (NoArg ("m", "")) 
-              "Receive update as body of email on stdin"]
+              "Receive update as body of email on stdin",
+              Option "i" ["inreplyto"] (ReqArg (stdRequired "i") "MSGID")
+              "Indicate this message is in reply to MSGID"
+             ]
              update_worker
 
 update_worker x cp ([("m", "")], []) =
@@ -59,9 +73,21 @@ update_worker x cp ([("m", "")], []) =
                              ([("source", "twidge"), ("status", poststatus)] ++
                               irt)
                    debugM "update" $ "Got doc: " ++ xmlstr
+
 update_worker x cp ([], []) =
     do l <- getLine
        update_worker x cp ([], [l])
+
+update_worker x cp ([("i", id )], []) =
+    do l <- getLine
+       update_worker x cp ([("i", id)], [l])
+
+update_worker _ cp ([("i", id)], [status]) =
+    do poststatus <- procStatus cp "update" status
+       xmlstr <- sendAuthRequest cp "/statuses/update.xml" [] 
+                 [("source", "Twidge"), ("status", poststatus), ("in_reply_to_status_id", id)]
+       debugM "update" $ "Got doc: " ++ xmlstr
+
 update_worker _ cp ([], [status]) =
     do poststatus <- procStatus cp "update" status
        xmlstr <- sendAuthRequest cp "/statuses/update.xml" [] 
@@ -72,9 +98,10 @@ update_worker _ _ _ =
 
 procStatus cp section status =
     do poststatus <- case get cp section "shortenurls" of
-                       Right True -> shortenUrls status
+                       Right True | length (utf8Decode status) > 140
+                                  -> shortenUrls cp status
                        _ -> return status
-       when (length poststatus > 140)
+       when (length (utf8Decode poststatus) > 140)
                 (permFail $ "Your status update was " ++ 
                           show (length poststatus) ++
                           " characters; max length 140")
@@ -96,20 +123,40 @@ dmsend_worker x cp ([], [recipient, status]) =
        debugM "dmsend" $ "Got doc: " ++ xmlstr
 dmsend_worker _ _ _ = permFail "Syntax error; see twidge dmsend --help"
 
-shortenUrls "" = return ""
-shortenUrls status = 
+shortenUrls _ "" = return ""
+shortenUrls cp status =
  do debugM "update" $ "shortenUrls considering: " ++ show status
+    shortURL <- chooseShortener cp
     if match == ""
        then return before       -- No match means no "after"
-       else do tiny <- mkTinyURL match
+       else do tiny <- shortURL match
                debugM "update" $ "Got tinyurl: " ++ show tiny
-               rest <- shortenUrls after
+               rest <- shortenUrls cp after
                return $ 
                       before ++ (if (length tiny < length match)
                                     then tiny else match)
                              ++ rest
     where (before, match, after) = status =~ pat
           pat = "(http|https|ftp)\\://[a-zA-Z0-9\\-\\.]+(:[a-zA-Z0-9]*)?/?([-a-zA-Z0-9:\\._\\?\\,\\'/\\\\\\+&%\\$#\\=~])*"
+
+chooseShortener cp = do
+  -- look either for [bitly] or [jmp] section in config
+  let (sec, newAccount) = if has_section cp "bitly"
+         then ("bitly", bitlyAccount)
+         else ("jmp",   jmpAccount)
+  -- [bitly] or [jmp] section should define both login and apikey
+  let acc = get cp sec "login" >>= \l ->
+            get cp sec "apikey" >>= \k ->
+            return $ newAccount { login=l, apikey=k }
+  return $ case acc of
+    Left _  -> mkTinyURL    -- use default
+    Right a -> mkBitlyURL a
+
+mkBitlyURL acc url = do
+  r <- shorten acc url
+  case r of
+    Left  e        -> permFail e      -- report bit.ly errors
+    Right shorturl -> return shorturl
 
 mkTinyURL url = 
     simpleDownload . concat $ "http://is.gd/api.php?longurl=" : map escapeHashes url
