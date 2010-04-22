@@ -1,0 +1,1771 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>twidge</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="twidge Manual"
+HREF="r1.html"><LINK
+REL="PREVIOUS"
+TITLE="twidge Manual"
+HREF="r1.html"><STYLE
+TYPE="text/css"
+>.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+    padding: 0.5em;
+}
+.programlisting {
+    background: #eeeeff;
+    border: solid 1px #aaaaff;
+    padding: 0.5em;
+}
+.variablelist {
+    padding: 4px;
+    margin-left: 3em;
+}
+.navigation {
+    background: #ffeeee;
+    border: solid 1px #ffaaaa;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.navigation a {
+    color: #770000;
+}
+.navigation a:visited {
+    color: #550000;
+}
+.navigation .title {
+    font-size: 200%;
+}</STYLE
+></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><TABLE
+WIDTH="100%"
+CLASS="navigation"
+SUMMARY="Navigation header"
+CELLPADDING="2"
+CELLSPACING="2"
+><TR
+VALIGN="middle"
+><TD
+><A
+ACCESSKEY="p"
+HREF="r1.html"
+><IMG
+SRC="left.png"
+WIDTH="24"
+HEIGHT="24"
+BORDER="0"
+ALT="Prev"></A
+></TD
+><TD
+><A
+ACCESSKEY="h"
+HREF="r1.html"
+><IMG
+SRC="home.png"
+WIDTH="24"
+HEIGHT="24"
+BORDER="0"
+ALT="Home"></A
+></TD
+><TH
+WIDTH="100%"
+align="center"
+>twidge Manual</TH
+></TR
+></TABLE
+><H1
+><A
+NAME="TWIDGE"
+></A
+>twidge</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN17"
+></A
+><H2
+>Name</H2
+>twidge&nbsp;--&nbsp;Microblogging client for Twitter, Identica</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN20"
+></A
+><H2
+>Synopsis</H2
+><P
+><B
+CLASS="COMMAND"
+>twidge</B
+>  [-d] [-c <TT
+CLASS="REPLACEABLE"
+><I
+>FILE</I
+></TT
+>]  <TT
+CLASS="REPLACEABLE"
+><I
+>command</I
+></TT
+>  [<TT
+CLASS="REPLACEABLE"
+><I
+>command_args</I
+></TT
+>]</P
+><P
+><B
+CLASS="COMMAND"
+>twidge</B
+>   --help </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.DESCRIPTION"
+></A
+><H2
+>Description</H2
+><P
+>      <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> is a client for microblogging sites such as 
+      <A
+HREF="http://twitter.com/"
+TARGET="_top"
+>Twitter</A
+> and
+      <A
+HREF="http://identi.ca/"
+TARGET="_top"
+>Identica</A
+> (identi.ca).
+      Microblogging sites let you post short one-paragraph updates,
+      follow the updates that your friends post, and interact with
+      everyone in the site in a conversation style.
+    </P
+><P
+>      <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> is a client to make working with microblogging sites
+      faster and easier.  It is extremely versatile, and can be
+      customized to work the way you want to work, and combined with
+      other tools to do just about anything.
+    </P
+><P
+>      <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> can be used quite nicely interactively from the shell.
+      It is useful directly as-is, and with simple shell aliases can
+      make a highly efficient system to do exactly what you want.  It
+      is perfectly capable of being your only client for
+      microblogging.
+    </P
+><P
+>      <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> also can be used in an automated way, via
+      <B
+CLASS="COMMAND"
+>cron(1)</B
+>, or it can even integrate with your
+      email system.
+    </P
+><P
+>      A full list of <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> features, along with numerous
+      suggestions on how to use it, can be found at the <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+>
+      website at <A
+HREF="http://software.complete.org/twidge"
+TARGET="_top"
+>http://software.complete.org/twidge</A
+>.
+    </P
+><P
+>      But, if you'd like to get going RIGHT NOW, skip to the Quick
+      Start section below.  For now, I'll summarize a few <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+>
+      features; a more comprehensive list is on the website.
+    </P
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.FEATURES"
+></A
+><H3
+>Feature List</H3
+><P
+></P
+><UL
+><LI
+><P
+>Convenient, easy to learn, and fast command-line
+            interface (it's simple to do simple things, and
+            advanced things are possible)</P
+></LI
+><LI
+><P
+>This extensive manual, and numerous examples
+        on the website</P
+></LI
+><LI
+><P
+>Compatible with any microblogging service that
+            implements the Twitter API.  Tested with Twitter and
+            Identica (identi.ca).  Should be compatible with any other
+            system.
+          </P
+></LI
+><LI
+><P
+>Full support for reading the activity of your
+            friends, replies to you, and your own
+            activity.</P
+></LI
+><LI
+><P
+>Optional capability to remember what you have
+            seen already and suppress those updates in future
+            runs.</P
+></LI
+><LI
+><P
+>Optional automatic shortening of long URLs via is.gd</P
+></LI
+><LI
+><P
+>Optional integration with your email system --
+            send and receive updates via email.</P
+></LI
+><LI
+><P
+>Specifically designed to be friendly to use in
+            shell scripts.</P
+></LI
+><LI
+><P
+>Shell scripting makes it easy to do many
+            things, such as scheduling future updates (with
+            <B
+CLASS="COMMAND"
+>at</B
+>), ignoring certain updates
+            (with <B
+CLASS="COMMAND"
+>grep</B
+>), etc.</P
+></LI
+><LI
+><P
+>Easy use of multiple accounts by having
+            multiple configuration profiles.   Mechanism lends itself
+            to shell aliases and tools.</P
+></LI
+><LI
+><P
+>Small, minimalist footprint</P
+></LI
+><LI
+><P
+>Output formats are easily parsed.  Input
+            formats are easily generated.  Configuration file format is
+            liberal and easy to generate.
+          </P
+></LI
+><LI
+><P
+>Robust error detection and recovery
+        throughout.
+          </P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.QUICKSTART"
+></A
+><H2
+>Quick Start</H2
+><P
+>      This section will describe how a first-time <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> user can
+      get up and running quickly.  It assumes you already have
+      <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> compiled or installed on your system.  If not,
+      please follow the instructions in the
+      <TT
+CLASS="FILENAME"
+>INSTALL</TT
+>
+      file in the
+      source distribution.
+    </P
+><P
+>      To get started, simply run <B
+CLASS="COMMAND"
+>twidge setup</B
+> at your
+      shell prompt.  <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> will lead you through the first-time
+      configuration -- which is only two questions and completely
+      self-explanatory!
+    </P
+><P
+>      Now, let's start exploring.  <B
+CLASS="COMMAND"
+>twidge lsrecent
+      -su</B
+> will show you the 20 most recent updates from the
+      people you follow.  After the first time, it will remember what
+      you've seen and only show you new updates.  In place of
+      <B
+CLASS="COMMAND"
+>lsrecent</B
+>, you could substitue
+      <B
+CLASS="COMMAND"
+>lsreplies</B
+> to replies to you.  You can also
+      run <B
+CLASS="COMMAND"
+>twidge lsrecent --help</B
+>, or refer to this
+      document, for more details on the command.  In short, -s tells
+      the system to save what you've seen, and -u tells it to only
+      show you unseen items.
+    </P
+><P
+>      You can subscribe to updates from friends by running
+      <B
+CLASS="COMMAND"
+>twidge follow
+      <TT
+CLASS="REPLACEABLE"
+><I
+>nick</I
+></TT
+></B
+>.  To subscribe to
+      updates for <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> itself, you'd run <B
+CLASS="COMMAND"
+>twidge follow
+      unixtwidge</B
+>.  If you've had enough of updates from
+      someone, just use the <B
+CLASS="COMMAND"
+>twidge unfollow</B
+> command.
+    </P
+><P
+>      Now, how about posting your own updates?  Just type
+      <B
+CLASS="COMMAND"
+>twidge update</B
+>.  Type your update, and press
+      Enter when done.  Your update may scroll past the end of the
+      screen; don't worry about it.  Just don't hit Enter until you're
+      done.  You can also pass your update on the command line, taking
+      care to quote it if it contains spaces or shell characters.
+    </P
+><P
+>      That's the quick tour.  For many more examples, refer to the
+      website.
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.OPTIONS"
+></A
+><H2
+>Options</H2
+><P
+>      <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> always is invoked with the name of a specific
+      operation, such as <CODE
+CLASS="OPTION"
+>update</CODE
+> or
+      <CODE
+CLASS="OPTION"
+>lsrecent</CODE
+>.  In <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+>, these operations are
+      called <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>commands</I
+></SPAN
+>.  Each command has its
+      own options, which are given after the command on the
+      <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> command line.  A full summary of each command's
+      options is given later in this manual.
+    </P
+><P
+>      You may obtain a list of all commands with <B
+CLASS="COMMAND"
+>twidge
+        lscommands</B
+>.  Help is available for any individual
+      command with <B
+CLASS="COMMAND"
+>twidge <TT
+CLASS="REPLACEABLE"
+><I
+>command</I
+></TT
+>
+        --help</B
+>.  Global help is available with
+      <B
+CLASS="COMMAND"
+>twidge --help</B
+>.
+    </P
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.OPTIONS.GLOBAL"
+></A
+><H3
+>Global Options</H3
+><P
+>        These options may be specified <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>before</I
+></SPAN
+> any
+        command.
+      </P
+><P
+></P
+><TABLE
+CLASS="variablelist"
+BORDER="0"
+CELLSPACING="0"
+CELLPADDING="4"
+><TBODY
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN127"><SPAN
+STYLE="white-space: nowrap"
+>-c <TT
+CLASS="REPLACEABLE"
+><I
+>FILE</I
+></TT
+></SPAN
+>, <SPAN
+STYLE="white-space: nowrap"
+>--config=<TT
+CLASS="REPLACEABLE"
+><I
+>FILE</I
+></TT
+></SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              By default, <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> uses
+              <TT
+CLASS="FILENAME"
+>~/.twidgerc</TT
+> for configuration.
+              With this option, you can specify an alternate file.
+              <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> will read configuration information
+              from it.  In certain cases, <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> will also write to
+              it, such as with the <B
+CLASS="COMMAND"
+>twidge setup</B
+>
+              command, or the -s option to one of the ls commands.
+            </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN139"><SPAN
+STYLE="white-space: nowrap"
+>-d</SPAN
+>, <SPAN
+STYLE="white-space: nowrap"
+>--debug</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              Enables debugging output.  This verbose output helps you
+              learn what <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> is doing every step of the way and
+              diagnose any problems you may encounter.
+            </P
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.COMMANDS"
+></A
+><H2
+>Commands in Twidge</H2
+><P
+>      <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> has many different commands.  You must specify a
+      command when using <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+>.
+      This section will discuss each command in
+      detail.  Note that all commands are case-sensitive and should be
+      <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>given in lowercase</I
+></SPAN
+>.
+    </P
+><P
+>      All commands support the option <CODE
+CLASS="OPTION"
+>--help</CODE
+>.  Running
+      <B
+CLASS="COMMAND"
+>twidge <TT
+CLASS="REPLACEABLE"
+><I
+>command</I
+></TT
+>
+      --help</B
+> will display information about the command and
+      its options.  Since all commands support this, it won't be
+      explicitly listed for each command below.
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.COMMANDS.UPDATEDISPLAY"
+></A
+><H2
+>Commands to Display Updates</H2
+><P
+><B
+CLASS="COMMAND"
+>twidge ls<TT
+CLASS="REPLACEABLE"
+><I
+>*</I
+></TT
+></B
+>  [-a] [-l] [-s] [-u]</P
+><P
+>      Several commands can display updates from yourself or others.
+      They all share a common syntax and common set of options.  The
+      commands are <B
+CLASS="COMMAND"
+>lsarchive</B
+>,
+      <B
+CLASS="COMMAND"
+>lsdm</B
+>, <B
+CLASS="COMMAND"
+>lsdmarchive</B
+>,
+      <B
+CLASS="COMMAND"
+>lsrecent</B
+>, and <B
+CLASS="COMMAND"
+>lsreplies</B
+>.
+      Here are the common options:
+    </P
+><P
+></P
+><TABLE
+CLASS="variablelist"
+BORDER="0"
+CELLSPACING="0"
+CELLPADDING="4"
+><TBODY
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN173"><SPAN
+STYLE="white-space: nowrap"
+>-a</SPAN
+>, <SPAN
+STYLE="white-space: nowrap"
+>--all</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>            Normally, microblogging sites return one "page" of results
+            -- typically, 20 or 100 results, depending on the
+            operation.  Specifying --all requests <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> to
+            continually send requests to the microblogging site until
+            it receives an entire set of information.  Normally this
+            is a bad idea, but when used in combination with -u --
+            especially if you have used -s before -- it can be a
+            useful way to poll for all new updates.
+          </P
+><P
+>            If not used carefully, this command can generate many
+            requests to the server and can use a significant amount of
+            bandwidth.  Microblogging sites have traffic limits, and
+            will not take kindly to this.  Be careful when you use
+            --all.
+          </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN180"><SPAN
+STYLE="white-space: nowrap"
+>-e <TT
+CLASS="REPLACEABLE"
+><I
+>command</I
+></TT
+></SPAN
+>, <SPAN
+STYLE="white-space: nowrap"
+>--exec=<TT
+CLASS="REPLACEABLE"
+><I
+>command</I
+></TT
+></SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>            Causes any normal output to be suppressed.  Instead, for
+            each item that is retrieved, call the given command.  The
+            command will be passed exactly four arguments.  Care
+            should be exercised when using them in shell scripts due
+            to the likelihood of the presence of shell
+            metacharacters.  The arguments are:
+          </P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>                The update ID for the given update.
+              </P
+></LI
+><LI
+><P
+>                The username that created the update</P
+></LI
+><LI
+><P
+>                A suggested Message-ID for representing the update in
+                email.  Contains the enclosing angle brackets.
+              </P
+></LI
+><LI
+><P
+>                The update text itself.  Likely contains spaces and
+                other shell metacharacters.
+              </P
+></LI
+></OL
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN196"><SPAN
+STYLE="white-space: nowrap"
+>-l</SPAN
+>, <SPAN
+STYLE="white-space: nowrap"
+>--long</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>            The default output format shows a nickname and a message,
+            formatted nicely for display.  Using this option causes
+            output to include these columns: message ID, sender nick,
+            recipient nick (empty unless a direct message), update
+            text, and date created.
+            The output format is suitable for machine parsing. 
+            horizontal tab character \t separates the columns,
+            and is guaranteed to appear nowhere else.  It is also
+            guaranteed that \n will appear nowhere within a line when
+            using -l.
+          </P
+><P
+>            The columns as presented are anticipated to remain
+            stable.  However, additional columns could be added to the
+            right of these columns in future versions of <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+>.
+            Well-behaved parsers should be prepared to discard any
+            surplus columns to the right of those specified in this
+            document.
+          </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN203"><SPAN
+STYLE="white-space: nowrap"
+>-m <TT
+CLASS="REPLACEABLE"
+><I
+>address</I
+></TT
+></SPAN
+>, <SPAN
+STYLE="white-space: nowrap"
+>--mailto=<TT
+CLASS="REPLACEABLE"
+><I
+>address</I
+></TT
+></SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>            Causes any normal output to be suppressed.  Instead, for
+            each item that is retrieved, generate an email and send it
+            to the given address.  The subject line will contain the
+            sender nickname and the first 30 characters of the text.
+            The body will contain
+            the entire text.  The message is sent by using the program
+            listed as sendmail in the configuration file.  If mailfrom
+            is listed in the configuration file, it is listed as the
+            from address and the name of the sender is listed as the
+            from comment.
+          </P
+><P
+>            A Message-ID designed to uniquely identify this update is
+            generated and included.  In addition, headers beginning
+            with X-Twidge- will be added, with various metadata.
+          </P
+><P
+>            It should be noted that a simple script could be used with
+            --exec to achieve this same purpose, but with greater
+            flexibility.
+            The functionality is built into <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> as well for
+            convenience.
+          </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN213"><SPAN
+STYLE="white-space: nowrap"
+>-s</SPAN
+>, <SPAN
+STYLE="white-space: nowrap"
+>--saveid</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>            Saves the ID of the most recent fetched message for future
+            use with -u.  Requires write access to your configuration
+            file.
+          </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN218"><SPAN
+STYLE="white-space: nowrap"
+>-u</SPAN
+>, <SPAN
+STYLE="white-space: nowrap"
+>--unseen</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>            Causes the command to show only items since the last use
+            of -s with this particular command.  If -s has never
+            before been used with this command, has no effect.
+          </P
+><P
+>            As of September 2008, Identi.ca does not support the
+            since_id parameter that is required for this option to be
+            effective.  A future version of <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> may implement a
+            workaround.
+          </P
+></TD
+></TR
+></TBODY
+></TABLE
+><P
+>      Some of these options don't make sense together; for instance,
+      --long, --exec, and --mailto are mutually exclusive.  Results
+      are undefined if you use such options simultaneously.
+    </P
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.LSARCHIVE"
+></A
+><H3
+>lsarchive</H3
+><P
+>        Lists your own posts.
+      </P
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.LSDM"
+></A
+><H3
+>lsdm</H3
+><P
+>        Lists direct messages sent to you.  Note: identi.ca does not
+        support direct messages, and this will cause an error with
+        that service.
+      </P
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.LSDMARCHIVE"
+></A
+><H3
+>lsdmarchive</H3
+><P
+>        Lists direct messages you have sent.  Note: identi.ca does not
+        support direct messages, and this command will cause an error
+        with that service.
+      </P
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.LSRECENT"
+></A
+><H3
+>lsrecent</H3
+><P
+>        Lists recent posts made by you or the people you follow.
+      </P
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.LSREPLIES"
+></A
+><H3
+>lsreplies</H3
+><P
+>        Lists recent replies made by anyone on the microblogging site
+        to you.
+      </P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.COMMANDS.DISPLAYINFO"
+></A
+><H2
+>Commands to Display Other Information</H2
+><P
+>      These commands honor --all and --long like the other commands,
+      but do not honor --saveid or --unseen, as these options make no
+      sense.
+    </P
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.LSFOLLOWERS"
+></A
+><H3
+>lsfollowers</H3
+><P
+><B
+CLASS="COMMAND"
+>twidge lsfollowers</B
+>  [<TT
+CLASS="REPLACEABLE"
+><I
+>options</I
+></TT
+>] [<TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+>]</P
+><P
+>        Will slow a list of people following you.  If given an
+        optional username, shows the people that follow that user.  If
+        given --long, shows the IDs for each person.  You may need to
+        use --all to get a complete list, but again this may generate
+        significant traffic.
+      </P
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.LSFOLLOWING"
+></A
+><H3
+>lsfollowing</H3
+><P
+><B
+CLASS="COMMAND"
+>twidge lsfollowing</B
+>  [<TT
+CLASS="REPLACEABLE"
+><I
+>options</I
+></TT
+>] [<TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+>]</P
+><P
+>        Shows a list of the people you follow.  Arguments and actions
+        are the same as with lsfollowers.
+      </P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.COMMANDS.ACTION"
+></A
+><H2
+>Action Commands</H2
+><P
+>      These commands perform an action on the server.
+    </P
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.DMSEND"
+></A
+><H3
+>dmsend</H3
+><P
+><B
+CLASS="COMMAND"
+>twidge dmsend</B
+>   <TT
+CLASS="REPLACEABLE"
+><I
+>recipient</I
+></TT
+>  [<TT
+CLASS="REPLACEABLE"
+><I
+>status</I
+></TT
+>]</P
+><P
+>        Causes <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> to send a new direct message to the designated
+        recipient.  If a
+        status is given on the command line, it must be presented as a
+        single argument to <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> by the use of shell quoting if
+        needed.  If no status is given on the command line, a single
+        line will be read from stdin and used as the status.
+      </P
+><P
+>        The maximum length of updates on various microblogging sites
+        is 140 characters.  Twidge will abort with an error if your
+        update attempt exceeds that length.
+      </P
+><P
+>        By default, Twidge will attempt to shorten URLs in your
+        updates via the is.gd service.  You can disable this by
+        setting shortenurls = no in the [DEFAULT] or [dmsend] section of your
+        configuration file.
+      </P
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.FOLLOW"
+></A
+><H3
+>follow</H3
+><P
+><B
+CLASS="COMMAND"
+>twidge follow</B
+>   <TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+> </P
+><P
+>        This command will cause <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> to request that the
+        microblogging site add the given username to the list of
+        people you follow.  It is considered an error to attempt to
+        add someone you already follow.
+      </P
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.SETOP"
+></A
+><H3
+>setup</H3
+><P
+><B
+CLASS="COMMAND"
+>twidge setup</B
+> </P
+><P
+>        Enters the interactive first-time setup tool.
+      </P
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.UNFOLLOW"
+></A
+><H3
+>unfollow</H3
+><P
+><B
+CLASS="COMMAND"
+>twidge unfollow</B
+>   <TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+> </P
+><P
+>        This command will cause <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> to request that the
+        microblogging site remove the given username from the list of
+        people you follow.  It is considered an error to attempt to
+        remove someone you do not follow.
+      </P
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.UPDATE"
+></A
+><H3
+>update</H3
+><P
+><B
+CLASS="COMMAND"
+>twidge update</B
+>  [<TT
+CLASS="REPLACEABLE"
+><I
+>status</I
+></TT
+>]</P
+><P
+><B
+CLASS="COMMAND"
+>twidge update -r</B
+> </P
+><P
+>        Causes <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> to post a new status to the server.  If a
+        status is given on the command line, it must be presented as a
+        single argument to <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> by the use of shell quoting if
+        needed.  If no status is given on the command line, a single
+        line will be read from stdin and used as the status.
+      </P
+><P
+>        The maximum length of updates on various microblogging sites
+        is 140 characters.  Twidge will abort with an error if your
+        update attempt exceeds that length.
+      </P
+><P
+>        By default, Twidge will attempt to shorten URLs in your
+        updates via the TinyURL.com service.  You can disable this by
+        setting shortenurls = no in the [DEFAULT] or [update] section of your
+        configuration file.
+      </P
+><P
+>        When -r is given, <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> expects to read an RFC2822 email
+        message in stdin.  The body of the message will be used as the
+        content of the update.  The References header of the message
+        will be briefly scanned, and if appropriate, the reply-to
+        attribute of the update will reflect the Message-ID referred
+        to therein.  This way, if you use <B
+CLASS="COMMAND"
+>twidge lsrecent
+        --mailto</B
+> to email recent items to you, then use your
+        email reply button to reply to them, <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> will link the
+        two on Twitter.  This linkage can be done even if you omit
+        @reply, but will likely confuse many people because most other
+        clients can't do this.  You should still include @reply.
+      </P
+><P
+>        It should be noted that, in an effort to minimize size and
+        complexity, <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> has an extremely simple email parser.
+        You should send it only plain text messages.  Do not use HTML,
+        RTF, attachments, or anything that would cause MIME headers to
+        appear in the RFC2822 body.  You probably want to turn off
+        your signature as well. <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> will convert newline
+        characters to spaces when processing your message body.  
+      </P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.COMMANDS.OTHER"
+></A
+><H2
+>Other Command</H2
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.LSCOMMANDS"
+></A
+><H3
+>lscommands</H3
+><P
+><B
+CLASS="COMMAND"
+>twidge lscommands</B
+> </P
+><P
+>        This command will display a list of all available <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+>
+        commands along with a brief description of each.
+      </P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.CONFIG"
+></A
+><H2
+>twidge Configuration File</H2
+><P
+>      <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> has a configuration file in which you can set various
+      options.  This file normally lives under
+      <TT
+CLASS="FILENAME"
+>~/.twidgerc</TT
+>.
+    </P
+><P
+>      The configuration file has multiple sections.  Each section has
+      a name and is introduced with the name in brackets.  Each
+      section has one or more options.
+    </P
+><P
+>      The section named DEFAULT is special in that it provides
+      defaults that will be used whenever an option can't be found
+      under a different section.  If you specify no section names,
+      DEFAULT is the assumed section.  Some items, such as username,
+      password, and urlbase are assumed to be in DEFAULT.
+    </P
+><P
+>      Let's start by looking at an example file, and then proceed to
+      examine all the options that are available.
+    </P
+><PRE
+CLASS="PROGRAMLISTING"
+>[DEFAULT]
+
+; Username and password
+username = ilovetwidge
+
+password = secret
+
+; If your password contains a percent sign (%), list it twice (%%)
+
+; Path to server API interface -- no trailing slash
+urlbase = https://twitter.com
+
+shortenurls = yes
+
+; Last IDs seen by different commands.  Written to with -s.
+
+[lsarchive]
+lastid = 917383569
+
+[lsrecent]
+lastid = 914881241</PRE
+><P
+>      Whenever <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> looks for information about a particular
+      option, it first checks to see if it can find that option in a
+      section for that option.  If not, it checks the
+      <CODE
+CLASS="OPTION"
+>DEFAULT</CODE
+> section.  If it still doesn't find an
+      answer, it consults its built-in defaults.  The only built-in
+      default at present is urlbase.
+    </P
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.CONFIG.GENERAL"
+></A
+><H3
+>General Options</H3
+><P
+>These are specified in the <CODE
+CLASS="OPTION"
+>DEFAULT</CODE
+>
+        section.
+      </P
+><P
+></P
+><TABLE
+CLASS="variablelist"
+BORDER="0"
+CELLSPACING="0"
+CELLPADDING="4"
+><TBODY
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN347"><SPAN
+STYLE="white-space: nowrap"
+>username</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              Your username on the microblogging site.  No default.
+            </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN351"><SPAN
+STYLE="white-space: nowrap"
+>password</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              Your password on the microblogging site.  No default.
+            </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN355"><SPAN
+STYLE="white-space: nowrap"
+>urlbase</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              The URL to access the API of the microblogging site.
+              The default, <TT
+CLASS="LITERAL"
+>https://twitter.com</TT
+> is
+              for Twitter.  To use Identica, you would specify
+              <TT
+CLASS="LITERAL"
+>http://identi.ca/api</TT
+>.  Do not put a
+              trailing slash on this option.
+            </P
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.CONFIG.OPTIONS"
+></A
+><H3
+>Per-Command Options</H3
+><P
+>        These options may be specified in <CODE
+CLASS="OPTION"
+>DEFAULT</CODE
+> or
+        in a per-option section.  If placed in
+        <CODE
+CLASS="OPTION"
+>DEFAULT</CODE
+>, they will apply to all relevant options
+        unless overridden.
+      </P
+><P
+></P
+><TABLE
+CLASS="variablelist"
+BORDER="0"
+CELLSPACING="0"
+CELLPADDING="4"
+><TBODY
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN367"><SPAN
+STYLE="white-space: nowrap"
+>lastid</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              Stores the last ID seen for commands that support -s or
+          -u.
+            </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN371"><SPAN
+STYLE="white-space: nowrap"
+>mailfrom</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              Gives the email address to use for the From: header on
+              messages generated by <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+>.  Normally specified in
+              [DEFAULT] so as to impact all commands.  If not given, 
+              <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> specifies no From: line, leaving the system's
+              mail transport to assign a default one.
+            </P
+><P
+>              Should contain a bare email address only -- no brackets,
+              parens, quotes, or comments.
+            </P
+><P
+>              When given, Twidge uses the nickname and this address
+              for the From line.  When not given, the nickname is
+              prepended to the Subject line.
+            </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN379"><SPAN
+STYLE="white-space: nowrap"
+>sendmail</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              Stores the path to the sendmail executable on your
+              system, used for sending mail.  Normally specified in
+              [DEFAULT] so as to impact all commands.  Defaults to
+              /usr/sbin/sendmail.
+            </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN383"><SPAN
+STYLE="white-space: nowrap"
+>shortenurls</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              You may specify <TT
+CLASS="LITERAL"
+>shortenurls</TT
+> in the
+              <TT
+CLASS="LITERAL"
+>[update]</TT
+> section.  It defaults to yes.  If
+              set to no, will cause <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> to omit its attempt to shorten
+              URLs in your updates via <TT
+CLASS="LITERAL"
+>tinyurl.com</TT
+>.
+            </P
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.TIPS"
+></A
+><H2
+>Tips &#38; Hints</H2
+><P
+>      Here are a few tips and hints to make <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> more pleasant
+      for you.
+    </P
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.TIPS.PROXY"
+></A
+><H3
+>Going Through a Proxy</H3
+><P
+>        If your connections must go through a proxy, you'll need to
+        set an environment variable.
+        If you use an
+        environment variable, your settings may will also impact other
+        applications -- and that's probably what you want.  See the
+        Environment section later for tips on doing that.
+      </P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.ENVIRONMENT"
+></A
+><H2
+>Environment</H2
+><P
+>      <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> does not read any environment variables directly.
+      However, it does pass on the environment to the
+      programs it calls, such as Curl.  This can be useful for
+      specifying proxies.  Please see
+      <SPAN
+CLASS="APPLICATION"
+>curl</SPAN
+>(1) for more details.
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.CONFORMING"
+></A
+><H2
+>Conforming To</H2
+><P
+></P
+><UL
+><LI
+><P
+>The <A
+HREF="http://www.w3.org/XML/"
+TARGET="_top"
+>Extensible Markup Language
+            (XML)</A
+> standard (W3C)</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.COPYRIGHT"
+></A
+><H2
+>Copyright</H2
+><P
+>      <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+>, all code, documentation, files, and build scripts are
+      Copyright &copy; 2006-2008 John Goerzen.  All code, documentation,
+      sripts, and files are under the following license unless
+      otherwise noted:
+    </P
+><P
+>      This program is free software; you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation; either version 2 of the License, or
+      (at your option) any later version.
+    </P
+><P
+>      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
+    </P
+><P
+>      You should have received a copy of the GNU General Public License
+      along with this program; if not, write to the Free Software
+      Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    </P
+><P
+>      The GNU General Public License is available in the file COPYING
+      in the source distribution.  Debian GNU/Linux users may find this in
+      /usr/share/common-licenses/GPL-2.
+    </P
+><P
+>      If the GPL is unacceptable for your uses, please e-mail me; alternative
+      terms can be negotiated for your project.
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.AUTHOR"
+></A
+><H2
+>Author</H2
+><P
+>      <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+>, its modules, documentation, executables, and all
+      included files, except where noted, was written by
+      John Goerzen <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:jgoerzen@complete.org"
+>jgoerzen@complete.org</A
+>&#62;</CODE
+> and
+      copyright is held as stated in the COPYRIGHT section.
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="TWIDGE.SEEALSO"
+></A
+><H2
+>See Also</H2
+><P
+>      <SPAN
+CLASS="APPLICATION"
+>curl</SPAN
+>(1)
+    </P
+><P
+>      The <SPAN
+CLASS="APPLICATION"
+>twidge</SPAN
+> homepage at <A
+HREF="http://software.complete.org/twidge"
+TARGET="_top"
+>http://software.complete.org/twidge</A
+>.
+    </P
+></DIV
+><TABLE
+CLASS="navigation"
+WIDTH="100%"
+SUMMARY="Navigation footer"
+CELLPADDING="2"
+CELLSPACING="2"
+><TR
+VALIGN="middle"
+><TD
+ALIGN="left"
+><A
+ACCESSKEY="p"
+HREF="r1.html"
+><B
+>&lt;&lt;&lt;&nbsp;twidge Manual</B
+></A
+></TD
+><TD
+ALIGN="right"
+></TD
+></TR
+></TABLE
+></BODY
+></HTML
+>
