@@ -30,6 +30,7 @@ import Network.OAuth.Consumer
 import Data.Maybe
 import Network.OAuth.Http.Request
 import Network.OAuth.Http.HttpClient
+import Data.Binary(encode)
 
 i = infoM "authenticate"
 
@@ -38,7 +39,8 @@ accUrl = fromJust . parseURL $ "http://twitter.com/oauth/access_token"
 authUrl = ("http://twitter.com/oauth/authorize?oauth_token=" ++ ) .
           findWithDefault ("oauth_token", "") .
           oauthParams
-srvUrl   = fromJust . parseURL $ "http://service/path/to/resource/"
+srvUrl = fromJust . parseURL $ 
+         "http://api.twitter.com/1/statuses/home_timeline.xml"
 app = Application {consKey = "t5TWz01unNDrmwngl4fQ",
                    consSec = "QR2RJVx8R6zdxWybdGDaLlPMqdRrhZDwO7Kn1uoZUc",
                    callback = OOB}
@@ -62,9 +64,11 @@ authenticate_worker cpath cp _ =
                                     cliAskAuthorization authUrl
                                     oauthRequest HMACSHA1 Nothing accUrl
                                     serviceRequest HMACSHA1 Nothing srvUrl
-                                    -- getToken
-     response <- resp
-     print "Done.\n"
+                                    tok <- getToken
+                                    return (twoLegged tok, threeLegged tok,
+                                            tok)
+     (leg2, leg3, response) <- resp
+     print (leg2, leg3, oauthParams response)
     where confirmAuth =
               do putStrLn "\nIt looks like you have already authenticated twidge."
                  putStrLn "If we continue, I may remove your existing"
