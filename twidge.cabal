@@ -39,12 +39,12 @@ Description: twidge is a client for microblogging sites such as Twitter and
  http://software.complete.org/twidge.
 
 Build-Depends: network, unix, parsec, MissingH>=1.0.0,
- mtl, base, HaXml>=1.13.2, HaXml<1.19, hslogger,
- ConfigFile, directory, HSH, regex-posix, utf8-string>=0.3.5, Bitly
+ mtl, base, HaXml>=1.13.2, HaXml<1.19, hslogger, hoauth,
+ ConfigFile, directory, HSH, regex-posix, utf8-string, Bitly
 
 Executable: twidge
 Main-Is: twidge.hs
-Other-Modules: Commands, Commands.FollowBlock, Commands.Ls,
+Other-Modules: Commands, Commands.Auth, Commands.FollowBlock, Commands.Ls,
         Commands.Setup, Commands.Update, Config, Download, FeedParser,
         MailParser, Types, Utils
 GHC-Options: -O2
