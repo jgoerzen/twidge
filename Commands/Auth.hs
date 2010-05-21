@@ -27,6 +27,8 @@ import Data.Char
 import Config
 import Control.Monad(when)
 import Network.OAuth.Consumer
+import Data.Maybe
+import Network.OAuth.Http.Request
 
 i = infoM "authenticate"
 
@@ -50,15 +52,27 @@ authenticate = simpleCmd "setup" "Interactively authenticate twidge to server"
 
 authenticate_worker cpath cp _ =
   do when (has_option cp "DEFAULT" "oauthtoken")
-       confirmSetup
+       confirmAuth
      hSetBuffering stdout NoBuffering
      putStrLn "Ready to authenticate twidge to your account."
-       response = runOAuth $ do ignite app
-                                oauthRequest PLAINTEXT Nothing reqUrl
-                                cliAskAuthorization authUrl
-                                oauthRequest PLAINTEXT Nothing accUrl
-                                serviceRequest HMACSHA1 (Just "realm") srvUrl
-
+     let response = runOAuth $ do ignite app
+                                  oauthRequest PLAINTEXT Nothing reqUrl
+                                  cliAskAuthorization authUrl
+                                  oauthRequest PLAINTEXT Nothing accUrl
+                                  serviceRequest HMACSHA1 (Just "realm") srvUrl
+     print response
+    where confirmAuth =
+              do putStrLn "\nIt looks like you have already authenticated twidge."
+                 putStrLn "If we continue, I may remove your existing"
+                 putStrLn "authentication.  Would you like to proceed?"
+                 putStr   "\nYES or NO: "
+                 c <- getLine
+                 if (map toLower c) == "yes"
+                    then return ()
+                    else permFail "Aborting authentication at user request."
+          esc x = concatMap fix x
+          fix '%' = "%%"
+          fix x = [x]
 
 setup_worker cpath cp _ =
     do when (has_option cp "DEFAULT" "username" || 
@@ -96,3 +110,7 @@ setup_worker cpath cp _ =
 
 setup_help =
  "Usage: twidge setup\n\n"
+
+authenticate_help =
+  "Usage: twidge authenticate\n\n"
+  
