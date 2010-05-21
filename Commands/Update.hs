@@ -31,15 +31,6 @@ import MailParser(message)
 import Text.ParserCombinators.Parsec
 import Network.Bitly (Account(..),bitlyAccount,jmpAccount,shorten)
 
--- should work on GHC 6.10, probably an obsolete hack with GHC >= 6.12.1
-import Codec.Binary.UTF8.String (isUTF8Encoded, decodeString)
-
-utf8Decode :: String -> String
-utf8Decode s =
-  if isUTF8Encoded s
-    then decodeString s
-    else s
-
 i = infoM "update"
 
 update = simpleCmd "update" "Update your status"
@@ -98,10 +89,10 @@ update_worker _ _ _ =
 
 procStatus cp section status =
     do poststatus <- case get cp section "shortenurls" of
-                       Right True | length (utf8Decode status) > 140
+                       Right True | length status > 140
                                   -> shortenUrls cp status
                        _ -> return status
-       when (length (utf8Decode poststatus) > 140)
+       when (length poststatus > 140)
                 (permFail $ "Your status update was " ++ 
                           show (length poststatus) ++
                           " characters; max length 140")
