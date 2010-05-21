@@ -33,9 +33,9 @@ import Network.OAuth.Http.HttpClient
 
 i = infoM "authenticate"
 
-reqUrl = fromJust . parseURL $ "https://twitter.com/oauth/request_token"
-accUrl = fromJust . parseURL $ "https://twitter.com/oauth/access_token"
-authUrl = ("https://twitter.com/oauth/authorize?oauth_token=" ++ ) .
+reqUrl = fromJust . parseURL $ "http://twitter.com/oauth/request_token"
+accUrl = fromJust . parseURL $ "http://twitter.com/oauth/access_token"
+authUrl = ("http://twitter.com/oauth/authorize?oauth_token=" ++ ) .
           findWithDefault ("oauth_token", "") .
           oauthParams
 srvUrl   = fromJust . parseURL $ "http://service/path/to/resource/"
@@ -48,7 +48,7 @@ app = Application {consKey = "t5TWz01unNDrmwngl4fQ",
 -- authenticate
 --------------------------------------------------
 
-authenticate = simpleCmd "setup" "Interactively authenticate twidge to server"
+authenticate = simpleCmd "authenticate" "Interactively authenticate twidge to server"
                authenticate_help
                [] authenticate_worker
 
@@ -60,7 +60,7 @@ authenticate_worker cpath cp _ =
      let CurlM resp = runOAuth $ do ignite app
                                     oauthRequest HMACSHA1 Nothing reqUrl
                                     cliAskAuthorization authUrl
-                                    oauthRequest PLAINTEXT Nothing accUrl
+                                    oauthRequest HMACSHA1 Nothing accUrl
                                     serviceRequest HMACSHA1 Nothing srvUrl
                                     -- getToken
      response <- resp
