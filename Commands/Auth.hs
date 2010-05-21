@@ -1,5 +1,5 @@
 {-
-Copyright (C) 2006-2008 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2010 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Setup(setup) where
+module Commands.Auth(authenticate) where
 import Utils
 import System.Log.Logger
 import Data.List
@@ -26,16 +26,39 @@ import Data.Either.Utils
 import Data.Char
 import Config
 import Control.Monad(when)
+import Network.OAuth.Consumer
 
-i = infoM "setup"
+i = infoM "authenticate"
+
+reqUrl = fromJust . parseURL $ "https://twitter.com/oauth/request_token"
+accUrl = fromJust . parseURL $ "https://twitter.com/oauth/access_token"
+authUrl = ("https://twitter.com/oauth/authorize?oauth_token=" ++ ) .
+          findWithDefault ("oauth_token", "") .
+          oauthParams
+app = Application {consKey = "t5TWz01unNDrmwngl4fQ",
+                   consSec = "QR2RJVx8R6zdxWybdGDaLlPMqdRrhZDwO7Kn1uoZUc",
+                   callback = OOB}
+
 
 --------------------------------------------------
--- lscasts
+-- authenticate
 --------------------------------------------------
 
-setup = simpleCmd "setup" "Interactively configure twidge for first-time use"
-             setup_help
-             [] setup_worker
+authenticate = simpleCmd "setup" "Interactively authenticate twidge to server"
+               authenticate_help
+               [] authenticate_worker
+
+authenticate_worker cpath cp _ =
+  do when (has_option cp "DEFAULT" "oauthtoken")
+       confirmSetup
+     hSetBuffering stdout NoBuffering
+     putStrLn "Ready to authenticate twidge to your account."
+       response = runOAuth $ do ignite app
+                                oauthRequest PLAINTEXT Nothing reqUrl
+                                cliAskAuthorization authUrl
+                                oauthRequest PLAINTEXT Nothing accUrl
+                                serviceRequest HMACSHA1 (Just "realm") srvUrl
+
 
 setup_worker cpath cp _ =
     do when (has_option cp "DEFAULT" "username" || 

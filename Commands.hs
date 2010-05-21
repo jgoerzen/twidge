@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 {- |
    Module     : Commands
-   Copyright  : Copyright (C) 2006-2008 John Goerzen
+   Copyright  : Copyright (C) 2006-2010 John Goerzen
    License    : GNU GPL, version 2 or above
 
    Maintainer : John Goerzen <jgoerzen@complete.org>
@@ -35,6 +35,7 @@ import Utils
 import Types
 import Config
 
+import qualified Commands.Auth
 import qualified Commands.FollowBlock
 import qualified Commands.Ls
 import qualified Commands.Setup
@@ -42,7 +43,8 @@ import qualified Commands.Update
 
 --allCommands :: [(String, Command)]
 allCommands = 
-    [Commands.Update.dmsend,
+    [Commands.Auth.authenticate,
+     Commands.Update.dmsend,
      Commands.FollowBlock.block,
      Commands.FollowBlock.follow,
      Commands.Ls.lsarchive,
