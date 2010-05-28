@@ -32,15 +32,16 @@ Written by John Goerzen, jgoerzen\@complete.org
 module Download(sendAuthRequest, simpleDownload) where
 import System.Log.Logger
 import Data.ConfigFile
-import HSH
 import Data.Either.Utils(forceEither)
-import Network.URI
-import Data.List
-import Control.Exception(evaluate)
+import Data.Maybe
+import Network.OAuth.Http.Request
+import TwidgeHttpClient
+import OAuth
 
 d = debugM "download"
 i = infoM "download"
 
+{-
 curl = "curl"
 curlopts = ["-A", "twidge v1.0.0; Haskell; GHC", -- Set User-Agent
             "-s",               -- Silent mode
@@ -50,6 +51,7 @@ curlopts = ["-A", "twidge v1.0.0; Haskell; GHC", -- Set User-Agent
             "--retry", "2",     -- Retry twice
             "-f"                -- Fail on server errors
            ]
+-}
 
 simpleDownload :: String -> IO String
 simpleDownload url = run (curl, curlopts ++ [url])

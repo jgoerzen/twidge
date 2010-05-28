@@ -27,7 +27,7 @@
 -- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -- | A type class that is able to perform HTTP requests.
-module Network.OAuth.Http.HttpClient (HttpClient(..)
+module TwidgeHttpClient (HttpClient(..)
                                      ,CurlM(..)
                                      ) where
 
@@ -84,6 +84,11 @@ instance HttpClient CurlM where
 
           opts = [CurlURL (showURL req)
                  ,CurlHttpVersion httpVersion
+                 ,CurlFollowLocation True  -- follow redirects
+                 ,CurlFailOnErorr True     -- fail on server errors
+                 ,CurlLowSpeedTime 60
+                 ,CurlLowSpeed 1
+                 ,CurlUserAgent "twidge v1.0.0; Haskell; GHC"
                  ,CurlHeader False
                  ] ++ curlHeaders
                    ++ curlMethod 
