@@ -37,10 +37,6 @@ i = infoM "authenticate"
 
 srvUrl = fromJust . parseURL $ 
          "http://api.twitter.com/1/statuses/home_timeline.xml"
-app = Application {consKey = "t5TWz01unNDrmwngl4fQ",
-                   consSec = "QR2RJVx8R6zdxWybdGDaLlPMqdRrhZDwO7Kn1uoZUc",
-                   callback = OOB}
-
 
 --------------------------------------------------
 -- authenticate
@@ -56,13 +52,13 @@ authenticate_worker cpath cp _ =
      hSetBuffering stdout NoBuffering
      putStrLn "Ready to authenticate twidge to your account."
      
-app <- case getApp cp of
+     app <- case getApp cp of
        Nothing -> fail $ "Error: must specify oauthconsumerkey and oauthconsumersecret for non-default host " ++ (serverHost cp)
        Just x -> return x
      
-     reqUrlBase <- get cp "DEFAULT" "oauthrequesttoken"
-     accUrlBase <- get cp "DEFAULT" "oauthaccesstoken"
-     authUrlBase <- get cp "DEFAULT" "oauthauthorize"
+     let reqUrlBase = forceEither $ get cp "DEFAULT" "oauthrequesttoken"
+     let accUrlBase = forceEither $ get cp "DEFAULT" "oauthaccesstoken"
+     let authUrlBase = forceEither $ get cp "DEFAULT" "oauthauthorize"
      let reqUrl = fromJust . parseURL $ reqUrlBase
      let accUrl = fromJust . parseURL $ accUrlBase
      let authUrl = (authUrlBase ++ ) . findWithDefault ("oauth_token", "") .

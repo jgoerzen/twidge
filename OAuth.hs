@@ -35,27 +35,31 @@ import Data.Maybe
 import Network.OAuth.Http.Request
 import Network.OAuth.Http.HttpClient
 import Data.ConfigFile
+import Utils
+import Data.Either.Utils
 
 twitterKeys = ("t5TWz01unNDrmwngl4fQ",
                "QR2RJVx8R6zdxWybdGDaLlPMqdRrhZDwO7Kn1uoZUc")
 identicaKeys = ("f027d666f9d0e7b80beaed528aec473c",
                 "d84c9b3dafb14becb5e05a002886b60c")
 
-getDefaultKeys :: ConfigFile -> Maybe (String, String)
+getDefaultKeys :: ConfigParser -> Maybe (String, String)
 getDefaultKeys cp =
   case serverHost cp of
     "twitter.com" -> Just twitterKeys
     "identi.ca" -> Just identicaKeys
 
-getApp :: ConfigFile -> Maybe Application
+getApp :: ConfigParser -> Maybe Application
 getApp cp = 
   if (has_option cp "DEFAULT" "oauthconsumerkey" &&
       has_option cp "DEFAULT" "oauthconsumersecret")
   then Just $ Application 
                     {consKey = 
-                          fromJust $ get cp "DEFAULT" "oauthconsumerkey",
-                       consSecret =
-                         fromJust $ get cp "DEFAULT" "oauthconsumersecret"}
+                         forceEither $ get cp "DEFAULT" "oauthconsumerkey",
+                     consSec =
+                         forceEither $ get cp "DEFAULT" "oauthconsumersecret",
+                     callback = OOB}
   else case getDefaultKeys cp of
-    Just (k, s) -> Just $ Application {consKey = k, consSecret = s}
+    Just (k, s) -> Just $ Application {consKey = k, consSec = s, 
+                                       callback = OOB}
     Nothing -> Nothing
