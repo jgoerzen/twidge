@@ -72,10 +72,12 @@ authenticate_worker cpath cp _ =
      -- leg1 is always false and r appears to not matter.
      print (leg2, leg3, oauthParams response)
      if leg3 
-       then do print "Successfully authenticated."
-               putStrLn $ "Token is " ++ findWithDefault ("oauth_token", "INVALID")
-                 (oauthParams response)
-       else print "Authentication failed; please try again"
+       then do let newcp = forceEither $ set cp "DEFAULT" "oauthtoken" $
+                           findWithDefault ("oauth_token", "INVALID")
+                           (oauthParams response)
+               writeCP cpath newcp
+               putStrLn "Successfully authenticated; twidge is ready for your use."
+       else putStrLn "Authentication failed; please try again"
     where confirmAuth =
               do putStrLn "\nIt looks like you have already authenticated twidge."
                  putStrLn "If we continue, I may remove your existing"
