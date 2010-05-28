@@ -69,11 +69,10 @@ sendAuthRequest cp url getopts postoptlist =
     do app <- case getApp cp of      
          Nothing -> fail $ "Error: auth not set up"
          Just x -> return x
-       oauthtoken <- case get cp "DEFAULT" "oauthtoken" of  
+       oauthdata <- case get cp "DEFAULT" "oauthdata" of  
          Left x -> fail $ "Need to (re-)run twidge setup to configure auth: "
                    ++ show x
          Right y -> return y
-       let oauthsessionhandle = forceEither $ get cp "DEFAULT" "oauthsessionhandle"
        
        let parsedUrl = fromJust . parseURL $ urlbase ++ url ++ optstr
        
@@ -87,8 +86,7 @@ sendAuthRequest cp url getopts postoptlist =
                         do ignite app
                            putToken $ AccessToken 
                                        {application = app,
-                                        oauthParams = fromList [("oauth_token", oauthtoken),
-                                                                ("oauth_session_handle", oauthsessionhandle)]
+                                        oauthParams = fromList (read oauthdata)
                                        }
                            serviceRequest HMACSHA1 Nothing request
        r <- resp

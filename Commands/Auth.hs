@@ -59,8 +59,6 @@ authenticate_worker cpath cp _ =
      let reqUrlBase = forceEither $ get cp "DEFAULT" "oauthrequesttoken"
      let accUrlBase = forceEither $ get cp "DEFAULT" "oauthaccesstoken"
      let authUrlBase = forceEither $ get cp "DEFAULT" "oauthauthorize"
-     let testRequest = fromJust $ parseURL 
-                       ((forceEither $ get cp "DEFAULT" "urlbase") ++ "/statuses/user_timeline.xml")
      let reqUrl = fromJust . parseURL $ reqUrlBase
      let accUrl = fromJust . parseURL $ accUrlBase
      let authUrl = ((authUrlBase ++ "?oauth_token=") ++ ) . 
@@ -71,7 +69,6 @@ authenticate_worker cpath cp _ =
                                     oauthRequest HMACSHA1 Nothing reqUrl
                                     cliAskAuthorization authUrl
                                     oauthRequest HMACSHA1 Nothing accUrl
-                                    serviceRequest HMACSHA1 Nothing testRequest
                                     tok <- getToken
                                     return (twoLegged tok, threeLegged tok,
                                             tok)
@@ -80,13 +77,9 @@ authenticate_worker cpath cp _ =
      -- leg1 is always false and r appears to not matter.
      print (leg2, leg3, oauthParams response)
      if leg3 
-       then do let newcp = forceEither $ set cp "DEFAULT" "oauthtoken" $
-                           findWithDefault ("oauth_token", "INVALID")
-                           (oauthParams response)
-               let newcp' = forceEither $ set newcp "DEFAULT" "oauthsessionhandle" $
-                            findWithDefault ("oauth_session_handle", "INVALID")
-                            (oauthParams response)
-               writeCP cpath newcp'
+       then do let newcp = forceEither $ set cp "DEFAULT" "oauthdata" .
+                           show . toList . oauthParams $ response
+               writeCP cpath newcp
                putStrLn "Successfully authenticated; twidge is ready for your use."
        else putStrLn "Authentication failed; please try again"
     where confirmAuth =
