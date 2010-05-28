@@ -2,6 +2,7 @@
 
 # twidge command line completion.
 # Copyright 2010 Ernesto Hernández-Novich <emhn@itverx.com.ve>
+# Licensed under the GNU General Public License, version 2
 
 have twidge &&
 _twidge()
