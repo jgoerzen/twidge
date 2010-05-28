@@ -1,5 +1,5 @@
 {- hpodder component
-Copyright (C) 2006-2007 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2010 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
 {- |
-   Module     : Types
-   Copyright  : Copyright (C) 2006-2007 John Goerzen
+   Module     : OAuth
+   Copyright  : Copyright (C) 2010 John Goerzen
    License    : GNU GPL, version 2 or above
 
    Maintainer : John Goerzen <jgoerzen@complete.org>
@@ -28,19 +28,34 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 Written by John Goerzen, jgoerzen\@complete.org
 
 -}
-module Types where
+module OAuth where
+
+import Network.OAuth.Consumer
+import Data.Maybe
+import Network.OAuth.Http.Request
+import Network.OAuth.Http.HttpClient
 import Data.ConfigFile
 
-data Command =
-    Command {cmdname :: String,
-             cmddescrip :: String,
-             execcmd :: [String] -> Maybe FilePath -> ConfigParser -> IO ()}
+twitterKeys = ("t5TWz01unNDrmwngl4fQ",
+               "QR2RJVx8R6zdxWybdGDaLlPMqdRrhZDwO7Kn1uoZUc")
+identicaKeys = ("f027d666f9d0e7b80beaed528aec473c",
+                "d84c9b3dafb14becb5e05a002886b60c")
 
-data Message = Message {
-      sId :: String,
-      sSender :: String,
-      sRecipient :: String,
-      sText :: String,
-      sDate :: String
-    } deriving (Eq, Read, Show, Ord)
+getDefaultKeys :: ConfigFile -> Maybe (String, String)
+getDefaultKeys cp =
+  case serverHost cp of
+    "twitter.com" -> Just twitterKeys
+    "identi.ca" -> Just identicaKeys
 
+getApp :: ConfigFile -> Maybe Application
+getApp cp = 
+  if (has_option cp "DEFAULT" "oauthconsumerkey" &&
+      has_option cp "DEFAULT" "oauthconsumersecret")
+  then Just $ Application 
+                    {consKey = 
+                          fromJust $ get cp "DEFAULT" "oauthconsumerkey",
+                       consSecret =
+                         fromJust $ get cp "DEFAULT" "oauthconsumersecret"}
+  else case getDefaultKeys cp of
+    Just (k, s) -> Just $ Application {consKey = k, consSecret = s}
+    Nothing -> Nothing

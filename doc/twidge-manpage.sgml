@@ -725,6 +725,21 @@ lastid = 914881241
             </para>
           </listitem>
         </varlistentry>
+        <varlistentry><term>oauthconsumerkey</term>
+          <listitem><para>
+              The oAuth consumer key.  Twidge is registered with
+              Twitter and identi.ca and will supply a reasonable
+              default for those two based on the content of urlbase.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>oauthconsumersecret</term>
+          <listitem><para>
+              The oAuth consumer secret.  A default is provided as
+              with oauthconsumerkey.
+            </para>
+          </listitem>
+        </varlistentry>
       </variablelist>
     </refsect2>              
 
