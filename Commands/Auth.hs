@@ -71,9 +71,11 @@ authenticate_worker cpath cp _ =
      -- on successful auth, leg3 is True. Otherwise, it is False.
      -- leg1 is always false and r appears to not matter.
      print (leg2, leg3, oauthParams response)
-     if leg3 then
-       print "Successfully authenticated."
-       else print "Authentication failed."
+     if leg3 
+       then do print "Successfully authenticated."
+               putStrLn $ "Token is " ++ findWithDefault ("oauth_token", "INVALID")
+                 (oauthParams response)
+       else print "Authentication failed; please try again"
     where confirmAuth =
               do putStrLn "\nIt looks like you have already authenticated twidge."
                  putStrLn "If we continue, I may remove your existing"
