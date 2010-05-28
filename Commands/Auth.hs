@@ -75,7 +75,7 @@ authenticate_worker cpath cp _ =
      (leg2, leg3, response) <- resp
      -- on successful auth, leg3 is True. Otherwise, it is False.
      -- leg1 is always false and r appears to not matter.
-     print (leg2, leg3, oauthParams response)
+     print (leg2, leg3,response, oauthParams response)
      if leg3 
        then do let newcp = forceEither $ set cp "DEFAULT" "oauthtoken" $
                            findWithDefault ("oauth_token", "INVALID")
