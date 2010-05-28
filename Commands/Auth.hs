@@ -66,10 +66,14 @@ authenticate_worker cpath cp _ =
                                     r <- serviceRequest HMACSHA1 Nothing srvUrl
                                     tok <- getToken
                                     return (twoLegged tok, threeLegged tok,
-                                            tok, r)
-     (leg2, leg3, response, r) <- resp
+                                            tok)
+     (leg2, leg3, response) <- resp
+     -- on successful auth, leg3 is True. Otherwise, it is False.
+     -- leg1 is always false and r appears to not matter.
      print (leg2, leg3, oauthParams response)
-     print r
+     if leg3 then
+       print "Successfully authenticated."
+       else print "Authentication failed."
     where confirmAuth =
               do putStrLn "\nIt looks like you have already authenticated twidge."
                  putStrLn "If we continue, I may remove your existing"
