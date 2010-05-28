@@ -73,6 +73,7 @@ sendAuthRequest cp url getopts postoptlist =
          Left x -> fail $ "Need to (re-)run twidge setup to configure auth: "
                    ++ show x
          Right y -> return y
+       let oauthsessionhandle = forceEither $ get cp "DEFAULT" "oauthsessionhandle"
        
        let parsedUrl = fromJust . parseURL $ urlbase ++ url ++ optstr
        
@@ -86,10 +87,12 @@ sendAuthRequest cp url getopts postoptlist =
                         do ignite app
                            putToken $ AccessToken 
                                        {application = app,
-                                        oauthParams = fromList [("oauth_token", oauthtoken)]
+                                        oauthParams = fromList [("oauth_token", oauthtoken),
+                                                                ("oauth_session_handle", oauthsessionhandle)]
                                        }
                            serviceRequest HMACSHA1 Nothing request
        r <- resp
+       d $ "response: " ++ show r
        return . toString . rspPayload $ r
     where urlbase = forceEither $ get cp "DEFAULT" "urlbase"
           optstr = case getopts of
