@@ -30,15 +30,11 @@ import Network.OAuth.Consumer
 import Data.Maybe
 import Network.OAuth.Http.Request
 import Network.OAuth.Http.HttpClient
+import OAuth
 import Data.Binary(encode)
 
 i = infoM "authenticate"
 
-reqUrl = fromJust . parseURL $ "http://twitter.com/oauth/request_token"
-accUrl = fromJust . parseURL $ "http://twitter.com/oauth/access_token"
-authUrl = ("http://twitter.com/oauth/authorize?oauth_token=" ++ ) .
-          findWithDefault ("oauth_token", "") .
-          oauthParams
 srvUrl = fromJust . parseURL $ 
          "http://api.twitter.com/1/statuses/home_timeline.xml"
 app = Application {consKey = "t5TWz01unNDrmwngl4fQ",
@@ -59,6 +55,19 @@ authenticate_worker cpath cp _ =
        confirmAuth
      hSetBuffering stdout NoBuffering
      putStrLn "Ready to authenticate twidge to your account."
+     
+app <- case getApp cp of
+       Nothing -> fail $ "Error: must specify oauthconsumerkey and oauthconsumersecret for non-default host " ++ (serverHost cp)
+       Just x -> return x
+     
+     reqUrlBase <- get cp "DEFAULT" "oauthrequesttoken"
+     accUrlBase <- get cp "DEFAULT" "oauthaccesstoken"
+     authUrlBase <- get cp "DEFAULT" "oauthauthorize"
+     let reqUrl = fromJust . parseURL $ reqUrlBase
+     let accUrl = fromJust . parseURL $ accUrlBase
+     let authUrl = (authUrlBase ++ ) . findWithDefault ("oauth_token", "") .
+          oauthParams
+     
      let CurlM resp = runOAuth $ do ignite app
                                     oauthRequest HMACSHA1 Nothing reqUrl
                                     cliAskAuthorization authUrl
