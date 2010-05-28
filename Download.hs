@@ -32,9 +32,13 @@ Written by John Goerzen, jgoerzen\@complete.org
 module Download(sendAuthRequest, simpleDownload) where
 import System.Log.Logger
 import Data.ConfigFile
+import Data.List
+import Network.URI
 import Data.Either.Utils(forceEither)
 import Data.Maybe
 import Network.OAuth.Http.Request
+import Network.OAuth.Http.Response
+import Network.OAuth.Consumer
 import TwidgeHttpClient
 import OAuth
 import Data.ByteString.Lazy.UTF8(toString)
@@ -55,7 +59,10 @@ curlopts = ["-A", "twidge v1.0.0; Haskell; GHC", -- Set User-Agent
 -}
 
 simpleDownload :: String -> IO String
+{-
 simpleDownload url = run (curl, curlopts ++ [url])
+-}
+simpleDownload _ = fail "simpleDownload not yet implemented"
 
 sendAuthRequest :: ConfigParser -> String -> [(String, String)] -> [(String, String)] -> IO String
 sendAuthRequest cp url getopts postoptlist =
@@ -64,7 +71,7 @@ sendAuthRequest cp url getopts postoptlist =
          Just x -> return x
        oauthtoken <- case get cp "DEFAULT" "oauthtoken" of  
          Left x -> fail $ "Need to (re-)run twidge setup to configure auth: "
-                   show x
+                   ++ show x
          Right y -> return y
        
        let parsedUrl = fromJust . parseURL $ urlbase ++ url ++ optstr

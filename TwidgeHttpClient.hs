@@ -27,31 +27,23 @@
 -- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -- | A type class that is able to perform HTTP requests.
-module TwidgeHttpClient (HttpClient(..)
-                                     ,CurlM(..)
+module TwidgeHttpClient (CurlM(..)
                                      ) where
 
 import Network.Curl
 import Control.Monad.Fix
 import Network.OAuth.Http.Request
 import Network.OAuth.Http.Response
+import qualified Network.OAuth.Http.HttpClient
 import Control.Monad.Trans
 import Data.Char (chr,ord)
 import qualified Data.ByteString.Lazy as B
-
--- | The HttpClient type class.
-class (Monad m) => HttpClient m where
-  -- | Performs the request and returns the response wrapped into a given monad.
-  request :: Request -> m Response
-
-  -- | Unpacks the monad and returns the inner IO monad.
-  unlift :: m a -> IO a
 
 -- | The libcurl backend
 newtype CurlM a = CurlM { unCurlM :: IO a }
   deriving (Monad,MonadIO,MonadFix,Functor)
 
-instance HttpClient CurlM where
+instance Network.OAuth.Http.HttpClient.HttpClient CurlM where
   unlift = unCurlM
 
   request req = CurlM $ withCurlDo $ do c <- initialize
