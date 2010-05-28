@@ -37,6 +37,7 @@ import Data.Maybe
 import Network.OAuth.Http.Request
 import TwidgeHttpClient
 import OAuth
+import Data.ByteString.Lazy.UTF8(toString)
 
 d = debugM "download"
 i = infoM "download"
@@ -58,17 +59,36 @@ simpleDownload url = run (curl, curlopts ++ [url])
 
 sendAuthRequest :: ConfigParser -> String -> [(String, String)] -> [(String, String)] -> IO String
 sendAuthRequest cp url getopts postoptlist =
-    do -- Force this to be evaluated in the parent process
-       authopts <- evaluate (getAuthOpts cp)
-       run (curl, curlopts ++ authopts ++ postopts ++ [urlbase ++ url ++ optstr])
+    do app <- case getApp cp of      
+         Nothing -> fail $ "Error: auth not set up"
+         Just x -> return x
+       oauthtoken <- case get cp "DEFAULT" "oauthtoken" of  
+         Left x -> fail $ "Need to (re-)run twidge setup to configure auth: "
+                   show x
+         Right y -> return y
+       
+       let parsedUrl = fromJust . parseURL $ urlbase ++ url ++ optstr
+       
+       -- add to the request the POST headers
+       let request = parsedUrl {reqHeaders = 
+                                   fromList (toList (reqHeaders parsedUrl) ++
+                                                    postoptlist)
+                               }
+       
+       let CurlM resp = runOAuth $ 
+                        do ignite app
+                           putToken $ AccessToken 
+                                       {application = app,
+                                        oauthParams = fromList [("oauth_token", oauthtoken)]
+                                       }
+                           serviceRequest HMACSHA1 Nothing request
+       r <- resp
+       return . toString . rspPayload $ r
     where urlbase = forceEither $ get cp "DEFAULT" "urlbase"
           optstr = case getopts of
                      [] -> ""
                      _ -> "?" ++ (concat . intersperse "&" . map conv $ getopts)
           conv (k, v) = k ++ "=" ++ escapeURIString isUnreserved v
-          postopts = concatMap postopt postoptlist
-          postopt (k, v) = ["-d", escapeURIString isUnreserved k ++ "=" ++
-                                  escapeURIString isUnreserved v]
 
 getAuthOpts :: ConfigParser -> [String]
 getAuthOpts cp =
