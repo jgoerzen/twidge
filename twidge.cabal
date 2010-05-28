@@ -40,7 +40,8 @@ Description: twidge is a client for microblogging sites such as Twitter and
 
 Build-Depends: network, unix, parsec, MissingH>=1.0.0,
  mtl, base, HaXml>=1.13.2, HaXml<1.19, hslogger, hoauth,
- ConfigFile, directory, HSH, regex-posix, utf8-string, Bitly, binary
+ ConfigFile, directory, HSH, regex-posix, utf8-string, Bitly, binary,
+ bytestring, curl
 
 Executable: twidge
 Main-Is: twidge.hs

@@ -85,7 +85,7 @@ instance HttpClient CurlM where
           opts = [CurlURL (showURL req)
                  ,CurlHttpVersion httpVersion
                  ,CurlFollowLocation True  -- follow redirects
-                 ,CurlFailOnErorr True     -- fail on server errors
+                 ,CurlFailOnError True     -- fail on server errors
                  ,CurlLowSpeedTime 60
                  ,CurlLowSpeed 1
                  ,CurlUserAgent "twidge v1.0.0; Haskell; GHC"
