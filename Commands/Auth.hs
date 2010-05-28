@@ -63,12 +63,13 @@ authenticate_worker cpath cp _ =
                                     oauthRequest HMACSHA1 Nothing reqUrl
                                     cliAskAuthorization authUrl
                                     oauthRequest HMACSHA1 Nothing accUrl
-                                    serviceRequest HMACSHA1 Nothing srvUrl
+                                    r <- serviceRequest HMACSHA1 Nothing srvUrl
                                     tok <- getToken
                                     return (twoLegged tok, threeLegged tok,
-                                            tok)
-     (leg2, leg3, response) <- resp
+                                            tok, r)
+     (leg2, leg3, response, r) <- resp
      print (leg2, leg3, oauthParams response)
+     print r
     where confirmAuth =
               do putStrLn "\nIt looks like you have already authenticated twidge."
                  putStrLn "If we continue, I may remove your existing"
