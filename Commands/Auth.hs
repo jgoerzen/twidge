@@ -47,9 +47,9 @@ authenticate = simpleCmd "authenticate" "Interactively authenticate twidge to se
                [] authenticate_worker
 
 authenticate_worker cpath cp _ =
-  do when (has_option cp "DEFAULT" "oauthtoken")
+  do hSetBuffering stdout NoBuffering
+     when (has_option cp "DEFAULT" "oauthtoken")
        confirmAuth
-     hSetBuffering stdout NoBuffering
      putStrLn "Ready to authenticate twidge to your account."
      
      app <- case getApp cp of
@@ -61,14 +61,14 @@ authenticate_worker cpath cp _ =
      let authUrlBase = forceEither $ get cp "DEFAULT" "oauthauthorize"
      let reqUrl = fromJust . parseURL $ reqUrlBase
      let accUrl = fromJust . parseURL $ accUrlBase
-     let authUrl = (authUrlBase ++ ) . findWithDefault ("oauth_token", "") .
+     let authUrl = ((authUrlBase ++ "?oauth_token=") ++ ) . 
+                   findWithDefault ("oauth_token", "") .
           oauthParams
      
      let CurlM resp = runOAuth $ do ignite app
                                     oauthRequest HMACSHA1 Nothing reqUrl
                                     cliAskAuthorization authUrl
                                     oauthRequest HMACSHA1 Nothing accUrl
-                                    r <- serviceRequest HMACSHA1 Nothing srvUrl
                                     tok <- getToken
                                     return (twoLegged tok, threeLegged tok,
                                             tok)
@@ -92,46 +92,6 @@ authenticate_worker cpath cp _ =
                  if (map toLower c) == "yes"
                     then return ()
                     else permFail "Aborting authentication at user request."
-          esc x = concatMap fix x
-          fix '%' = "%%"
-          fix x = [x]
-
-setup_worker cpath cp _ =
-    do when (has_option cp "DEFAULT" "username" || 
-             has_option cp "DEFAULT" "password")
-            (confirmSetup)
-       hSetBuffering stdout NoBuffering
-       putStrLn "\nWelcome to twidge.  We will now configure twidge for your"
-       putStrLn "use with Twitter.  This will be quick and easy!\n"
-       putStrLn "First, what is your username?\n"
-       putStr   "Username: "
-       username <- getLine
-       putStrLn $ "\nWelcome, " ++ username ++ "!  Now I'll need your password.\n"
-       putStr   "Password: "
-       hSetEcho stdin False
-       password <- getLine
-       hSetEcho stdin True
-       let newcp = forceEither $ set cp "DEFAULT" "username" (esc username)
-       let newcp' = forceEither $ set newcp "DEFAULT" "password" (esc password)
-       
-       writeCP cpath newcp'
-       
-       putStrLn "\n\ntwidge has now been configured for you.\n"
-    where confirmSetup =
-              do putStrLn "\nIt looks like you have already configured twidge."
-                 putStrLn "If we continue, I may remove your existing"
-                 putStrLn "configuration.  Would you like to proceed?"
-                 putStr   "\nYES or NO: "
-                 c <- getLine
-                 if (map toLower c) == "yes"
-                    then return ()
-                    else permFail "Aborting configuration at user request."
-          esc x = concatMap fix x
-          fix '%' = "%%"
-          fix x = [x]
-
-setup_help =
- "Usage: twidge setup\n\n"
 
 authenticate_help =
   "Usage: twidge authenticate\n\n"

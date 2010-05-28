@@ -40,9 +40,9 @@ import System.Posix.Files(rename, setFileCreationMask)
 getDefaultCP =
     do return $ forceEither $ 
               do cp <- set startingcp "DEFAULT" "urlbase" "https://twitter.com"
-                 cp <- set startingcp "DEFAULT" "oauthrequesttoken" "%(urlbase)s/oauth/request_token"
-                 cp <- set startingcp "DEFAULT" "oauthaccesstoken" "%(urlbase)s/oauth/access_token"
-                 cp <- set startingcp "DEFAULT" "oauthauthorize" "%(urlbase)s/oauth/authorize"
+                 cp <- set cp "DEFAULT" "oauthrequesttoken" "%(urlbase)s/oauth/request_token"
+                 cp <- set cp "DEFAULT" "oauthaccesstoken" "%(urlbase)s/oauth/access_token"
+                 cp <- set cp "DEFAULT" "oauthauthorize" "%(urlbase)s/oauth/authorize"
                  cp <- set cp "DEFAULT" "sendmail" "/usr/sbin/sendmail"
                  cp <- set cp "DEFAULT" "shortenurls" "yes"
                  return cp
