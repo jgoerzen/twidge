@@ -703,6 +703,28 @@ lastid = 914881241
               trailing slash on this option.
             </para></listitem>
         </varlistentry>
+        <varlistentry><term>oauthrequesttoken</term>
+          <listitem><para>
+              The URL to access the oAuth request token interface.  The
+              default,
+              <literal>%(urlbase)s/oauth/request_token</literal>, will
+              work with most environments.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>oauthaccesstoken</term>
+          <listitem><para>
+              The oAuth access token URL.  Default is
+              <literal>%(urlbase)s/oauth/access_token</literal>.
+            </para></listitem>
+        </varlistentry>
+        <varlistentry><term>oauthauthorize</term>
+          <listitem><para>
+              The oAuth authorize URL.  Default is
+              <literal>%(urlbase)s/oauth/authorize</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
       </variablelist>
     </refsect2>              
 
