@@ -1,0 +1,30 @@
+#-*- mode: shell-script;-*-
+
+# twidge command line completion.
+# Copyright 2010 Ernesto Hernández-Novich <emhn@itverx.com.ve>
+
+have twidge &&
+_twidge()
+{
+    local cur
+    cur=${COMP_WORDS[COMP_CWORD]}
+
+    COMPREPLY=()
+
+    if (($COMP_CWORD == 1)); then
+        COMPREPLY=( $( twidge lscommands | tail --lines=+4 | cut -f1 -d' '| grep "^$cur" ) )
+        return 0
+    fi
+
+    local i=${#COMPREPLY[*]}
+    local colonprefixes=${cur%"${cur##*:}"}
+    while [ $((--i)) -ge 0 ]; do
+      COMPREPLY[$i]=`printf %q "${COMPREPLY[$i]}"`
+
+      COMPREPLY[$i]=${COMPREPLY[$i]#"$colonprefixes"} 
+    done
+    return 0
+
+}
+[ "$have" ] && complete -F _twidge -o default twidge
+
