@@ -1,5 +1,5 @@
 {- hpodder component
-Copyright (C) 2006-2007 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2006-2010 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 {- |
    Module     : Download
-   Copyright  : Copyright (C) 2006-2008 John Goerzen
+   Copyright  : Copyright (C) 2006-2010 John Goerzen
    License    : GNU GPL, version 2 or above
 
    Maintainer : John Goerzen <jgoerzen@complete.org>
@@ -59,15 +59,16 @@ curlopts = ["-A", "twidge v1.0.0; Haskell; GHC", -- Set User-Agent
 -}
 
 simpleDownload :: String -> IO String
-{-
-simpleDownload url = run (curl, curlopts ++ [url])
--}
-simpleDownload _ = fail "simpleDownload not yet implemented"
+simpleDownload url =
+  do r <- resp
+     d $ "simpleDownload response from URL " ++ show url ++ ": " ++ show r
+     return . toString . rspPayload $ r
+  where CurlM resp = request (parseURL url)
 
 sendAuthRequest :: ConfigParser -> String -> [(String, String)] -> [(String, String)] -> IO String
 sendAuthRequest cp url getopts postoptlist =
     do app <- case getApp cp of      
-         Nothing -> fail $ "Error: auth not set up"
+         Nothing -> fail $ "Error: auth not set up for this host"
          Just x -> return x
        oauthdata <- case get cp "DEFAULT" "oauthdata" of  
          Left x -> fail $ "Need to (re-)run twidge setup to configure auth: "
