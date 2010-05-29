@@ -32,6 +32,8 @@ import Network.OAuth.Http.Request
 import Network.OAuth.Http.HttpClient
 import OAuth
 import Data.Binary(encode)
+import Control.Monad.Trans
+import qualified Control.Monad.State.Class as M
 
 i = infoM "setup"
 d = debugM "setup"
@@ -81,7 +83,7 @@ setup_worker cpath cp _ =
                            esc . show . toList . oauthParams $ response
                writeCP cpath newcp
                putStrLn $ "Successfully authenticated as " ++ 
-                          findWithDefault "screen_name" (oauthParams response) ++ "!"
+                          findWithDefault ("screen_name", "") (oauthParams response) ++ "!"
                putStrLn "Twidge has now been configured for you and is ready to use."
        else putStrLn "Authentication failed; please try again"
     where confirmSetup =
@@ -99,7 +101,7 @@ setup_worker cpath cp _ =
 
 twidgeAskAuthorization :: MonadIO m => (Token -> String) -> OAuthMonad m ()
 twidgeAskAuthorization getUrl = 
-  do token <- get
+  do token <- M.get
      answer <- liftIO $ do putStrLn "OK, next I need you to authorize Twidge to access your account."
                            putStrLn "Please cut and paste this URL and open it in a web browser:\n"
                            putStrLn (getUrl token)
@@ -107,7 +109,7 @@ twidgeAskAuthorization getUrl =
                            putStrLn "key in your browser window.  Copy and paste it here.\n"
                            putStr   "Authorization key: "
                            getLine
-     put (injectOAuthVerifier answer token)
+     M.put (injectOAuthVerifier answer token)
 
 setup_help =
   "Usage: twidge setup\n\n"
