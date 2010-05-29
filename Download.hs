@@ -46,18 +46,6 @@ import Data.ByteString.Lazy.UTF8(toString)
 d = debugM "download"
 i = infoM "download"
 
-{-
-curl = "curl"
-curlopts = ["-A", "twidge v1.0.0; Haskell; GHC", -- Set User-Agent
-            "-s",               -- Silent mode
-            "-S",               -- Still show error messages
-            "-L",               -- Follow redirects
-            "-y", "60", "-Y", "1", -- Timeouts
-            "--retry", "2",     -- Retry twice
-            "-f"                -- Fail on server errors
-           ]
--}
-
 simpleDownload :: String -> IO String
 simpleDownload url =
   do r <- resp
@@ -98,10 +86,3 @@ sendAuthRequest cp url getopts postoptlist =
                      [] -> ""
                      _ -> "?" ++ (concat . intersperse "&" . map conv $ getopts)
           conv (k, v) = k ++ "=" ++ escapeURIString isUnreserved v
-
-getAuthOpts :: ConfigParser -> [String]
-getAuthOpts cp =
-    case (get cp "DEFAULT" "username", get cp "DEFAULT" "password") of
-      (Right user, Right pass) ->
-          ["--user", user ++ ":" ++ pass]
-      _ -> error "Missing username or password option in config file"
