@@ -42,16 +42,18 @@ srvUrl = fromJust . parseURL $
 -- authenticate
 --------------------------------------------------
 
-authenticate = simpleCmd "authenticate" "Interactively authenticate twidge to server"
+authenticate = simpleCmd "authenticate" "Interactively configure twidge for first-time use"
                authenticate_help
                [] authenticate_worker
 
 authenticate_worker cpath cp _ =
   do hSetBuffering stdout NoBuffering
      when (has_option cp "DEFAULT" "oauthtoken")
-       confirmAuth
-     putStrLn "Ready to authenticate twidge to your account."
-     
+       confirmSetup
+     putStrLn "\nWelcome to twidge.  We will now configure twidge for your"
+     putStrLn "use with Twitter (or a similar service).  This will be quick and easy!\n"
+     putStrLn "\nPlease wait a moment while I query the server...\n\n"
+       
      app <- case getApp cp of
        Nothing -> fail $ "Error: must specify oauthconsumerkey and oauthconsumersecret for non-default host " ++ (serverHost cp)
        Just x -> return x
@@ -75,14 +77,14 @@ authenticate_worker cpath cp _ =
      (leg2, leg3, response) <- resp
      -- on successful auth, leg3 is True. Otherwise, it is False.
      -- leg1 is always false and r appears to not matter.
-     print (leg2, leg3, oauthParams response)
+     d $ show (leg2, leg3, oauthParams response)
      if leg3 
        then do let newcp = forceEither $ set cp "DEFAULT" "oauthdata" .
                            show . toList . oauthParams $ response
                writeCP cpath newcp
-               putStrLn "Successfully authenticated; twidge is ready for your use."
+               putStrLn "Successfully authenticated!  Twidge has now been configured for you."
        else putStrLn "Authentication failed; please try again"
-    where confirmAuth =
+    where confirmSetup =
               do putStrLn "\nIt looks like you have already authenticated twidge."
                  putStrLn "If we continue, I may remove your existing"
                  putStrLn "authentication.  Would you like to proceed?"
