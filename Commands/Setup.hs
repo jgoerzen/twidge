@@ -65,10 +65,18 @@ setup_worker cpath cp _ =
      let accUrl = fromJust . parseURL $ accUrlBase
      let authUrl = ((authUrlBase ++ "?oauth_token=") ++ ) . 
                    findWithDefault ("oauth_token", "") .
-          oauthParams
+                   oauthParams
      
      let CurlM resp = runOAuth $ do ignite app
-                                    oauthRequest HMACSHA1 Nothing reqUrl
+                                    
+                                    -- hack around hoauth bug - identica doesn't
+                                    -- return oauth_callback_confirmed
+                                    putToken $ AccessToken {application = app,
+                                                            oauthParams = empty}
+                                    reqres <- oauthRequest HMACSHA1 Nothing reqUrl
+                                    liftIO $ d $ "reqres params: " ++ case reqres of 
+                                      Left x -> " error " ++ x
+                                      Right y -> show (oauthParams y)
                                     twidgeAskAuthorization authUrl
                                     oauthRequest HMACSHA1 Nothing accUrl
                                     tok <- getToken
