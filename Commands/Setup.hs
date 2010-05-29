@@ -77,6 +77,9 @@ setup_worker cpath cp _ =
                                     liftIO $ d $ "reqres params: " ++ case reqres of 
                                       Left x -> " error " ++ x
                                       Right y -> show (oauthParams y)
+                                    case reqres of
+                                      Left x -> fail $ "Error from oauthRequest: " ++ show x
+                                      Right _ -> return ()
                                     twidgeAskAuthorization authUrl
                                     oauthRequest HMACSHA1 Nothing accUrl
                                     tok <- getToken
