@@ -48,7 +48,7 @@ setup = simpleCmd "setup" "Interactively configure twidge for first-time use"
 
 setup_worker cpath cp _ =
   do hSetBuffering stdout NoBuffering
-     when (has_option cp "DEFAULT" "oauthtoken")
+     when (has_option cp "DEFAULT" "oauthdata")
        confirmSetup
      putStrLn "\nWelcome to twidge.  We will now configure twidge for your"
      putStrLn "use with Twitter (or a similar service).  This will be quick and easy!\n"

@@ -38,8 +38,6 @@ import Data.String.Utils(strip, split)
 import System.Posix.Files(rename, setFileCreationMask)
 import System.Log.Logger
 
-d = debugM "Config"
-
 getDefaultCP =
     do return $ forceEither $ 
               do cp <- set startingcp "DEFAULT" "urlbase" "https://twitter.com"
@@ -62,7 +60,7 @@ loadCP useDefaultIfMissing cpgiven =
                    Just x -> return x
        defaultcp <- getDefaultCP
        dfe <- doesFileExist cpname
-       d $ "CP " ++ cpname ++ " exists? " ++ show dfe
+       debugM "Config" $ "CP " ++ cpname ++ " exists? " ++ show dfe
        if dfe
           then do cp <- readfile defaultcp cpname
                   return $ forceEither cp
