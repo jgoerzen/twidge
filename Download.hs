@@ -39,6 +39,7 @@ import Data.Maybe
 import Network.OAuth.Http.Request
 import Network.OAuth.Http.Response
 import Network.OAuth.Consumer
+import Network.OAuth.Http.HttpClient(request)
 import TwidgeHttpClient
 import OAuth
 import Data.ByteString.Lazy.UTF8(toString)
@@ -51,7 +52,7 @@ simpleDownload url =
   do r <- resp
      d $ "simpleDownload response from URL " ++ show url ++ ": " ++ show r
      return . toString . rspPayload $ r
-  where CurlM resp = request (parseURL url)
+  where CurlM resp = request (fromJust $ parseURL url)
 
 sendAuthRequest :: ConfigParser -> String -> [(String, String)] -> [(String, String)] -> IO String
 sendAuthRequest cp url getopts postoptlist =
