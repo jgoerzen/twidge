@@ -53,7 +53,7 @@ getCPName =
     do appdir <- getUserDocumentsDirectory
        return $ appdir ++ "/.twidgerc"
 
-loadCP cpgiven = 
+loadCP useDefaultIfMissing cpgiven = 
     do cpname <- case cpgiven of
                    Nothing -> getCPName
                    Just x -> return x
@@ -62,7 +62,9 @@ loadCP cpgiven =
        if dfe
           then do cp <- readfile defaultcp cpname
                   return $ forceEither cp
-          else do fail $ "No config file found at " ++ cpname ++ 
+          else if useDefaultIfMissing
+               then return defaultcp
+               else do fail $ "No config file found at " ++ cpname ++ 
                            "\nRun twidge setup to configure twidge for use."
 
 writeCP cpgiven cp =

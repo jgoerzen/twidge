@@ -68,8 +68,8 @@ worker args commandargs =
        updateGlobalLogger "" (setHandlers [handler])
        let commandname = head cmdargs
        cp <- if commandname `elem` ["lscommands", "setup"] -- no config file needed
-                then return emptyCP
-                else loadCP (lookup "c" args)
+                then loadCP True (lookup "c" args)
+                else loadCP False (lookup "c" args)
        let cmdargs' = (words $ expandAlias cp commandname) ++ (tail cmdargs)
        let commandname' = head cmdargs'
        case lookup commandname' allCommands of
