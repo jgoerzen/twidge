@@ -67,7 +67,7 @@ authenticate_worker cpath cp _ =
      
      let CurlM resp = runOAuth $ do ignite app
                                     oauthRequest HMACSHA1 Nothing reqUrl
-                                    cliAskAuthorization authUrl
+                                    twidgeAskAuthorization authUrl
                                     oauthRequest HMACSHA1 Nothing accUrl
                                     tok <- getToken
                                     return (twoLegged tok, threeLegged tok,
@@ -95,6 +95,17 @@ authenticate_worker cpath cp _ =
           fix '%' = "%%"
           fix x = [x]
 
+twidgeAskAuthorization :: MonadIO m => (Token -> String) -> OAuthMonad m ()
+twidgeAskAuthorization getUrl = 
+  do token <- get
+     answer <- liftIO $ do putStrLn "OK, next I need you to authorize Twidge to access your account."
+                           putStrLn "Please cut and paste this URL and open it in a web browser:\n"
+                           putStrLn (getUrl token)
+                           putStrLn "\nClick Allow when prompted.  You will be given a numeric"
+                           putStrLn "key in your browser window.  Copy and paste it here.\n"
+                           putStr   "Authorization key: "
+                           getLine
+     put (injectOAuthVerifier answer token)
+
 authenticate_help =
   "Usage: twidge authenticate\n\n"
-  
