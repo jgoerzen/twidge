@@ -35,7 +35,6 @@ import Utils
 import Types
 import Config
 
-import qualified Commands.Auth
 import qualified Commands.FollowBlock
 import qualified Commands.Ls
 import qualified Commands.Setup
@@ -43,8 +42,7 @@ import qualified Commands.Update
 
 --allCommands :: [(String, Command)]
 allCommands = 
-    [Commands.Auth.authenticate,
-     Commands.Update.dmsend,
+    [Commands.Update.dmsend,
      Commands.FollowBlock.block,
      Commands.FollowBlock.follow,
      Commands.Ls.lsarchive,
