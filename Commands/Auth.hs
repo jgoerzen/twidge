@@ -80,7 +80,9 @@ authenticate_worker cpath cp _ =
        then do let newcp = forceEither $ set cp "DEFAULT" "oauthdata" .
                            esc . show . toList . oauthParams $ response
                writeCP cpath newcp
-               putStrLn "Successfully authenticated!  Twidge has now been configured for you."
+               putStrLn $ "Successfully authenticated as " ++ 
+                          findWithDefault "screen_name" (oauthParams response) ++ "!"
+               putStrLn "Twidge has now been configured for you and is ready to use."
        else putStrLn "Authentication failed; please try again"
     where confirmSetup =
               do putStrLn "\nIt looks like you have already authenticated twidge."
