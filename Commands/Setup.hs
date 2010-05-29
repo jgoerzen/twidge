@@ -93,8 +93,7 @@ setup_worker cpath cp _ =
        then do let newcp = forceEither $ set cp "DEFAULT" "oauthdata" .
                            esc . show . toList . oauthParams $ response
                writeCP cpath newcp
-               putStrLn $ "Successfully authenticated as " ++ 
-                          findWithDefault ("screen_name", "") (oauthParams response) ++ "!"
+               putStrLn $ "Successfully authenticated!" 
                putStrLn "Twidge has now been configured for you and is ready to use."
        else putStrLn "Authentication failed; please try again"
     where confirmSetup =
@@ -117,7 +116,9 @@ twidgeAskAuthorization getUrl =
                            putStrLn "Please cut and paste this URL and open it in a web browser:\n"
                            putStrLn (getUrl token)
                            putStrLn "\nClick Allow when prompted.  You will be given a numeric"
-                           putStrLn "key in your browser window.  Copy and paste it here.\n"
+                           putStrLn "key in your browser window.  Copy and paste it here."
+                           putStrLn "(NOTE: some non-Twitter services supply no key; just leave this blank"
+                           putStrLn "if you don't get one.)\n"
                            putStr   "Authorization key: "
                            getLine
      M.put (injectOAuthVerifier answer token)
