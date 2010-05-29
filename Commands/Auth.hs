@@ -34,9 +34,7 @@ import OAuth
 import Data.Binary(encode)
 
 i = infoM "authenticate"
-
-srvUrl = fromJust . parseURL $ 
-         "http://api.twitter.com/1/statuses/home_timeline.xml"
+d = debugM "authenticate"
 
 --------------------------------------------------
 -- authenticate
@@ -80,7 +78,7 @@ authenticate_worker cpath cp _ =
      d $ show (leg2, leg3, oauthParams response)
      if leg3 
        then do let newcp = forceEither $ set cp "DEFAULT" "oauthdata" .
-                           show . toList . oauthParams $ response
+                           esc . show . toList . oauthParams $ response
                writeCP cpath newcp
                putStrLn "Successfully authenticated!  Twidge has now been configured for you."
        else putStrLn "Authentication failed; please try again"
@@ -93,6 +91,9 @@ authenticate_worker cpath cp _ =
                  if (map toLower c) == "yes"
                     then return ()
                     else permFail "Aborting authentication at user request."
+          esc x = concatMap fix x
+          fix '%' = "%%"
+          fix x = [x]
 
 authenticate_help =
   "Usage: twidge authenticate\n\n"
