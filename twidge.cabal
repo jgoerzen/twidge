@@ -11,7 +11,8 @@ extra-source-files: COPYING, INSTALL, doc/SConstruct,
   doc/man.twidge.sgml, doc/printlocal.dsl, doc/sgml-common/COPYING,
   doc/sgml-common/COPYRIGHT, doc/sgml-common/ChangeLog,
   doc/sgml-common/Makefile.common, doc/sgml-common/SConstruct,
-  doc/sgml-common/ps2epsi
+  doc/sgml-common/ps2epsi,
+  twidge.bash_completion
 homepage: http://software.complete.org/twidge
 Build-type: Simple
 Category: Network
