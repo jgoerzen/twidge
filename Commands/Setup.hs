@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
-module Commands.Auth(authenticate) where
+module Commands.Setup(setup) where
 import Utils
 import System.Log.Logger
 import Data.List
@@ -33,18 +33,18 @@ import Network.OAuth.Http.HttpClient
 import OAuth
 import Data.Binary(encode)
 
-i = infoM "authenticate"
-d = debugM "authenticate"
+i = infoM "setup"
+d = debugM "setup"
 
 --------------------------------------------------
--- authenticate
+-- setup
 --------------------------------------------------
 
-authenticate = simpleCmd "authenticate" "Interactively configure twidge for first-time use"
-               authenticate_help
-               [] authenticate_worker
+setup = simpleCmd "setup" "Interactively configure twidge for first-time use"
+        setup_help
+        [] setup_worker
 
-authenticate_worker cpath cp _ =
+setup_worker cpath cp _ =
   do hSetBuffering stdout NoBuffering
      when (has_option cp "DEFAULT" "oauthtoken")
        confirmSetup
@@ -92,7 +92,7 @@ authenticate_worker cpath cp _ =
                  c <- getLine
                  if (map toLower c) == "yes"
                     then return ()
-                    else permFail "Aborting authentication at user request."
+                    else permFail "Aborting setup at user request."
           esc x = concatMap fix x
           fix '%' = "%%"
           fix x = [x]
@@ -109,5 +109,5 @@ twidgeAskAuthorization getUrl =
                            getLine
      put (injectOAuthVerifier answer token)
 
-authenticate_help =
-  "Usage: twidge authenticate\n\n"
+setup_help =
+  "Usage: twidge setup\n\n"
