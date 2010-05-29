@@ -143,7 +143,7 @@
     <para>
       To get started, simply run <command>twidge setup</command> at your
       shell prompt.  &twidge; will lead you through the first-time
-      configuration -- which is only two questions and completely
+      configuration -- which is very quick and completely
       self-explanatory!
     </para>
     <para>
@@ -640,8 +640,8 @@
       The section named DEFAULT is special in that it provides
       defaults that will be used whenever an option can't be found
       under a different section.  If you specify no section names,
-      DEFAULT is the assumed section.  Some items, such as username,
-      password, and urlbase are assumed to be in DEFAULT.
+      DEFAULT is the assumed section.  Some items, such as urlbase,
+      are assumed to be in DEFAULT.
     </para>
     <para>
       Let's start by looking at an example file, and then proceed to
@@ -649,11 +649,6 @@
     </para>
     <programlisting><![CDATA[
 [DEFAULT]
-
-; Username and password
-username = ilovetwidge
-
-password = secret
 
 ; If your password contains a percent sign (%), list it twice (%%)
 
@@ -675,8 +670,7 @@ lastid = 914881241
       option, it first checks to see if it can find that option in a
       section for that option.  If not, it checks the
       <option>DEFAULT</option> section.  If it still doesn't find an
-      answer, it consults its built-in defaults.  The only built-in
-      default at present is urlbase.
+      answer, it consults its built-in defaults.
     </para>
     <refsect2 id="twidge.config.general">
       <title>General Options</title>
@@ -684,16 +678,6 @@ lastid = 914881241
         section.
       </para>
       <variablelist>
-        <varlistentry><term>username</term>
-          <listitem><para>
-              Your username on the microblogging site.  No default.
-            </para></listitem>
-        </varlistentry>
-        <varlistentry><term>password</term>
-          <listitem><para>
-              Your password on the microblogging site.  No default.
-            </para></listitem>
-        </varlistentry>
         <varlistentry><term>urlbase</term>
           <listitem><para>
               The URL to access the API of the microblogging site.
@@ -737,6 +721,13 @@ lastid = 914881241
           <listitem><para>
               The oAuth consumer secret.  A default is provided as
               with oauthconsumerkey.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>oauthdata</term>
+          <listitem><para>
+              Automatically written by <command>twidge
+                setup</command>.  Do not alter.
             </para>
           </listitem>
         </varlistentry>
