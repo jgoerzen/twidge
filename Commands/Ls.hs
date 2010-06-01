@@ -34,7 +34,6 @@ import Data.Either.Utils(forceEither)
 import Control.Monad(when)
 import HSH
 import System.Console.GetOpt.Utils
--- import qualified System.IO.UTF8 as UTF8
 import Network.URI
 import Data.Maybe (isJust)
 
