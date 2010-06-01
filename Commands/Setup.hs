@@ -68,12 +68,22 @@ setup_worker cpath cp _ =
                    oauthParams
      
      let CurlM resp = runOAuth $ do ignite app
-                                    reqres <- oauthRequest HMACSHA1 Nothing reqUrl
-                                    liftIO $ d $ "reqres params: " ++ case reqres of 
-                                      Left x -> " error " ++ x
-                                      Right y -> show (oauthParams y)
-                                    case reqres of
-                                      Left x -> fail $ "Error from oauthRequest: " ++ show x
+                                     -- hack around hoauth bug - identica doesn't
+                                     -- return oauth_callback_confirmed
+                                    putToken $ AccessToken {application = app,
+                                                            oauthParams = empty}
+                                    reqres1 <- tryRequest reqUrl
+                                    case reqres1 of
+                                      Left x -> -- hack around hoauth bug for
+                                                -- identica -- it doesn't return
+                                                -- oauth_callback_confirmed
+                                                -- otherwise.
+                                        do putToken $ AccessToken {application = app,
+                                                                   oauthParams = empty}
+                                           reqres2 <- tryRequest reqUrl
+                                           case reqres2 of 
+                                             Left x -> fail $ "Error from oauthRequest: " ++ show x
+                                             Right _ -> return ()
                                       Right _ -> return ()
                                     twidgeAskAuthorization authUrl
                                     oauthRequest HMACSHA1 Nothing accUrl
@@ -86,7 +96,7 @@ setup_worker cpath cp _ =
      d $ show (leg2, leg3, oauthParams response)
      if leg3 
        then do let newcp = forceEither $ set cp "DEFAULT" "oauthdata" .
-                           esc . show . fixIdentica . toList . oauthParams $ response
+                           esc . show . toList . oauthParams $ response
                writeCP cpath newcp
                putStrLn $ "Successfully authenticated!" 
                putStrLn "Twidge has now been configured for you and is ready to use."
@@ -100,13 +110,12 @@ setup_worker cpath cp _ =
                  if (map toLower c) == "yes"
                     then return ()
                     else permFail "Aborting setup at user request."
-          -- Work around a hoauth bug - identica doesn't return
-          -- oauth_callback_confirmed
-          fixIdentica :: [(String, String)] -> [(String, String)]
-          fixIdentica inp =
-            case lookup "oauth_callback_confirmed" inp of
-              Nothing -> ("oauth_callback_confirmed", "true") : inp
-              Just _ -> inp
+          tryRequest reqUrl = 
+            do reqres <- oauthRequest HMACSHA1 Nothing reqUrl
+               liftIO $ d $ "reqres params: " ++ case reqres of
+                 Left x -> " error " ++ x
+                 Right y -> show (oauthParams y)
+               return reqres
           esc x = concatMap fix x
           fix '%' = "%%"
           fix x = [x]
