@@ -70,11 +70,11 @@ setup_worker cpath cp _ =
      let CurlM resp = 
            runOAuth $ 
            do ignite app
-              d "ignite done.  trying request 1."
+              liftIO $ d "ignite done.  trying request 1."
               reqres1 <- tryRequest reqUrl
               case reqres1 of
                 Left x -> -- hack around hoauth bug for identica
-                  do d "request 1 failed.  attempting workaround."
+                  do liftIO $ d "request 1 failed.  attempting workaround."
                      putToken $ AccessToken {application = app,
                                              oauthParams = empty}
                      reqres2 <- tryRequest reqUrl
