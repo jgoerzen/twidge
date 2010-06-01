@@ -71,8 +71,8 @@ setup_worker cpath cp _ =
                                     
                                     -- hack around hoauth bug - identica doesn't
                                     -- return oauth_callback_confirmed
-                                    putToken $ AccessToken {application = app,
-                                                            oauthParams = empty}
+                                    -- putToken $ AccessToken {application = app,
+                                    --                        oauthParams = empty}
                                     reqres <- oauthRequest HMACSHA1 Nothing reqUrl
                                     liftIO $ d $ "reqres params: " ++ case reqres of 
                                       Left x -> " error " ++ x
