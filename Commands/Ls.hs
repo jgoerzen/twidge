@@ -34,7 +34,7 @@ import Data.Either.Utils(forceEither)
 import Control.Monad(when)
 import HSH
 import System.Console.GetOpt.Utils
-import qualified System.IO.UTF8 as UTF8
+-- import qualified System.IO.UTF8 as UTF8
 import Network.URI
 import Data.Maybe (isJust)
 
@@ -253,10 +253,10 @@ printGeneric shortfunc longfunc section cp args m =
             (Just cmd, _) ->
                 runIO $ (cmd, [sId m, sSender m, sRecipient m, 
                                sText m, sDate m])
-            (Nothing, Nothing) -> UTF8.putStr (shortfunc (case lookup "w" args of 
+            (Nothing, Nothing) -> putStr (shortfunc (case lookup "w" args of 
                                                             Just ws -> read ws
                                                             Nothing -> defaultWidth) m)
-            (Nothing, Just _) -> UTF8.putStr (longfunc m)
+            (Nothing, Just _) -> putStr (longfunc m)
       Just recipient -> mailto section cp args m recipient
     where msgid = genMsgId section m cp
 
