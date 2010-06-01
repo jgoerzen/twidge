@@ -17,7 +17,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -}
 
 module Commands.Ls(lsrecent, lsreplies, lsblocking,
-                   lsfollowing, lsfollowers, lsarchive, lsdm, lsdmarchive) where
+                   lsfollowing, lsfollowers, lsarchive, 
+                   lsrt, lsrtreplies, lsrtarchive, lsdm, lsdmarchive) where
 import Utils
 import System.Log.Logger
 import Types
@@ -125,6 +126,8 @@ lsarchive = simpleCmd "lsarchive" "List recent status updates you posted yoursel
             (stdopts ++ sinceopts) (paginated (statuses_worker "lsarchive"
                                                "/statuses/user_timeline"))
 
+
+
 lsdm = simpleCmd "lsdm" "List recent direct messages to you"
        lsdm_help
        (stdopts ++ sinceopts) (paginated (dm_worker "lsdm" 
@@ -134,6 +137,21 @@ lsdmarchive = simpleCmd "lsdmarchive" "List recent direct messages you sent"
               lsdmarchive_help
               (stdopts ++ sinceopts) (paginated (dm_worker "lsdmarchive"
                                                  "/direct_messages/sent"))
+
+lsrt = simpleCmd "lsrt" "List recent retweets from those you follow"
+       lsrt_help
+       (stdopts ++ sinceopts) (paginated (statuses_worker "lsrt"
+                                          "/statuses/retweeted_to_me"))
+       
+lsrtarchive = simpleCmd "lsrtarchive" "List recent retweets you made yourself"
+              lsrtarchive_help
+              (stdopts ++ sinceopts) (paginated (statuses_worker "lsrtarchive"
+                                                 "/statuses/retweeted_by_me"))
+
+lsrtreplies = simpleCmd "lsrtreplies" "List others' retweets of your statuses"
+              lsrtreplies_help
+              (stdopts ++ sinceopts) (paginated (statuses_worker "lsrtreplies"
+                                                 "/statuses/retweets_of_me"))
 
 statuses_worker = generic_worker handleStatus
 dm_worker = generic_worker handleDM
@@ -174,6 +192,31 @@ lsarchive_help =
  \For more examples, including how to see only unseen updates, please\n\
  \refer to the examples under twidge lsrecent --help, which also pertain\n\
  \to lsarchive.\n"
+
+lsrt_help = 
+ "Usage: twidge lsrt [options]\n\n\
+ \You can see the 20 most recent retweets posted by those you follow with:\n\n\
+ \   twidge lsrt\n\n\
+ \For more examples, including how to see only unseen retweets, please\n\
+ \refer to the examples under twidge lsrecent --help, which also pertain\n\
+ \to lsreplies.\n"
+ 
+lsrtreplies_help = 
+ "Usage: twidge lsrtreplies [options]\n\n\
+ \You can see the 20 most retweets made of your statuses with:\n\n\
+ \   twidge lsrtreplies\n\n\
+ \For more examples, including how to see only unseen retweets, please\n\
+ \refer to the examples under twidge lsrecent --help, which also pertain\n\
+ \to lsreplies.\n"
+
+lsrtarchive_help = 
+ "Usage: twidge lsrt [options]\n\n\
+ \You can see the 20 most recent retweets you made:\n\n\
+ \   twidge lsrtarchive\n\n\
+ \For more examples, including how to see only unseen retweets, please\n\
+ \refer to the examples under twidge lsrecent --help, which also pertain\n\
+ \to lsreplies.\n"
+
 
 lsdm_help =
  "Usage: twidge lsdm [options]\n\n\
