@@ -67,27 +67,25 @@ setup_worker cpath cp _ =
                    findWithDefault ("oauth_token", "") .
                    oauthParams
      
-     let CurlM resp = runOAuth $ do ignite app
-                                    putToken $ AccessToken {application = app,
-                                                            oauthParams = empty}
-                                    reqres1 <- tryRequest reqUrl
-                                    case reqres1 of
-                                      Left x -> -- hack around hoauth bug for
-                                                -- identica -- it doesn't return
-                                                -- oauth_callback_confirmed
-                                                -- otherwise.
-                                        do putToken $ AccessToken {application = app,
-                                                                   oauthParams = empty}
-                                           reqres2 <- tryRequest reqUrl
-                                           case reqres2 of 
-                                             Left x -> fail $ "Error from oauthRequest: " ++ show x
-                                             Right _ -> return ()
-                                      Right _ -> return ()
-                                    twidgeAskAuthorization authUrl
-                                    oauthRequest HMACSHA1 Nothing accUrl
-                                    tok <- getToken
-                                    return (twoLegged tok, threeLegged tok,
-                                            tok)
+     let CurlM resp = 
+           runOAuth $ 
+           do ignite app
+              putToken $ AccessToken {application = app,
+                                      oauthParams = empty}
+              reqres1 <- tryRequest reqUrl
+              case reqres1 of
+                Left x -> -- hack around hoauth bug for identica
+                  do putToken $ AccessToken {application = app,
+                                             oauthParams = empty}
+                     reqres2 <- tryRequest reqUrl
+                     case reqres2 of 
+                       Left x -> fail $ "Error from oauthRequest: " ++ show x
+                       Right _ -> return ()
+                Right _ -> return ()
+              twidgeAskAuthorization authUrl
+              oauthRequest HMACSHA1 Nothing accUrl
+              tok <- getToken
+              return (twoLegged tok, threeLegged tok, tok)
      (leg2, leg3, response) <- resp
      -- on successful auth, leg3 is True. Otherwise, it is False.
      -- leg1 is always false and r appears to not matter.
