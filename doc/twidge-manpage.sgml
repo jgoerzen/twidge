@@ -392,12 +392,6 @@
             of -s with this particular command.  If -s has never
             before been used with this command, has no effect.
           </para>
-          <para>
-            As of September 2008, Identi.ca does not support the
-            since_id parameter that is required for this option to be
-            effective.  A future version of &twidge; may implement a
-            workaround.
-          </para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -447,6 +441,40 @@
         to you.
       </para>
     </refsect2>
+
+    <refsect2 id ="twidge.commands.lsrt">
+      <title>lsrt</title>
+      <para>
+        Lists new-style retweets made by those that you follow. 
+      </para>
+      <para>
+        Note: identi.ca doesn't support new-style retweets and will
+        return an error on this command.
+      </para>
+    </refsect2>
+
+    <refsect2 id="twidge.commands.lsrtarchive">
+      <title>lsrtarchive</title>
+      <para>
+        Lists the new-style retweets you made yourself.
+      </para>
+      <para>
+        Note: identi.ca doesn't support new-style retweets and will
+        return an error on this command.
+      </para>
+    </refsect2>
+
+    <refsect2 id="twidge.commands.lsrtreplies">
+      <title>lsrtreplies</title>
+      <para>
+        List retweets of your statuses made by others.
+      </para>
+      <para>
+        Note: identi.ca doesn't support new-style retweets and will
+        return an error on this command.
+      </para>
+    </refsect2>
+
   </refsect1>
 
   <refsect1 id="twidge.commands.displayinfo">
