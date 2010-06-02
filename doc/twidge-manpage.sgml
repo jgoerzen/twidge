@@ -605,6 +605,8 @@
       <title>update</title>
       <cmdsynopsis>
         <command>twidge update</command>
+        <arg choice="opt">-i <replaceable>MSGID</replaceable> |
+          --inreplyto <replaceable>MSGID</replaceable></arg>
         <arg choice="opt"><replaceable>status</replaceable></arg>
       </cmdsynopsis>
       <cmdsynopsis>
@@ -649,6 +651,11 @@
         appear in the RFC2822 body.  You probably want to turn off
         your signature as well. &twidge; will convert newline
         characters to spaces when processing your message body.  
+      </para>
+      <para>
+        When -i is given, the internal Twitter ID of a message is
+        expected to be passed.  This sets the "in reply to" flag on
+        Twitter appropriately.
       </para>
     </refsect2>
   </refsect1>
