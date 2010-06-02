@@ -59,7 +59,7 @@ Executable twidge
   Main-Is: twidge.hs
   Other-Modules: Commands, Commands.FollowBlock, Commands.Ls,
         Commands.Setup, Commands.Update, Config, Download, FeedParser,
-        MailParser, Types, Utils, OAuth
+        MailParser, Types, Utils, OAuth, TwidgeHttpClient
   GHC-Options: -O2
   Extensions: ExistentialQuantification, OverlappingInstances,
     UndecidableInstances
