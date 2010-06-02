@@ -5,7 +5,10 @@ twidge (1.0.0) unstable; urgency=medium
     prior to 1.0.0 will soon fail to work.  This version switches
     using oAuth to maintain compatibility.  Users will need to re-run
     twidge setup to complete the switch.
+    + Code relevant to #521616 has been removed.  Closes: #521616.
+    + New HTTP client in place.  Closes: #535766.
   * New commands to support new-style retweets: lsrt, lsrtreplis, lsrtarchive.
+    Closes: #583999.
   * lsarchive gained -U to let you specify which user's posts to see.
   * New support for URL shorteners: is.gd, bit.ly, j.mp.
     Patch from Robin Green.
@@ -14,6 +17,7 @@ twidge (1.0.0) unstable; urgency=medium
   * Corrected a spelling mistake.  Closes: #521616.
   * Added support for blocking and unblocking.
   * Only shorten URLs when needed.  Patch from Eric Y. Kow.
+    Closes: #567174.
   * Added support to set an in_reply_to_status_id via the -i argument
     to update.
   * Provide correct UTF-8 output.
