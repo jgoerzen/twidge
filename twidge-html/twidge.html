@@ -339,7 +339,7 @@ CLASS="COMMAND"
 CLASS="APPLICATION"
 >twidge</SPAN
 > will lead you through the first-time
-      configuration -- which is only two questions and completely
+      configuration -- which is very quick and completely
       self-explanatory!
     </P
 ><P
@@ -649,9 +649,20 @@ CLASS="COMMAND"
       <B
 CLASS="COMMAND"
 >lsrecent</B
->, and <B
+>, <B
 CLASS="COMMAND"
 >lsreplies</B
+>,
+      <B
+CLASS="COMMAND"
+>lsrt</B
+>, <B
+CLASS="COMMAND"
+>lsrtarchive</B
+>,
+      and <B
+CLASS="COMMAND"
+>lsrtreplies</B
 >.
       Here are the common options:
     </P
@@ -668,7 +679,7 @@ CELLPADDING="4"
 ALIGN="LEFT"
 VALIGN="TOP"
 ><A
-NAME="AEN173"><SPAN
+NAME="AEN176"><SPAN
 STYLE="white-space: nowrap"
 >-a</SPAN
 >, <SPAN
@@ -705,7 +716,7 @@ CLASS="APPLICATION"
 ALIGN="LEFT"
 VALIGN="TOP"
 ><A
-NAME="AEN180"><SPAN
+NAME="AEN183"><SPAN
 STYLE="white-space: nowrap"
 >-e <TT
 CLASS="REPLACEABLE"
@@ -766,7 +777,7 @@ TYPE="1"
 ALIGN="LEFT"
 VALIGN="TOP"
 ><A
-NAME="AEN196"><SPAN
+NAME="AEN199"><SPAN
 STYLE="white-space: nowrap"
 >-l</SPAN
 >, <SPAN
@@ -806,7 +817,7 @@ CLASS="APPLICATION"
 ALIGN="LEFT"
 VALIGN="TOP"
 ><A
-NAME="AEN203"><SPAN
+NAME="AEN206"><SPAN
 STYLE="white-space: nowrap"
 >-m <TT
 CLASS="REPLACEABLE"
@@ -860,7 +871,7 @@ CLASS="APPLICATION"
 ALIGN="LEFT"
 VALIGN="TOP"
 ><A
-NAME="AEN213"><SPAN
+NAME="AEN216"><SPAN
 STYLE="white-space: nowrap"
 >-s</SPAN
 >, <SPAN
@@ -882,7 +893,7 @@ VALIGN="TOP"
 ALIGN="LEFT"
 VALIGN="TOP"
 ><A
-NAME="AEN218"><SPAN
+NAME="AEN221"><SPAN
 STYLE="white-space: nowrap"
 >-u</SPAN
 >, <SPAN
@@ -896,15 +907,6 @@ VALIGN="TOP"
 >            Causes the command to show only items since the last use
             of -s with this particular command.  If -s has never
             before been used with this command, has no effect.
-          </P
-><P
->            As of September 2008, Identi.ca does not support the
-            since_id parameter that is required for this option to be
-            effective.  A future version of <SPAN
-CLASS="APPLICATION"
->twidge</SPAN
-> may implement a
-            workaround.
           </P
 ></TD
 ></TR
@@ -923,8 +925,54 @@ NAME="TWIDGE.COMMANDS.LSARCHIVE"
 ><H3
 >lsarchive</H3
 ><P
->        Lists your own posts.
+>        Lists your own posts.  With the one
+        <TT
+CLASS="LITERAL"
+>lsarchive</TT
+> option, you can also list the
+        posts of a specific other user:
       </P
+><P
+></P
+><TABLE
+CLASS="variablelist"
+BORDER="0"
+CELLSPACING="0"
+CELLPADDING="4"
+><TBODY
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN232"><SPAN
+STYLE="white-space: nowrap"
+>-U <TT
+CLASS="REPLACEABLE"
+><I
+>USERNAME</I
+></TT
+></SPAN
+>, <SPAN
+STYLE="white-space: nowrap"
+>--username=<TT
+CLASS="REPLACEABLE"
+><I
+>USERNAME</I
+></TT
+></SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              Instead of showing your own updates, instead show those of
+              a differerent user.
+            </P
+></TD
+></TR
+></TBODY
+></TABLE
 ></DIV
 ><HR><DIV
 CLASS="REFSECT2"
@@ -973,6 +1021,51 @@ NAME="TWIDGE.COMMANDS.LSREPLIES"
 ><P
 >        Lists recent replies made by anyone on the microblogging site
         to you.
+      </P
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.LSRT"
+></A
+><H3
+>lsrt</H3
+><P
+>        Lists new-style retweets made by those that you follow. 
+      </P
+><P
+>        Note: identi.ca doesn't support new-style retweets and will
+        return an error on this command.
+      </P
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.LSRTARCHIVE"
+></A
+><H3
+>lsrtarchive</H3
+><P
+>        Lists the new-style retweets you made yourself.
+      </P
+><P
+>        Note: identi.ca doesn't support new-style retweets and will
+        return an error on this command.
+      </P
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.COMMANDS.LSRTREPLIES"
+></A
+><H3
+>lsrtreplies</H3
+><P
+>        List retweets of your statuses made by others.
+      </P
+><P
+>        Note: identi.ca doesn't support new-style retweets and will
+        return an error on this command.
       </P
 ></DIV
 ></DIV
@@ -1314,8 +1407,8 @@ CLASS="FILENAME"
 >      The section named DEFAULT is special in that it provides
       defaults that will be used whenever an option can't be found
       under a different section.  If you specify no section names,
-      DEFAULT is the assumed section.  Some items, such as username,
-      password, and urlbase are assumed to be in DEFAULT.
+      DEFAULT is the assumed section.  Some items, such as urlbase,
+      are assumed to be in DEFAULT.
     </P
 ><P
 >      Let's start by looking at an example file, and then proceed to
@@ -1324,11 +1417,6 @@ CLASS="FILENAME"
 ><PRE
 CLASS="PROGRAMLISTING"
 >[DEFAULT]
-
-; Username and password
-username = ilovetwidge
-
-password = secret
 
 ; If your password contains a percent sign (%), list it twice (%%)
 
@@ -1355,8 +1443,7 @@ CLASS="APPLICATION"
 CLASS="OPTION"
 >DEFAULT</CODE
 > section.  If it still doesn't find an
-      answer, it consults its built-in defaults.  The only built-in
-      default at present is urlbase.
+      answer, it consults its built-in defaults.
     </P
 ><DIV
 CLASS="REFSECT2"
@@ -1385,41 +1472,7 @@ CELLPADDING="4"
 ALIGN="LEFT"
 VALIGN="TOP"
 ><A
-NAME="AEN347"><SPAN
-STYLE="white-space: nowrap"
->username</SPAN
-></TD
-><TD
-ALIGN="LEFT"
-VALIGN="TOP"
-><P
->              Your username on the microblogging site.  No default.
-            </P
-></TD
-></TR
-><TR
-><TD
-ALIGN="LEFT"
-VALIGN="TOP"
-><A
-NAME="AEN351"><SPAN
-STYLE="white-space: nowrap"
->password</SPAN
-></TD
-><TD
-ALIGN="LEFT"
-VALIGN="TOP"
-><P
->              Your password on the microblogging site.  No default.
-            </P
-></TD
-></TR
-><TR
-><TD
-ALIGN="LEFT"
-VALIGN="TOP"
-><A
-NAME="AEN355"><SPAN
+NAME="AEN369"><SPAN
 STYLE="white-space: nowrap"
 >urlbase</SPAN
 ></TD
@@ -1438,6 +1491,129 @@ CLASS="LITERAL"
 >http://identi.ca/api</TT
 >.  Do not put a
               trailing slash on this option.
+            </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN375"><SPAN
+STYLE="white-space: nowrap"
+>oauthrequesttoken</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              The URL to access the oAuth request token interface.  The
+              default,
+              <TT
+CLASS="LITERAL"
+>%(urlbase)s/oauth/request_token</TT
+>, will
+              work with most environments.
+            </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN380"><SPAN
+STYLE="white-space: nowrap"
+>oauthaccesstoken</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              The oAuth access token URL.  Default is
+              <TT
+CLASS="LITERAL"
+>%(urlbase)s/oauth/access_token</TT
+>.
+            </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN385"><SPAN
+STYLE="white-space: nowrap"
+>oauthauthorize</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              The oAuth authorize URL.  Default is
+              <TT
+CLASS="LITERAL"
+>%(urlbase)s/oauth/authorize</TT
+>.
+            </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN390"><SPAN
+STYLE="white-space: nowrap"
+>oauthconsumerkey</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              The oAuth consumer key.  Twidge is registered with
+              Twitter and identi.ca and will supply a reasonable
+              default for those two based on the content of urlbase.
+            </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN394"><SPAN
+STYLE="white-space: nowrap"
+>oauthconsumersecret</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              The oAuth consumer secret.  A default is provided as
+              with oauthconsumerkey.
+            </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN398"><SPAN
+STYLE="white-space: nowrap"
+>oauthdata</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              Automatically written by <B
+CLASS="COMMAND"
+>twidge
+                setup</B
+>.  Do not alter.
             </P
 ></TD
 ></TR
@@ -1476,7 +1652,7 @@ CELLPADDING="4"
 ALIGN="LEFT"
 VALIGN="TOP"
 ><A
-NAME="AEN367"><SPAN
+NAME="AEN409"><SPAN
 STYLE="white-space: nowrap"
 >lastid</SPAN
 ></TD
@@ -1494,7 +1670,7 @@ VALIGN="TOP"
 ALIGN="LEFT"
 VALIGN="TOP"
 ><A
-NAME="AEN371"><SPAN
+NAME="AEN413"><SPAN
 STYLE="white-space: nowrap"
 >mailfrom</SPAN
 ></TD
@@ -1530,7 +1706,27 @@ CLASS="APPLICATION"
 ALIGN="LEFT"
 VALIGN="TOP"
 ><A
-NAME="AEN379"><SPAN
+NAME="AEN421"><SPAN
+STYLE="white-space: nowrap"
+>savelast</SPAN
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>              For one of the "ls" class of commands, implies -s on
+              every invocation, rather than require it to be manually
+              given.  This option need only be present; the value you
+              give it doesn't mater.
+            </P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><A
+NAME="AEN425"><SPAN
 STYLE="white-space: nowrap"
 >sendmail</SPAN
 ></TD
@@ -1550,7 +1746,7 @@ VALIGN="TOP"
 ALIGN="LEFT"
 VALIGN="TOP"
 ><A
-NAME="AEN383"><SPAN
+NAME="AEN429"><SPAN
 STYLE="white-space: nowrap"
 >shortenurls</SPAN
 ></TD
@@ -1579,6 +1775,66 @@ CLASS="LITERAL"
 ></TR
 ></TBODY
 ></TABLE
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.CONFIG.SHORTENING"
+></A
+><H3
+>URL Shortening Options</H3
+><P
+>        To enable the bit.ly or j.ump URL shorteners, you must add a
+        <TT
+CLASS="LITERAL"
+>[bitly]</TT
+> or <TT
+CLASS="LITERAL"
+>[jmp]</TT
+> section
+        to the configuration file.  This should contain two entries:
+        <TT
+CLASS="LITERAL"
+>login</TT
+> and <TT
+CLASS="LITERAL"
+>apikey</TT
+> as
+        found in <A
+HREF="http://bit.ly/account/"
+TARGET="_top"
+>http://bit.ly/account/</A
+>.  For
+        example:
+      </P
+><PRE
+CLASS="PROGRAMLISTING"
+>[jmp]
+login: bitlyapidemo
+apikey: R_0da49e0a9118ff35f52f629d2d71bf07
+      </PRE
+></DIV
+><HR><DIV
+CLASS="REFSECT2"
+><A
+NAME="TWIDGE.CONFIG.ALIASES"
+></A
+><H3
+>Aliases</H3
+><P
+>        You can add an <TT
+CLASS="LITERAL"
+>[alias]</TT
+> section to the
+        config file which will effectively create new commands.  For
+        example:
+      </P
+><PRE
+CLASS="PROGRAMLISTING"
+>[alias]
+recent: lsrecent -u
+replies: lsreplies -u
+      </PRE
 ></DIV
 ></DIV
 ><DIV
