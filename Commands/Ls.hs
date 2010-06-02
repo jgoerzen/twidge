@@ -107,6 +107,11 @@ sinceArgs section cp args =
       (_, Right a) -> 
           [("since_id", strip a)]
 
+screenNameArgs args =
+  case lookup "U" args of
+    Nothing -> []
+    Just username -> [("screen_name", username)]
+
 --------------------------------------------------
 -- lsrecent & friends
 --------------------------------------------------
@@ -123,8 +128,16 @@ lsreplies = simpleCmd "lsreplies" "List recent replies to you"
 
 lsarchive = simpleCmd "lsarchive" "List recent status updates you posted yourself"
             lsarchive_help
-            (stdopts ++ sinceopts) (paginated (statuses_worker "lsarchive"
-                                               "/statuses/user_timeline"))
+            (stdopts ++ sinceopts ++ usernameopts) 
+            (paginated (statuses_worker "lsarchive"
+                        "/statuses/user_timeline"))
+              where 
+                usernameopts = [
+                  Option "U" ["username"] (ReqArg (stdRequired "U") "USERNAME")
+                  "Instead of showing your own updates, show\n\
+                  \those of the given username."
+                  ]
+
 
 
 
@@ -158,7 +171,8 @@ dm_worker = generic_worker handleDM
 
 generic_worker procfunc section command cpath cp (args, _) page =
     do xmlstr <- sendAuthRequest cp (command ++ ".xml")
-                 (("page", show page) : sinceArgs section cp args)
+                 (("page", show page) : sinceArgs section cp args
+                  ++ screenNameArgs args)
                  []
        debugM section $ "Got doc: " ++ xmlstr
        results <- procfunc section cp args xmlstr

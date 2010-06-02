@@ -405,8 +405,19 @@
     <refsect2 id="twidge.commands.lsarchive">
       <title>lsarchive</title>
       <para>
-        Lists your own posts.
+        Lists your own posts.  With the one
+        <literal>lsarchive</literal> option, you can also list the
+        posts of a specific other user:
       </para>
+      <varlistentry>
+        <term>-U <replaceable>USERNAME</replaceable></term>
+        <term>--username=<replaceable>USERNAME</replaceable></term>
+        <listitem><pra>
+            Instead of showing your own updates, instead show those of
+            a differerent user.
+          </pra>
+        </listitem>
+      </varlistentry>
     </refsect2>
 
     <refsect2 id="twidge.commands.lsdm">
