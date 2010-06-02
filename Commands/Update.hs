@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-
 Copyright (C) 2006-2008 John Goerzen <jgoerzen@complete.org>
 
@@ -165,19 +166,19 @@ mkTinyURL url =
       escapeHashes c   = [c]
 
 update_help =
- "Usage: twidge update [status]\n\n\
- \Updates your status to the given status.  You will most likely need to\n\
- \quote this to prevent interference from the shell.  For instance:\n\n\
- \  twidge update \"At home, baking.\"\n\n\
- \You can also omit the status, in which case a single line will be read\n\
- \from stdin and taken as your update.  Example:\n\n\
- \  date | twidge update\n"
+ "Usage: twidge update [status]\n\n" ++
+ "Updates your status to the given status.  You will most likely need to\n" ++
+ "quote this to prevent interference from the shell.  For instance:\n\n" ++
+ "  twidge update \"At home, baking.\"\n\n" ++
+ "You can also omit the status, in which case a single line will be read\n" ++
+ "from stdin and taken as your update.  Example:\n\n" ++
+ "  date | twidge update\n"
 
 dmsend_help =
- "Usage: twidge dmsend recipient [status]\n\n\
- \Sends a direct message to the given recipient.  You will most likely need\n\
- \to quote this to prevent interference from the shell.  For instance:\n\n\
- \  twidge dmsend unixtwidge \"At home, baking.\"\n\n\
- \You can also omit the status, in which case a single line will be read\n\
- \from stdin and taken as your update.  Example:\n\n\
- \  date | twidge dmsend unixtwidge\n"
+ "Usage: twidge dmsend recipient [status]\n\n" ++
+ "Sends a direct message to the given recipient.  You will most likely need\n" ++
+ "to quote this to prevent interference from the shell.  For instance:\n\n" ++
+ "  twidge dmsend unixtwidge \"At home, baking.\"\n\n" ++
+ "You can also omit the status, in which case a single line will be read\n" ++
+ "from stdin and taken as your update.  Example:\n\n" ++
+ "  date | twidge dmsend unixtwidge\n"

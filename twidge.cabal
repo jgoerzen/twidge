@@ -62,4 +62,4 @@ Executable twidge
         MailParser, Types, Utils
   GHC-Options: -O2
   Extensions: ExistentialQuantification, OverlappingInstances,
-    UndecidableInstances, CPP
+    UndecidableInstances
