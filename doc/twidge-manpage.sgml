@@ -266,7 +266,9 @@
       They all share a common syntax and common set of options.  The
       commands are <command>lsarchive</command>,
       <command>lsdm</command>, <command>lsdmarchive</command>,
-      <command>lsrecent</command>, and <command>lsreplies</command>.
+      <command>lsrecent</command>, <command>lsreplies</command>,
+      <command>lsrt</command>, <command>lsrtarchive</command>,
+      and <command>lsrtreplies</command>.
       Here are the common options:
     </para>
     
