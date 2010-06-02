@@ -822,6 +822,22 @@ lastid = 914881241
 
     </refsect2>
 
+    <refsect2 id="twidge.config.shortening">
+      <title>URL Shortening Options</title>
+      <para>
+        To enable the bit.ly or j.ump URL shorteners, you must add a
+        <literal>[bitly]</literal> or <literal>[jmp]</literal> section
+        to the configuration file.  This should contain two entries:
+        <literal>login</literal> and <literal>apikey</literal> as
+        found in <ulink url="http://bit.ly/account/"></ulink>.  For
+        example:
+      </para>
+      <programlisting>
+[jmp]
+login: bitlyapidemo
+apikey: R_0da49e0a9118ff35f52f629d2d71bf07
+      </programlisting>
+    </refsect2>
   </refsect1>
               
 
