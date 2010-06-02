@@ -848,6 +848,20 @@ login: bitlyapidemo
 apikey: R_0da49e0a9118ff35f52f629d2d71bf07
       </programlisting>
     </refsect2>
+
+    <refsect2 id="twidge.config.aliases">
+      <title>Aliases</title>
+      <para>
+        You can add an <literal>[alias]</literal> section to the
+        config file which will effectively create new commands.  For
+        example:
+      </para>
+      <programlisting>
+[alias]
+recent: lsrecent -u
+replies: lsreplies -u
+      </programlisting>
+    </refsect2>
   </refsect1>
               
 
