@@ -1,5 +1,5 @@
 Name: twidge
-Version: 1.0.1
+Version: 1.0.1.1
 License: GPL
 Maintainer: John Goerzen <jgoerzen@complete.org>
 Author: John Goerzen
@@ -11,7 +11,7 @@ extra-source-files: COPYING, INSTALL, doc/SConstruct,
   doc/man.twidge.sgml, doc/printlocal.dsl, doc/sgml-common/COPYING,
   doc/sgml-common/COPYRIGHT, doc/sgml-common/ChangeLog,
   doc/sgml-common/Makefile.common, doc/sgml-common/SConstruct,
-  doc/sgml-common/ps2epsi,
+  doc/sgml-common/ps2epsi, Makefile,
   twidge.bash_completion
 homepage: http://software.complete.org/twidge
 Build-type: Simple
@@ -59,7 +59,7 @@ Executable twidge
   Main-Is: twidge.hs
   Other-Modules: Commands, Commands.FollowBlock, Commands.Ls,
         Commands.Setup, Commands.Update, Config, Download, FeedParser,
-        MailParser, Types, Utils
+        MailParser, Types, Utils, OAuth
   GHC-Options: -O2
   Extensions: ExistentialQuantification, OverlappingInstances,
     UndecidableInstances
