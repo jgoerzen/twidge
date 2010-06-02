@@ -1,3 +1,27 @@
+twidge (1.0.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Twitter is dropping support for HTTP basic auth.  Versions of twidge
+    prior to 1.0.0 will soon fail to work.  This version switches
+    using oAuth to maintain compatibility.  Users will need to re-run
+    twidge setup to complete the switch.
+  * New commands to support new-style retweets: lsrt, lsrtreplis, lsrtarchive.
+  * lsarchive gained -U to let you specify which user's posts to see.
+  * New support for URL shorteners: is.gd, bit.ly, j.mp.
+    Patch from Robin Green.
+  * Added --width option to ls commands.
+    Patch from Robin Green.
+  * Corrected a spelling mistake.  Closes: #521616.
+  * Added support for blocking and unblocking.
+  * Only shorten URLs when needed.  Patch from Eric Y. Kow.
+  * Added support to set an in_reply_to_status_id via the -i argument
+    to update.
+  * Provide correct UTF-8 output.
+  * New config file options: savelast, alias section, oauth-related URLs,
+  * Added bash completion script from Ernesto Hernández-Novich.
+
+ -- John Goerzen <jgoerzen@complete.org>  Wed, 02 Jun 2010 03:34:01 -0500
+
 twidge (0.99.4+nmu1) unstable; urgency=low
 
   * Non-maintainer upload needed to address xpdf's RC bugs:
