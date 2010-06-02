@@ -409,15 +409,17 @@
         <literal>lsarchive</literal> option, you can also list the
         posts of a specific other user:
       </para>
-      <varlistentry>
-        <term>-U <replaceable>USERNAME</replaceable></term>
-        <term>--username=<replaceable>USERNAME</replaceable></term>
-        <listitem><pra>
-            Instead of showing your own updates, instead show those of
-            a differerent user.
-          </pra>
-        </listitem>
-      </varlistentry>
+      <variablelist>
+        <varlistentry>
+          <term>-U <replaceable>USERNAME</replaceable></term>
+          <term>--username=<replaceable>USERNAME</replaceable></term>
+          <listitem><para>
+              Instead of showing your own updates, instead show those of
+              a differerent user.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
     </refsect2>
 
     <refsect2 id="twidge.commands.lsdm">
