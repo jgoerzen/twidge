@@ -248,7 +248,7 @@ procStatuses item =
     Message {sId = s (tag "id") item,
              sSender = s (tag "user" /> tag "screen_name") item,
              sRecipient = "",
-             sText = s (tag "text") item,
+             sText = unEsc $ s (tag "text") item,
              sDate = s (tag "created_at") item}
 
 s f item = sanitize $ contentToString (keep /> f /> txt $ item)
@@ -258,7 +258,7 @@ procDM item =
     Message {sId = s (tag "id") item,
              sSender = s (tag "sender_screen_name") item,
              sRecipient = s (tag "recipient_screen_name") item,
-             sText = s (tag "text") item,
+             sText = unEsc $ s (tag "text") item,
              sDate = s (tag "created_at") item}
 
 getStatuses = tag "statuses" /> tag "status"
@@ -429,3 +429,11 @@ paginated workerfunc cppath cp (args, remainder)
                      then return ()
                      else paginateloop (page + 1)
 
+{- | Twitter has an additional level of escaping for &lt; and &gt; only. 
+Sigh. -}
+unEsc :: String -> String
+unEsc [] = []
+unEsc x 
+  | "&lt;" `isPrefixOf` x = '<' : unEsc (drop 4 x)
+  | "&gt;" `isPrefixOf` x = '>' : unEsc (drop 4 x)
+  | otherwise = head x : unEsc (tail x)
