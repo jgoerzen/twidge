@@ -1,3 +1,11 @@
+twidge (0.99.4+nmu1) unstable; urgency=low
+
+  * Non-maintainer upload needed to address xpdf's RC bugs:
+  * Perform the PDF generation with pdftotext from poppler-utils
+    instead of xpdf-utils (Closes: #550657)
+
+ -- Moritz Muehlenhoff <jmm@debian.org>  Mon, 02 Nov 2009 22:28:23 +0100
+
 twidge (0.99.4) unstable; urgency=low
 
   * Added build-dep on libghc6-hsh-dev.  Closes: #506543.
