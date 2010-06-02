@@ -798,6 +798,16 @@ lastid = 914881241
           </listitem>
         </varlistentry>
 
+        <varlistentry><term>savelast</term>
+          <listitem><para>
+              For one of the "ls" class of commands, implies -s on
+              every invocation, rather than require it to be manually
+              given.  This option need only be present; the value you
+              give it doesn't mater.
+            </para>
+          </listitem>
+        </varlistentry>
+
         <varlistentry><term>sendmail</term>
           <listitem><para>
               Stores the path to the sendmail executable on your
