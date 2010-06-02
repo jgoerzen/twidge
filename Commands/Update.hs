@@ -29,7 +29,9 @@ import Text.Regex.Posix
 import Data.ConfigFile
 import MailParser(message)
 import Text.ParserCombinators.Parsec
+#ifdef USE_BITLY
 import Network.Bitly (Account(..),bitlyAccount,jmpAccount,shorten)
+#endif
 
 i = infoM "update"
 
@@ -130,6 +132,7 @@ shortenUrls cp status =
     where (before, match, after) = status =~ pat
           pat = "(http|https|ftp)\\://[a-zA-Z0-9\\-\\.]+(:[a-zA-Z0-9]*)?/?([-a-zA-Z0-9:\\._\\?\\,\\'/\\\\\\+&%\\$#\\=~])*"
 
+#ifdef USE_BITLY
 chooseShortener cp = do
   -- look either for [bitly] or [jmp] section in config
   let (sec, newAccount) = if has_section cp "bitly"
@@ -148,6 +151,9 @@ mkBitlyURL acc url = do
   case r of
     Left  e        -> permFail e      -- report bit.ly errors
     Right shorturl -> return shorturl
+#else
+chooseShortener _ = return mkTinyURL
+#endif
 
 mkTinyURL url = 
     simpleDownload . concat $ "http://is.gd/api.php?longurl=" : map escapeHashes url

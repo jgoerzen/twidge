@@ -39,10 +39,19 @@ Description: twidge is a client for microblogging sites such as Twitter and
  how to use it, can be found at the twidge website at
  http://software.complete.org/twidge.
 
+flag withBitly
+  description: Enable bit.ly and j.mp shorteners (requires Bitly module)
+  default: False:
+
+
 Build-Depends: network, unix, parsec, MissingH>=1.0.0,
  mtl, base, HaXml>=1.13.2, HaXml<1.19, hslogger, hoauth,
- ConfigFile, directory, HSH, regex-posix, utf8-string, Bitly, binary,
+ ConfigFile, directory, HSH, regex-posix, utf8-string, binary,
  bytestring, curl
+
+if flag(withBitly)
+  Build-Depends: Bitly
+  CPP-OPTIONS: USE_BITLY
 
 Executable: twidge
 Main-Is: twidge.hs
@@ -51,4 +60,4 @@ Other-Modules: Commands, Commands.FollowBlock, Commands.Ls,
         MailParser, Types, Utils
 GHC-Options: -O2
 Extensions: ExistentialQuantification, OverlappingInstances,
-    UndecidableInstances
+    UndecidableInstances, CPP

@@ -23,6 +23,7 @@ twidge (1.0.0) unstable; urgency=medium
   * Provide correct UTF-8 output.
   * New config file options: savelast, alias section, oauth-related URLs,
   * Added bash completion script from Ernesto Hernández-Novich.
+  * ACK NMU.  Closes: #550657.
 
  -- John Goerzen <jgoerzen@complete.org>  Wed, 02 Jun 2010 03:34:01 -0500
 
