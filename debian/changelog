@@ -1,4 +1,4 @@
-twidge (1.0.0) unstable; urgency=medium
+twidge (1.0.1) unstable; urgency=medium
 
   * New upstream release.
   * Twitter is dropping support for HTTP basic auth.  Versions of twidge
