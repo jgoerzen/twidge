@@ -54,7 +54,7 @@ Executable twidge
 
   if flag(withBitly)
     Build-Depends: Bitly
-    CPP-OPTIONS: USE_BITLY
+    CPP-OPTIONS: -DUSE_BITLY
 
   Main-Is: twidge.hs
   Other-Modules: Commands, Commands.FollowBlock, Commands.Ls,
