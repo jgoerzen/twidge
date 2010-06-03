@@ -54,8 +54,8 @@ simpleDownload url =
      return . toString . rspPayload $ r
   where CurlM resp = request (fromJust $ parseURL url)
 
-sendAuthRequest :: ConfigParser -> String -> [(String, String)] -> [(String, String)] -> IO String
-sendAuthRequest cp url getopts postoptlist =
+sendAuthRequest :: Method -> ConfigParser -> String -> [(String, String)] -> [(String, String)] -> IO String
+sendAuthRequest mth cp url getopts postoptlist =
     do app <- case getApp cp of      
          Nothing -> fail $ "Error: auth not set up for this host"
          Just x -> return x
@@ -66,10 +66,11 @@ sendAuthRequest cp url getopts postoptlist =
        
        let parsedUrl = fromJust . parseURL $ urlbase ++ url ++ optstr
        
-       -- add to the request the POST headers
-       let request = parsedUrl {reqHeaders = 
-                                   fromList (toList (reqHeaders parsedUrl) ++
+       -- add to the request the GET/POST headers
+       let request = parsedUrl {qString = 
+                                   fromList (toList (qString parsedUrl) ++
                                                     postoptlist)
+                               ,method = mth
                                }
        
        let CurlM resp = runOAuth $ 

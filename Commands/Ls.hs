@@ -37,6 +37,7 @@ import HSH
 import System.Console.GetOpt.Utils
 import Network.URI
 import Data.Maybe (isJust)
+import Network.OAuth.Http.Request
 
 i = infoM "ls"
 
@@ -170,7 +171,7 @@ statuses_worker = generic_worker handleStatus
 dm_worker = generic_worker handleDM
 
 generic_worker procfunc section command cpath cp (args, _) page =
-    do xmlstr <- sendAuthRequest cp (command ++ ".xml")
+    do xmlstr <- sendAuthRequest GET cp (command ++ ".xml")
                  (("page", show page) : sinceArgs section cp args
                   ++ screenNameArgs args)
                  []
@@ -397,7 +398,7 @@ lsblocking_help =
 ------------------------------------------------------------
 
 genericfb_worker cmdname urlbase _ cp (args, user) page =
-    do xmlstr <- sendAuthRequest cp url [("page", show page)] []
+    do xmlstr <- sendAuthRequest GET cp url [("page", show page)] []
        debugM cmdname $ "Got doc: " ++ xmlstr
        let doc = getContent . xmlParse cmdname . stripUnicodeBOM $ xmlstr
        let users = map procUsers . getUsers $ doc

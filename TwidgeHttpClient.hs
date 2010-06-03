@@ -37,7 +37,11 @@ import Network.OAuth.Http.Response
 import qualified Network.OAuth.Http.HttpClient
 import Control.Monad.Trans
 import Data.Char (chr,ord)
+import System.Log.Logger
+import Network.URI
 import qualified Data.ByteString.Lazy as B
+
+d = debugM "TwidgeHttpClient"
 
 -- | The libcurl backend
 newtype CurlM a = CurlM { unCurlM :: IO a }
@@ -48,7 +52,14 @@ instance Network.OAuth.Http.HttpClient.HttpClient CurlM where
 
   request req = CurlM $ withCurlDo $ do c <- initialize
                                         setopts c opts
+                                        d $ "Sending request: " ++ show req
                                         rsp <- perform_with_response_ c
+                                        d $ "Got response: " ++ show 
+                                          (respStatus rsp, respStatusLine rsp,
+                                           respHeaders rsp, respBody rsp)
+                                        if respStatus rsp < 200 || respStatus rsp >= 300
+                                          then fail $ "Bad response: " ++ show (respStatus rsp)
+                                          else return () 
                                         return $ RspHttp (respStatus rsp)
                                                          (respStatusLine rsp)
                                                          (fromList.respHeaders $ rsp)
@@ -56,6 +67,15 @@ instance Network.OAuth.Http.HttpClient.HttpClient CurlM where
     where httpVersion = case (version req)
                         of Http10 -> HttpVersion10
                            Http11 -> HttpVersion11
+                           
+          url = case method req of
+            POST -> showURL (req {qString = fromList []})
+            _ -> showURL req
+          curlPostData = case method req of
+            POST -> [CurlPostFields (map postopt . toList . qString $ req)]
+            _ -> []
+          postopt (k, v) = escapeURIString isUnreserved k ++ "=" ++
+                           escapeURIString isUnreserved v
           
           curlMethod = case (method req)
                        of GET   -> [CurlHttpGet True]
@@ -65,9 +85,6 @@ instance Network.OAuth.Http.HttpClient.HttpClient CurlM where
                           other -> if (B.null.reqPayload $ req)
                                    then [CurlHttpGet True,CurlCustomRequest (show other)]
                                    else [CurlPost True,CurlCustomRequest (show other)]
-          curlPostData = if (B.null.reqPayload $ req)
-                         then []
-                         else [CurlPostFields [map (chr.fromIntegral).B.unpack.reqPayload $ req]]
           curlHeaders = let headers = (map (\(k,v) -> k++": "++v).toList.reqHeaders $ req)
                         in [CurlHttpHeaders $"Expect: " 
                                             :("Content-Length: " ++ (show.B.length.reqPayload $ req))
