@@ -1,3 +1,10 @@
+twidge (1.0.2) unstable; urgency=high
+
+  * Corrected bug in 1.0.1 that prevented any updates from posting properly.
+  * Fixed the withBitly flag support.
+
+ -- John Goerzen <jgoerzen@complete.org>  Thu, 03 Jun 2010 00:08:34 -0500
+
 twidge (1.0.1) unstable; urgency=medium
 
   * New upstream release.
