@@ -88,7 +88,7 @@ usageerror errormsg =
        putStrLn "Run \"twidge lscommands\" for a list of available commands.\n\
                 \Run \"twidge command --help\" for help on a particular command.\n"
        putStr $ "This is Twidge, version " ++ showVersion version
-       putStrLn $ ".  Copyright (c) 2008 John Goerzen"
+       putStrLn $ ".  Copyright (c) 2008-2010 John Goerzen"
        exitFailure
 
 header = "Usage: twidge [global-options] command [command-options]\n\n\
