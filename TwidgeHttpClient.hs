@@ -48,7 +48,7 @@ newtype CurlM a = CurlM { unCurlM :: IO a }
   deriving (Monad,MonadIO,MonadFix,Functor)
 
 instance Network.OAuth.Http.HttpClient.HttpClient CurlM where
-  unlift = unCurlM
+  unpack = unCurlM
 
   request req = CurlM $ withCurlDo $ do c <- initialize
                                         setopts c opts
