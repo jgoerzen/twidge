@@ -73,15 +73,15 @@ setup_worker cpath cp _ =
               liftIO $ d "ignite done.  trying request 1."
               reqres1 <- tryRequest reqUrl
               case reqres1 of
-                Left x -> -- hack around hoauth bug for identica
+                AccessToken _ _ -> return ()
+                _ -> -- hack around hoauth bug for identica
                   do liftIO $ d "request 1 failed.  attempting workaround."
                      putToken $ AccessToken {application = app,
                                              oauthParams = empty}
                      reqres2 <- tryRequest reqUrl
                      case reqres2 of 
-                       Left x -> fail $ "Error from oauthRequest: " ++ show x
-                       Right _ -> return ()
-                Right _ -> return ()
+                       AccessToken _ _ -> return ()
+                       _ -> fail $ "Error from oauthRequest."
               twidgeAskAuthorization authUrl
               oauthRequest HMACSHA1 Nothing accUrl
               tok <- getToken
@@ -108,9 +108,7 @@ setup_worker cpath cp _ =
                     else permFail "Aborting setup at user request."
           tryRequest reqUrl = 
             do reqres <- oauthRequest HMACSHA1 Nothing reqUrl
-               liftIO $ d $ "reqres params: " ++ case reqres of
-                 Left x -> " error " ++ x
-                 Right y -> show (oauthParams y)
+               liftIO $ d $ "reqres params: " ++ (show (oauthParams reqres))
                return reqres
           -- Work around a hoauth bug - identica doesn't return
           -- oauth_callback_confirmed
