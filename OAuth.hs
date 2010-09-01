@@ -46,6 +46,7 @@ identicaKeys = ("f027d666f9d0e7b80beaed528aec473c",
 getDefaultKeys :: ConfigParser -> Maybe (String, String)
 getDefaultKeys cp =
   case serverHost cp of
+    "api.twitter.com" -> Just twitterKeys
     "twitter.com" -> Just twitterKeys
     "identi.ca" -> Just identicaKeys
 

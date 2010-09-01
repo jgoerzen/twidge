@@ -1,3 +1,13 @@
+twidge (1.0.3) unstable; urgency=high
+
+  * Twitter has dropped support for http://twitter.com URLs on some
+    servers, and now generally requires http://api.twitter.com/1.  This
+    required some minor changes to configuration code.  Twitter uses geoIP
+    and some of there servers work fine with 1.0.2 while others don't.
+    This version will work with all of them.
+
+ -- John Goerzen <jgoerzen@complete.org>  Wed, 01 Sep 2010 00:09:38 -0500
+
 twidge (1.0.2) unstable; urgency=high
 
   * Corrected bug in 1.0.1 that prevented any updates from posting properly.

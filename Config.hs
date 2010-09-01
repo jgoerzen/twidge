@@ -40,10 +40,11 @@ import System.Log.Logger
 
 getDefaultCP =
     do return $ forceEither $ 
-              do cp <- set startingcp "DEFAULT" "urlbase" "https://twitter.com"
-                 cp <- set cp "DEFAULT" "oauthrequesttoken" "%(urlbase)s/oauth/request_token"
-                 cp <- set cp "DEFAULT" "oauthaccesstoken" "%(urlbase)s/oauth/access_token"
-                 cp <- set cp "DEFAULT" "oauthauthorize" "%(urlbase)s/oauth/authorize"
+              do cp <- set startingcp "DEFAULT" "serverbase" "https://api.twitter.com"
+                 cp <- set startingcp "DEFAULT" "urlbase" "%(serverbase)s/1"
+                 cp <- set cp "DEFAULT" "oauthrequesttoken" "%(serverbase)s/oauth/request_token"
+                 cp <- set cp "DEFAULT" "oauthaccesstoken" "%(serverbase)s/oauth/access_token"
+                 cp <- set cp "DEFAULT" "oauthauthorize" "%(serverbase)s/oauth/authorize"
                  cp <- set cp "DEFAULT" "sendmail" "/usr/sbin/sendmail"
                  cp <- set cp "DEFAULT" "shortenurls" "yes"
                  return cp
