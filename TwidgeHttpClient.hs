@@ -1,4 +1,4 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, CPP #-}
 
 -- Copyright (c) 2009, Diego Souza
 -- All rights reserved.
@@ -48,7 +48,11 @@ newtype CurlM a = CurlM { unCurlM :: IO a }
   deriving (Monad,MonadIO,MonadFix,Functor)
 
 instance Network.OAuth.Http.HttpClient.HttpClient CurlM where
+#if MIN_VERSION_hoauth(0,2,4)
   unpack = unCurlM
+#else
+  unlift = unCurlM
+#endif
 
   request req = CurlM $ withCurlDo $ do c <- initialize
                                         setopts c opts
