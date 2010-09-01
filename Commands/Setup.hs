@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-
 Copyright (C) 2010 John Goerzen <jgoerzen@complete.org>
 
@@ -73,15 +74,25 @@ setup_worker cpath cp _ =
               liftIO $ d "ignite done.  trying request 1."
               reqres1 <- tryRequest reqUrl
               case reqres1 of
+#if MIN_VERSION_hoauth(0,2,4)
                 AccessToken _ _ -> return ()
                 _ -> -- hack around hoauth bug for identica
+#else
+                Left x -> -- hack around hoauth bug for identica
+#endif
                   do liftIO $ d "request 1 failed.  attempting workaround."
                      putToken $ AccessToken {application = app,
                                              oauthParams = empty}
                      reqres2 <- tryRequest reqUrl
                      case reqres2 of 
+#if MIN_VERSION_hoauth(0,2,4)
                        AccessToken _ _ -> return ()
                        _ -> fail $ "Error from oauthRequest."
+#else
+                       Left x -> fail $ "Error from oauthRequest: " ++ show x
+                       Right _ -> return ()
+                Right _ -> return ()
+#endif
               twidgeAskAuthorization authUrl
               oauthRequest HMACSHA1 Nothing accUrl
               tok <- getToken
@@ -108,7 +119,13 @@ setup_worker cpath cp _ =
                     else permFail "Aborting setup at user request."
           tryRequest reqUrl = 
             do reqres <- oauthRequest HMACSHA1 Nothing reqUrl
+#if MIN_VERSION_hoauth(0,2,4)
                liftIO $ d $ "reqres params: " ++ (show (oauthParams reqres))
+#else
+               liftIO $ d $ "reqres params: " ++ case reqres of
+                 Left x -> " error " ++ x
+                 Right y -> show (oauthParams y)
+#endif
                return reqres
           -- Work around a hoauth bug - identica doesn't return
           -- oauth_callback_confirmed
