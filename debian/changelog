@@ -1,4 +1,4 @@
-twidge (1.0.3) unstable; urgency=high
+twidge (1.0.5) unstable; urgency=high
 
   * Twitter has dropped support for http://twitter.com URLs on some
     servers, and now generally requires http://api.twitter.com/1.  This
