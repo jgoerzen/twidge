@@ -41,7 +41,7 @@ import System.Log.Logger
 getDefaultCP =
     do return $ forceEither $ 
               do cp <- set startingcp "DEFAULT" "serverbase" "https://api.twitter.com"
-                 cp <- set startingcp "DEFAULT" "urlbase" "%(serverbase)s/1"
+                 cp <- set cp "DEFAULT" "urlbase" "%(serverbase)s/1"
                  cp <- set cp "DEFAULT" "oauthrequesttoken" "%(serverbase)s/oauth/request_token"
                  cp <- set cp "DEFAULT" "oauthaccesstoken" "%(serverbase)s/oauth/access_token"
                  cp <- set cp "DEFAULT" "oauthauthorize" "%(serverbase)s/oauth/authorize"
