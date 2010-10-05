@@ -1,0 +1,88 @@
+#!/bin/bash
+# twidge-sh: customized interactive twidge shell
+# Copyright: (C) 2010 Florian Baumann <flo@noqqe.de>
+# License: GPL-3 <http://www.gnu.org/licenses/gpl-3.0.txt>
+# Date: Monday 2010-10-04
+
+
+### initial settings & security ###############################################
+# need some general security checks and generate settings
+#
+# get config if available
+if [ -r $twidgerc ]; then
+    twidgerc=$HOME/.twidgerc
+else
+    echo "$HOME/.twidgerc not found!"
+    echo "try: 'twidge setup' to fix it."
+    exit
+fi
+
+# check username
+if ! grep -q "screen_name" $twidgerc ; then
+    echo "error by getting username from $twidgerc"; exit 1
+fi
+
+# check service
+if ! grep -q -e "^urlbase:.*$" $twidgerc ; then
+    echo "error by getting microblogging-service from $twidgerc"; exit 1
+fi
+
+# create new shell with specific config
+[ "$0" = 'bash' ] || exec /usr/bin/env bash --rcfile "$0" "$@"
+
+# include user's .bashrc file
+[ -r ~/.bashrc ] && {
+    pushd ~ > /dev/null
+    . .bashrc
+    popd > /dev/null
+}
+
+### completion and aliases ####################################################
+# read standard commands and create aliases for new prompt
+# defined aliases will automatically be completed
+# usage:
+# user@twitter> lsrecent
+#
+for x in $(twidge lscommands | tail --lines=+4 | cut -f1 -d' '| grep "^$cur")
+do
+    alias $x="twidge $x"
+done
+
+# read local aliases in .twidgerc
+# for example:
+# [alias]
+# recent: lsrecent -u
+# replies: lsreplies -u
+#
+OLDIFS=$IFS; IFS=$'\n'
+for line in $(cat $twidgerc | sed -n -e '/\[alias\]/,/\[.*\]/s/:/:/p')
+do
+    key=$(echo $line | cut -d : -f 1)
+    command=$(echo $line | cut -d : -f 2-)
+    alias ${key}="twidge $command"
+done
+IFS=$OLDIFS
+
+### customized prompt #########################################################
+# create microblogging prompt
+# for example: user@twitter>
+#
+PS1='$(get_user)@$(get_services)> '
+
+# get username from config
+get_user() {
+    if fgrep -q "screen_name" $twidgerc ; then
+        fgrep "screen_name" $twidgerc | cut -d \" -f 8
+    elif fgrep -q "username:" $twidgerc; then
+        fgrep "username:" | awk '{print $NF}'
+    fi
+}
+
+# get configured service for prompt
+get_services() {
+    if grep -q -e "^urlbase:.*twitter.com$" $twidgerc; then
+        echo "twitter"
+    elif grep -q -e "^urlbase:.*identi.ca$" $twidgerc; then
+        echo "identica"
+    fi
+}
