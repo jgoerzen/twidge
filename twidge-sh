@@ -63,6 +63,9 @@ do
 done
 IFS=$OLDIFS
 
+# display commands by "help"
+alias help="twidge lscommands"
+
 ### customized prompt #########################################################
 # create microblogging prompt
 # for example: user@twitter>
