@@ -734,7 +734,7 @@ lastid = 914881241
               site.  This should contain the server name but not the
               API path.  The default is
               <literal>https://api.twitter.com</literal>.  For Identica,
-              you would use <literal>https://identi.ca/api</literal>.
+              you would use <literal>http://identi.ca/api (note that some users have trouble if attempting to use SSL with identica).</literal>.
             </para>
           </listitem>
         </varlistentry>
@@ -743,7 +743,7 @@ lastid = 914881241
               The URL to access the API of the microblogging site.
               The default, <literal>%(serverbase)s/1</literal> is
               for Twitter.  To use Identica, you would specify
-              <literal>%(serverbase)s/api</literal>.  Do not put a
+              <literal>%(serverbase)s</literal>.  Do not put a
               trailing slash on this option.
             </para></listitem>
         </varlistentry>
