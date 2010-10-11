@@ -9,7 +9,7 @@
 # need some general security checks and generate settings
 #
 # get config if available
-if [ -r $twidgerc ]; then
+if [ -r $HOME/.twidgerc ]; then
     twidgerc=$HOME/.twidgerc
 else
     echo "$HOME/.twidgerc not found!"
@@ -55,10 +55,10 @@ done
 # replies: lsreplies -u
 #
 OLDIFS=$IFS; IFS=$'\n'
-for line in $(cat $twidgerc | sed -n -e '/\[alias\]/,/\[.*\]/s/:/:/p')
+for y in $(cat $twidgerc | sed -n -e '/\[alias\]/,/\[.*\]/s/:/:/p')
 do
-    key=$(echo $line | cut -d : -f 1)
-    command=$(echo $line | cut -d : -f 2-)
+    key=$(echo $y | cut -d : -f 1)
+    command=$(echo $y | cut -d : -f 2-)
     alias ${key}="twidge $command"
 done
 IFS=$OLDIFS
