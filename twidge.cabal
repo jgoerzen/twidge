@@ -1,5 +1,5 @@
 Name: twidge
-Version: 1.0.6
+Version: 1.0.6.1
 License: GPL
 Maintainer: John Goerzen <jgoerzen@complete.org>
 Author: John Goerzen
@@ -48,7 +48,7 @@ Flag withBitly
 
 Executable twidge
   Build-Depends: network, unix, parsec, MissingH>=1.0.0,
-   mtl, base >= 4 && < 5, HaXml>=1.13.2, HaXml<1.19, hslogger, hoauth>=0.2.3,
+   mtl, base >= 4 && < 5, HaXml>=1.13.2, HaXml<1.19, hslogger, hoauth>=0.2.3 && <0.2.4,
    ConfigFile, directory, HSH, regex-posix, utf8-string, binary,
    bytestring, curl
 
