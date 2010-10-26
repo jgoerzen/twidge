@@ -38,10 +38,29 @@ import Data.ConfigFile
 import Utils
 import Data.Either.Utils
 
-twitterKeys = ("t5TWz01unNDrmwngl4fQ",
-               "QR2RJVx8R6zdxWybdGDaLlPMqdRrhZDwO7Kn1uoZUc")
+-- obfuscatedTwitterKeys=
+
+
+
+obfuscatedTwitterKeys = ("jRlf9pXnU7uEV5ZcxrJmc",
+               "L17bXFykkLYz4TBCmet1wuX9VtXbLq8Xj4Lif42O4ew")
 identicaKeys = ("f027d666f9d0e7b80beaed528aec473c",
                 "d84c9b3dafb14becb5e05a002886b60c")
+twitterKeys = (twitterDeObfuscator (fst obfuscatedTwitterKeys),
+               twitterDeObfuscator (snd obfuscatedTwitterKeys))
+
+twitterDeObfuscator :: String -> String
+twitterDeObfuscator = reverse . map rot13
+
+rot13 :: Char -> Char
+rot13 x = 
+    case lookup x trans of
+        Just y -> y
+        Nothing -> x
+    where trans = zip (lcbase ++ ucbase) (part lcbase ++ part ucbase)
+          lcbase = ['a' .. 'z']
+          ucbase = ['A' .. 'Z']
+          part x = drop 13 x ++ take 13 x
 
 getDefaultKeys :: ConfigParser -> Maybe (String, String)
 getDefaultKeys cp =
