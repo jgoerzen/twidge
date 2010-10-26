@@ -1,3 +1,12 @@
+twidge (1.0.6) unstable; urgency=low
+
+  * Twitter invalidated the twidge API key because it became publicly
+    known (sigh).  Have now obfuscated it enough for them.
+    twidge will be broken by default without this fix.
+    Closes: #601427.
+
+ -- John Goerzen <jgoerzen@complete.org>  Mon, 25 Oct 2010 20:28:16 -0500
+
 twidge (1.0.5) unstable; urgency=high
 
   * Twitter has dropped support for http://twitter.com URLs on some

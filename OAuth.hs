@@ -38,10 +38,6 @@ import Data.ConfigFile
 import Utils
 import Data.Either.Utils
 
--- obfuscatedTwitterKeys=
-
-
-
 obfuscatedTwitterKeys = ("jRlf9pXnU7uEV5ZcxrJmc",
                "L17bXFykkLYz4TBCmet1wuX9VtXbLq8Xj4Lif42O4ew")
 identicaKeys = ("f027d666f9d0e7b80beaed528aec473c",
