@@ -47,6 +47,7 @@ getDefaultCP =
                  cp <- set cp "DEFAULT" "oauthauthorize" "%(serverbase)s/oauth/authorize"
                  cp <- set cp "DEFAULT" "sendmail" "/usr/sbin/sendmail"
                  cp <- set cp "DEFAULT" "shortenurls" "yes"
+                 cp <- set cp "DEFAULT" "shortenall" "no"
                  return cp
 
 startingcp = emptyCP {accessfunc = interpolatingAccess 10}

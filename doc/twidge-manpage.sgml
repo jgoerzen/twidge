@@ -559,9 +559,20 @@
       </para>
       <para>
         By default, Twidge will attempt to shorten URLs in your
-        updates via the is.gd service.  You can disable this by
-        setting shortenurls = no in the [DEFAULT] or [dmsend] section of your
-        configuration file.
+        updates via an URL shortening service, but only if your
+        update's length exceeds 140 characters. This means long
+        URLs shorter than 140 characters WILL NOT be shortened.
+      </para>
+      <para>
+        If you want all your URLs to be shortened all the time
+        regardless of their length, then set shortenall = yes
+        in the [DEFAULT] or [dmsend] section of your configuration
+        file.
+      </para>
+      <para>
+        You can disable URL shortening altogether by setting
+        shortenurls = no in the [DEFAULT] or [dmsend] section of
+        your configuration file.
       </para>
     </refsect2>
 
@@ -626,9 +637,20 @@
       </para>
       <para>
         By default, Twidge will attempt to shorten URLs in your
-        updates via the TinyURL.com service.  You can disable this by
-        setting shortenurls = no in the [DEFAULT] or [update] section of your
-        configuration file.
+        updates via an URL shortening service, but only if your
+        update's length exceeds 140 characters. This means long
+        URLs shorter than 140 characters WILL NOT be shortened.
+      </para>
+      <para>
+        If you want all your URLs to be shortened all the time
+        regardless of their length, then set shortenall = yes
+        in the [DEFAULT] or [dmsend] section of your configuration
+        file.
+      </para>
+      <para>
+        You can disable URL shortening altogether by setting
+        shortenurls = no in the [DEFAULT] or [dmsend] section of
+        your configuration file.
       </para>
       <para>
         When -r is given, &twidge; expects to read an RFC2822 email
@@ -855,7 +877,21 @@ lastid = 914881241
               You may specify <literal>shortenurls</literal> in the
               <literal>[update]</literal> section.  It defaults to yes.  If
               set to no, will cause &twidge; to omit its attempt to shorten
-              URLs in your updates via <literal>tinyurl.com</literal>.
+              URLs in your updates. If set to yes, will cause &twidge; to
+              shorten URLs in your updates, only if the latter's length
+              exceeds 140 characters. See <literal>shortenall</literal>
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry><term>shortenall</term>
+          <listitem>
+            <para>
+              You may specify <literal>shortenall</literal> in the
+              <literal>[update]</literal> section.  It defaults to no.  If
+              set to yes, will cause &twidge; to shorten all URLs in
+              your updates, all the time. It only makes sense if
+              <literal>shortenurls</literal> is set to yes.
             </para>
           </listitem>
         </varlistentry>
@@ -866,6 +902,9 @@ lastid = 914881241
 
     <refsect2 id="twidge.config.shortening">
       <title>URL Shortening Options</title>
+      <para>
+        &twidge; uses is.gd as its default URL shortening service.
+      </para>
       <para>
         To enable the bit.ly or j.ump URL shorteners, you must add a
         <literal>[bitly]</literal> or <literal>[jmp]</literal> section
