@@ -46,22 +46,17 @@ clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp configure-stamp
-
-	# Add here commands to clean up after the build process.
-	-$(MAKE) clean-code
+	dh_auto_clean -- clean-code
+	#	-$(MAKE) clean-code
 	-rm -rf debian/tmp-doc
-
 	dh_clean 
 
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k 
+	dh_prep
 	dh_installdirs
-
-	# Add here commands to install the package into debian/twidge.
-	#$(MAKE) install DESTDIR=$(CURDIR)/debian/twidge
-	cp dist/build/twidge/twidge debian/twidge/usr/bin/
+	dh_install
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -74,24 +69,11 @@ binary-arch: build install
 	dh_installchangelogs 
 	dh_installdocs
 	dh_installexamples
-#	dh_install
-#	dh_installmenu
-#	dh_installdebconf	
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_python
-#	dh_installinit
-#	dh_installcron
-#	dh_installinfo
-	dh_installman debian/tmp-doc/twidge.1
+	dh_installman
 	dh_link
 	dh_strip
 	dh_compress
 	dh_fixperms
-#	dh_perl
-#	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
