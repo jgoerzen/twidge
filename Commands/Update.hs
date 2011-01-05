@@ -145,7 +145,7 @@ shortenUrls cp status =
                                     then tiny else match)
                              ++ rest
     where (before, match, after) = status =~ pat
-          pat = "(http|https|ftp)\\://[a-zA-Z0-9\\-\\.]+(:[a-zA-Z0-9]*)?/?([-a-zA-Z0-9:\\._\\?\\,\\'/\\\\\\+&%\\$#\\=~])*"
+          pat = "(http|https|ftp)\\://[a-zA-Z0-9\\-\\.]+(:[a-zA-Z0-9]*)?/?([-a-zA-Z0-9:()\\._\\?\\,\\'/\\\\\\+&%\\$#\\=~])*"
 
 #ifdef USE_BITLY
 chooseShortener cp = do
