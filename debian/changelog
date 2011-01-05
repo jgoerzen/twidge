@@ -1,3 +1,9 @@
+twidge (1.0.8) unstable; urgency=low
+
+  * Accept parens as part of URLs.  CLoses: #608978.
+
+ -- John Goerzen <jgoerzen@complete.org>  Wed, 05 Jan 2011 00:12:38 -0600
+
 twidge (1.0.6) unstable; urgency=low
 
   * Twitter invalidated the twidge API key because it became publicly
