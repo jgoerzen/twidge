@@ -1,3 +1,11 @@
+twidge (1.0.8.1) unstable; urgency=low
+
+  * Clean up a debian packaging bug introduced in 3rd-party commit
+    880982d2bc2a9dbbff2893fa16ceb04ce32f6356.  Package now contains
+    all the files it should again.  Closes: #609139.
+
+ -- John Goerzen <jgoerzen@complete.org>  Thu, 06 Jan 2011 22:17:54 -0600
+
 twidge (1.0.8) unstable; urgency=low
 
   * Accept parens as part of URLs.  CLoses: #608978.
