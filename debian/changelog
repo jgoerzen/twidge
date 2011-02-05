@@ -1,3 +1,11 @@
+twidge (1.0.9) unstable; urgency=low
+
+  * Correctly handle UTF-8 updates given on the command line.
+    Closes: #611775.
+  * Correct VCS and homepage URLs.
+
+ -- John Goerzen <jgoerzen@complete.org>  Sat, 05 Feb 2011 13:26:51 -0600
+
 twidge (1.0.8.1) unstable; urgency=low
 
   * Clean up a debian packaging bug introduced in 3rd-party commit
