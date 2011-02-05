@@ -34,6 +34,7 @@ import Network.OAuth.Http.Request
 #ifdef USE_BITLY
 import Network.Bitly (Account(..),bitlyAccount,jmpAccount,shorten)
 #endif
+import qualified Codec.Binary.UTF8.String as UTF8
 
 i = infoM "update"
 d = debugM "update"
@@ -49,7 +50,8 @@ update = simpleCmd "update" "Update your status"
              
 update_worker_wrapper x cp args =
   do d $ "Running update_worker with: " ++ show (x, args)
-     update_worker x cp args
+     update_worker x cp (newargs args)
+  where newargs (opts, status) = (opts, map UTF8.decodeString status)
 
 update_worker x cp ([("m", "")], []) =
     do d "Reading mail message"
