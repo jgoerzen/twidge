@@ -38,6 +38,9 @@ import System.Console.GetOpt.Utils
 import Network.URI
 import Data.Maybe (isJust)
 import Network.OAuth.Http.Request
+import Data.Time.Format (formatTime, parseTime)
+import Data.Time.LocalTime (ZonedTime)
+import System.Locale (defaultTimeLocale, rfc822DateFormat)
 
 i = infoM "ls"
 
@@ -328,6 +331,10 @@ mailto section cp args m recipient =
                       Right x -> ["From: " ++ (sSender m) ++ " <" ++ x ++ ">",
                                   "Subject: " ++ subject]
                     ) ++ 
+                    (case twitterToRFC822 (sDate m) of
+                      Just d -> [ "Date: " ++ d ]
+                      Nothing -> []
+                    ) ++
                     ["Message-ID: " ++ msgid,
                      "X-Twidge-urlbase: " ++ forceEither (get cp "DEFAULT" "urlbase"),
                      "X-Twidge-server-base: " ++ serverHost cp,
@@ -349,6 +356,11 @@ mailto section cp args m recipient =
                      escapeURIString isUnreserved (sSender m)
                     ,"User home: http://twitter.com/" ++ sSender m
                     ]
+          twitterToRFC822 d =
+            formatTime defaultTimeLocale rfc822DateFormat `fmap` time
+              where
+                time :: Maybe ZonedTime
+                time = parseTime defaultTimeLocale "%a %b %e %H:%M:%S %Z %Y" d
 
 ----------------------------------------------------------------------
 -- Follow/block type commands
