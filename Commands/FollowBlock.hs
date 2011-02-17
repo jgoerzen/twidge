@@ -47,12 +47,16 @@ unblock = simpleCmd "unblock" "Stop blocking someone"
 unblock_worker = generic_worker POST "/blocks/destroy/" "unblock"
 unblock_help = generic_rm_help "block"
 
-generic_worker method urlbase cmdname _ cp ([], [user]) =
-    do xmlstr <- sendAuthRequest method cp (urlbase ++ user ++ ".xml") [] [("id", user)]
+generic_worker method urlbase cmdname _ cp ([], [user_string]) =
+    do let user = strip_at user_string
+       xmlstr <- sendAuthRequest method cp (urlbase ++ user ++ ".xml") [] [("id", user)]
        debugM cmdname $ "Got doc: " ++ xmlstr
        -- let doc = getContent . xmlParse "follow" . stripUnicodeBOM $ xmlstr
        -- return ()
-       
+
+       where strip_at ('@':u) = u
+             strip_at u = u
+
 generic_worker _ _ cmdname _ _ _ =
     permFail $ "follow: syntax error; see twidge " ++ cmdname ++ " --help"
 
