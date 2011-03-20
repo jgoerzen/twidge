@@ -4,7 +4,9 @@
 # Copyright 2010 Ernesto Hernández-Novich <emhn@itverx.com.ve>
 # Licensed under the GNU General Public License, version 2
 
-have twidge &&
+: ${have=$(command -v twidge)}
+
+test -n "$have" &&
 _twidge()
 {
     local cur
@@ -22,10 +24,10 @@ _twidge()
     while [ $((--i)) -ge 0 ]; do
       COMPREPLY[$i]=`printf %q "${COMPREPLY[$i]}"`
 
-      COMPREPLY[$i]=${COMPREPLY[$i]#"$colonprefixes"} 
+      COMPREPLY[$i]=${COMPREPLY[$i]#"$colonprefixes"}
     done
     return 0
 
 }
-[ "$have" ] && complete -F _twidge -o default twidge
+test -n "$have" && complete -F _twidge -o default twidge
 
