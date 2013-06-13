@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 module MailParser where
 import Text.ParserCombinators.Parsec
 import Data.String.Utils
-import FeedParser(sanitize)
+import Types(sanitize)
 
 eol = (string "\r\n") <|> string "\n"
 

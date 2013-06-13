@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 module Commands.FollowBlock(follow, unfollow, block, unblock) where
 import Utils
 import System.Log.Logger
-import Data.List
 import Download
 import Network.OAuth.Http.Request
 
@@ -28,30 +27,29 @@ i = infoM "followblock"
 follow = simpleCmd "follow" "Start following someone"
              follow_help
              [] follow_worker
-follow_worker = generic_worker POST "/friendships/create/" "follow"
+follow_worker = generic_worker POST "/friendships/create.json" "follow"
 follow_help = generic_add_help "follow"
 
 unfollow = simpleCmd "unfollow" "Stop following someone"
              unfollow_help
              [] unfollow_worker
-unfollow_worker = generic_worker POST "/friendships/destroy/" "unfollow"
+unfollow_worker = generic_worker POST "/friendships/destroy.json" "unfollow"
 unfollow_help = generic_rm_help "follow"
 
 block = simpleCmd "block" "Start blocking someone"
         block_help [] block_worker
-block_worker = generic_worker POST "/blocks/create/" "block"
+block_worker = generic_worker POST "/blocks/create.json" "block"
 block_help = generic_add_help "block"
 
 unblock = simpleCmd "unblock" "Stop blocking someone"
           unblock_help [] unblock_worker
-unblock_worker = generic_worker POST "/blocks/destroy/" "unblock"
+unblock_worker = generic_worker POST "/blocks/destroy.json" "unblock"
 unblock_help = generic_rm_help "block"
 
-generic_worker method urlbase cmdname _ cp ([], [user_string]) =
+generic_worker method url cmdname _ cp ([], [user_string]) =
     do let user = strip_at user_string
-       xmlstr <- sendAuthRequest method cp (urlbase ++ user ++ ".xml") [] [("id", user)]
-       debugM cmdname $ "Got doc: " ++ xmlstr
-       -- let doc = getContent . xmlParse "follow" . stripUnicodeBOM $ xmlstr
+       json <- sendAuthRequest method cp url [] [("screen_name", user)]
+       debugM cmdname $ "Got doc: " ++ show json
        -- return ()
 
        where strip_at ('@':u) = u
