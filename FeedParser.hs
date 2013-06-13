@@ -31,6 +31,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 module FeedParser where
 
 import Text.XML.HaXml
+import Text.XML.HaXml.Posn
 import Data.Char
 import Data.List
 import Data.String.Utils(strip)
@@ -44,16 +45,16 @@ An implementation without unescaping would simply be:
 Because HaXml's unescaping only works on Elements, we must make sure that
 whatever Content we have is wrapped in an Element, then use txt to
 pull the insides back out. -}
-contentToString :: [Content] -> String
+contentToString :: [Content Posn] -> String
 contentToString = 
     concatMap procContent
     where procContent x = 
-              verbatim $ keep /> txt $ CElem (unesc (fakeElem x))
+              verbatim $ keep /> txt $ CElem (unesc (fakeElem x)) noPos
 
-          fakeElem :: Content -> Element
+          fakeElem :: Content a -> Element a
           fakeElem x = Elem "fake" [] [x]
 
-          unesc :: Element -> Element
+          unesc :: Element a -> Element a
           unesc = xmlUnEscape stdXmlEscaper
 
 stripUnicodeBOM :: String -> String
@@ -67,4 +68,4 @@ sanitize = strip . map sanitizer
               | c `elem` "\n\r\0\t" = ' '
               | otherwise = c
 
-getContent (Document _ _ e _) = CElem e
+getContent (Document _ _ e _) = CElem e noPos
