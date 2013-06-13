@@ -2,7 +2,7 @@ Source: twidge
 Section: utils
 Priority: optional
 Maintainer: John Goerzen <jgoerzen@complete.org>
-Build-Depends: debhelper (>= 55), groff, docbook-utils, jade, lynx, scons, poppler-utils, sgml2x, gtk-doc-tools, ghc6 (>= 6.8.2), haskell-devscripts (>= 0.6.6), libghc6-missingh-dev (>= 1.0.0), libghc6-network-dev, libghc6-unix-dev, libghc6-mtl-dev, libghc-aeson-dev (>= 0.6.1.0), libghc6-filepath-dev, libghc6-configfile-dev (>= 1.0.4.5), libghc6-hslogger-dev (>= 1.0.7.1), libghc6-regex-posix-dev, libghc6-utf8-string-dev, libghc6-hsh-dev (>= 1.2.6.3), libghc6-hoauth-dev
+Build-Depends: debhelper (>= 55), groff, docbook-utils, jade, lynx, scons, poppler-utils, sgml2x, gtk-doc-tools, ghc (>= 6.8.2), haskell-devscripts (>= 0.6.6), libghc-missingh-dev (>= 1.0.0), libghc-network-dev, libghc-unix-dev, libghc-mtl-dev, libghc-aeson-dev (>= 0.6.1.0), libghc-filepath-dev, libghc-configfile-dev (>= 1.0.4.5), libghc-hslogger-dev (>= 1.0.7.1), libghc-regex-posix-dev, libghc-utf8-string-dev, libghc-hsh-dev (>= 1.2.6.3), libghc-hoauth-dev
 Standards-Version: 3.9.1
 Homepage: https://github.com/jgoerzen/twidge/wiki/
 Vcs-Browser: https://github.com/jgoerzen/twidge
