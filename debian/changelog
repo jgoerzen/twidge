@@ -6,6 +6,15 @@ twidge (1.0.9) unstable; urgency=low
 
  -- John Goerzen <jgoerzen@complete.org>  Sat, 05 Feb 2011 13:26:51 -0600
 
+twidge (1.0.8.1+nmu1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Fix build deps to refer to ghc instead of ghc6 (Closes: #629725)
+  * Work on newer HaXml in Debian 
+
+ -- Iain Lane <laney@debian.org>  Thu, 28 Jul 2011 13:15:31 +0100
+>>>>>>> debnmu
+
 twidge (1.0.8.1) unstable; urgency=low
 
   * Clean up a debian packaging bug introduced in 3rd-party commit

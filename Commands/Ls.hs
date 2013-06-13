@@ -26,6 +26,7 @@ import Text.Printf
 import System.Console.GetOpt
 import Data.List
 import Text.XML.HaXml hiding (when)
+import Text.XML.HaXml.Posn
 import Download
 import FeedParser
 import Data.ConfigFile
@@ -261,7 +262,7 @@ handleGeneric pfunc printfunc section cp args xmlstr =
     in do mapM_ (printfunc section cp args) statuses
           return statuses
 
-procStatuses :: Content -> Message
+procStatuses :: Content Posn -> Message
 procStatuses item = 
     Message {sId = s (tag "id") item,
              sSender = s (tag "user" /> tag "screen_name") item,
@@ -271,7 +272,7 @@ procStatuses item =
 
 s f item = sanitize $ contentToString (keep /> f /> txt $ item)
 
-procDM :: Content -> Message
+procDM :: Content Posn -> Message
 procDM item =
     Message {sId = s (tag "id") item,
              sSender = s (tag "sender_screen_name") item,
@@ -429,7 +430,7 @@ genericfb_worker cmdname urlbase _ cp (args, user) page =
 
           getUsers = tag "users" /> tag "user"
 
-          procUsers :: Content -> (String, String)
+          procUsers :: Content Posn -> (String, String)
           procUsers item =
               (sanitize $ contentToString (keep /> tag "screen_name" /> txt $ item),
                sanitize $ contentToString (keep /> tag "id" /> txt $ item))
