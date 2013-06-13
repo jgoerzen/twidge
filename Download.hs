@@ -40,13 +40,21 @@ import Network.OAuth.Http.Request
 import Network.OAuth.Http.Response
 import Network.OAuth.Consumer
 import Network.OAuth.Http.HttpClient(request)
-import TwidgeHttpClient
 import OAuth
 import Data.ByteString.Lazy(ByteString)
 import Data.ByteString.Lazy.UTF8(toString)
 
 d = debugM "download"
 i = infoM "download"
+
+twidgeCurlClient :: CurlClient
+twidgeCurlClient = OptionsCurlClient
+                   [CurlLowSpeedTime 60
+                   ,CurlLowSpeed 1
+                   ,CurlUserAgent "twidge v1.1.0; Haskell. GHC"
+                   ,CurlFollowLocation True  -- follow redirects
+                   ,CurlFailOnError True     -- fail on server errors 
+                   ]
 
 simpleDownload :: String -> IO String
 simpleDownload url =

@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, CPP #-}
 {- hpodder component
 Copyright (C) 2006-2007 John Goerzen <jgoerzen@complete.org>
 
