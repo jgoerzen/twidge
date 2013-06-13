@@ -42,6 +42,7 @@ import Network.OAuth.Consumer
 import Network.OAuth.Http.HttpClient(request)
 import TwidgeHttpClient
 import OAuth
+import Data.ByteString.Lazy(ByteString)
 import Data.ByteString.Lazy.UTF8(toString)
 
 d = debugM "download"
@@ -54,7 +55,7 @@ simpleDownload url =
      return . toString . rspPayload $ r
   where CurlM resp = request (fromJust $ parseURL url)
 
-sendAuthRequest :: Method -> ConfigParser -> String -> [(String, String)] -> [(String, String)] -> IO String
+sendAuthRequest :: Method -> ConfigParser -> String -> [(String, String)] -> [(String, String)] -> IO ByteString
 sendAuthRequest mth cp url getopts postoptlist =
     do app <- case getApp cp of      
          Nothing -> fail $ "Error: auth not set up for this host"
@@ -82,7 +83,7 @@ sendAuthRequest mth cp url getopts postoptlist =
                            serviceRequest HMACSHA1 Nothing request
        r <- resp
        d $ "response: " ++ show r
-       return . toString . rspPayload $ r
+       return . rspPayload $ r
     where urlbase = forceEither $ get cp "DEFAULT" "urlbase"
           optstr = case getopts of
                      [] -> ""
