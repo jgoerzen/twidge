@@ -33,7 +33,6 @@ module Commands where
 import Text.Printf
 import Utils
 import Types
-import Config
 
 import qualified Commands.FollowBlock
 import qualified Commands.Ls
@@ -54,9 +53,8 @@ allCommands =
      Commands.Ls.lsfollowing,
      Commands.Ls.lsrecent,
      Commands.Ls.lsreplies,
-     Commands.Ls.lsrt,
-     Commands.Ls.lsrtarchive,
      Commands.Ls.lsrtreplies,
+     Commands.Ls.status,
      Commands.Setup.setup,
      Commands.FollowBlock.unblock,
      Commands.FollowBlock.unfollow,
