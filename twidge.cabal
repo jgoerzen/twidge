@@ -1,10 +1,10 @@
 Name: twidge
-Version: 1.0.9
+Version: 1.1.0
 License: GPL
 Maintainer: John Goerzen <jgoerzen@complete.org>
 Author: John Goerzen
 Stability: Stable
-Copyright: Copyright (c) 2006-2010 John Goerzen
+Copyright: Copyright (c) 2006-2013 John Goerzen
 license-file: COPYRIGHT
 extra-source-files: COPYING, INSTALL, doc/SConstruct,
   doc/twidge-manpage.sgml, doc/twidge.sgml, doc/local.dsl,
