@@ -48,9 +48,10 @@ Flag withBitly
 
 Executable twidge
   Build-Depends: network, unix, parsec, MissingH>=1.0.0,
-   mtl, base >= 4 && < 5, HaXml>1.20, hslogger, hoauth>=0.2.3 && <0.2.4,
+   mtl, base >= 4 && < 5, hslogger, hoauth>=0.2.3 && <0.2.4,
    ConfigFile, directory, HSH, regex-posix, utf8-string, binary,
-   bytestring, curl, old-locale, time
+   bytestring, curl, old-locale, time, aeson>=0.6.1.0 && <0.7,
+   text>=0.11.3.1 && <0.12
 
   if flag(withBitly)
     Build-Depends: Bitly
@@ -58,7 +59,7 @@ Executable twidge
 
   Main-Is: twidge.hs
   Other-Modules: Commands, Commands.FollowBlock, Commands.Ls,
-        Commands.Setup, Commands.Update, Config, Download, FeedParser,
+        Commands.Setup, Commands.Update, Config, Download,
         MailParser, Types, Utils, OAuth, TwidgeHttpClient
   GHC-Options: -O2
   Extensions: ExistentialQuantification, OverlappingInstances,

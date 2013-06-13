@@ -23,7 +23,6 @@ import System.Log.Logger
 import Types
 import System.Console.GetOpt
 import System.Console.GetOpt.Utils
-import Data.List
 import Download
 import Control.Monad(when)
 import Text.Regex.Posix
@@ -47,7 +46,7 @@ update = simpleCmd "update" "Update your status"
               "Indicate this message is in reply to MSGID"
              ]
              update_worker_wrapper
-             
+
 update_worker_wrapper x cp args =
   do d $ "Running update_worker with: " ++ show (x, args)
      update_worker x cp (newargs args)
@@ -72,10 +71,9 @@ update_worker x cp ([("m", "")], []) =
                                        else []
                  status = body
              in do poststatus <- procStatus cp "update" status
-                   xmlstr <- sendAuthRequest POST cp "/statuses/update.xml" []
-                             ([("source", "twidge"), ("status", poststatus)] ++
-                              irt)
-                   debugM "update" $ "Got doc: " ++ xmlstr
+                   json <- sendAuthRequest POST cp "/statuses/update.json" []
+                             ([("status", poststatus)] ++ irt)
+                   debugM "update" $ "Got doc: " ++ show json
 
 update_worker x cp ([], []) =
     do d "No args reading line"
@@ -90,16 +88,16 @@ update_worker x cp ([("i", id )], []) =
 update_worker _ cp ([("i", id)], [status]) =
     do d "-i have line"
        poststatus <- procStatus cp "update" status
-       xmlstr <- sendAuthRequest POST cp "/statuses/update.xml" [] 
-                 [("source", "Twidge"), ("status", poststatus), ("in_reply_to_status_id", id)]
-       debugM "update" $ "Got doc: " ++ xmlstr
+       json <- sendAuthRequest POST cp "/statuses/update.json" []
+                 [("status", poststatus), ("in_reply_to_status_id", id)]
+       debugM "update" $ "Got doc: " ++ show json
 
 update_worker _ cp ([], [status]) =
     do d "no args have line"
        poststatus <- procStatus cp "update" status
-       xmlstr <- sendAuthRequest POST cp "/statuses/update.xml" [] 
-                 [("source", "Twidge"), ("status", poststatus)]
-       debugM "update" $ "Got doc: " ++ xmlstr
+       json <- sendAuthRequest POST cp "/statuses/update.json" []
+                 [("status", poststatus)]
+       debugM "update" $ "Got doc: " ++ show json
 update_worker _ _ _ =
     permFail "update: syntax error; see twidge update --help"
 
@@ -127,10 +125,9 @@ dmsend_worker x cp ([], [r]) =
        dmsend_worker x cp ([], [r, l])
 dmsend_worker x cp ([], [recipient, status]) =
     do poststatus <- procStatus cp "dmsend" status
-       xmlstr <- sendAuthRequest POST cp "/direct_messages/new.xml" []
-                 [("source", "Twidge"), 
-                  ("text", poststatus), ("user", recipient)]
-       debugM "dmsend" $ "Got doc: " ++ xmlstr
+       json <- sendAuthRequest POST cp "/direct_messages/new.json" []
+                 [("text", poststatus), ("screen_name", recipient)]
+       debugM "dmsend" $ "Got doc: " ++ show json
 dmsend_worker _ _ _ = permFail "Syntax error; see twidge dmsend --help"
 
 shortenUrls _ "" = return ""
