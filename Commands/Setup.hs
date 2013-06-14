@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-
-Copyright (C) 2010 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2010-2013 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ import OAuth
 import Data.Binary(encode)
 import Control.Monad.Trans
 import qualified Control.Monad.State.Class as M
+import Download(twidgeCurlClient)
 
 i = infoM "setup"
 d = debugM "setup"
@@ -67,47 +68,34 @@ setup_worker cpath cp _ =
      let authUrl = ((authUrlBase ++ "?oauth_token=") ++ ) . 
                    findWithDefault ("oauth_token", "") .
                    oauthParams
-     
-     let CurlM resp = 
-           runOAuth $ 
-           do ignite app
-              liftIO $ d "ignite done.  trying request 1."
-              reqres1 <- tryRequest reqUrl
-              case reqres1 of
-#if MIN_VERSION_hoauth(0,2,4)
-                AccessToken _ _ -> return ()
-                _ -> -- hack around hoauth bug for identica
-#else
-                Left x -> -- hack around hoauth bug for identica
-#endif
-                  do liftIO $ d "request 1 failed.  attempting workaround."
-                     putToken $ AccessToken {application = app,
-                                             oauthParams = empty}
-                     reqres2 <- tryRequest reqUrl
-                     case reqres2 of 
-#if MIN_VERSION_hoauth(0,2,4)
-                       AccessToken _ _ -> return ()
-                       _ -> fail $ "Error from oauthRequest."
-#else
-                       Left x -> fail $ "Error from oauthRequest: " ++ show x
-                       Right _ -> return ()
-                Right _ -> return ()
-#endif
+
+     let resp = 
+           runOAuthM (fromApplication app) $ 
+           do liftIO $ d "Trying first signRq2"
+              reqres1 <- signRq2 PLAINTEXT Nothing reqUrl
+              liftIO $ d $ "First signRq2 result: " ++ (show reqres1)
+              oauthRequest twidgeCurlClient reqres1
+              
               twidgeAskAuthorization authUrl
-              oauthRequest HMACSHA1 Nothing accUrl
+              
+              liftIO $ d "Trying second signRq2"
+              reqres2 <- signRq2 PLAINTEXT Nothing accUrl
+              liftIO $ d $ "Second signRq2 result: " ++ show reqres2
+              oauthRequest twidgeCurlClient reqres2
+              
+
               tok <- getToken
-              return (twoLegged tok, threeLegged tok, tok)
-     (leg2, leg3, response) <- resp
-     -- on successful auth, leg3 is True. Otherwise, it is False.
-     -- leg1 is always false and r appears to not matter.
-     d $ show (leg2, leg3, oauthParams response)
-     if leg3 
-       then do let newcp = forceEither $ set cp "DEFAULT" "oauthdata" .
-                           esc . show . fixIdentica . toList . oauthParams $ response
-               writeCP cpath newcp
-               putStrLn $ "Successfully authenticated!" 
-               putStrLn "Twidge has now been configured for you and is ready to use."
-       else putStrLn "Authentication failed; please try again"
+              return tok
+     tok <- resp
+     d $ "Got token: " ++ show tok
+     case tok of
+       AccessToken _ _ -> do
+         let newcp = forceEither $ set cp "DEFAULT" "oauthdata" .
+                 esc . show . toList . oauthParams $ tok
+         writeCP cpath newcp
+         putStrLn $ "Successfully authenticated!" 
+         putStrLn "Twidge has now been configured for you and is ready to use."
+       _ -> putStrLn "Authentication failed; please try again"
     where confirmSetup =
               do putStrLn "\nIt looks like you have already authenticated twidge."
                  putStrLn "If we continue, I may remove your existing"
@@ -117,26 +105,10 @@ setup_worker cpath cp _ =
                  if (map toLower c) == "yes"
                     then return ()
                     else permFail "Aborting setup at user request."
-          tryRequest reqUrl = 
-            do reqres <- oauthRequest HMACSHA1 Nothing reqUrl
-#if MIN_VERSION_hoauth(0,2,4)
-               liftIO $ d $ "reqres params: " ++ (show (oauthParams reqres))
-#else
-               liftIO $ d $ "reqres params: " ++ case reqres of
-                 Left x -> " error " ++ x
-                 Right y -> show (oauthParams y)
-#endif
-               return reqres
-          -- Work around a hoauth bug - identica doesn't return
-          -- oauth_callback_confirmed
-          fixIdentica :: [(String, String)] -> [(String, String)]
-          fixIdentica inp =
-            case lookup "oauth_callback_confirmed" inp of
-              Nothing -> ("oauth_callback_confirmed", "true") : inp
-              Just _ -> inp
           esc x = concatMap fix x
           fix '%' = "%%"
           fix x = [x]
+
 
 twidgeAskAuthorization :: MonadIO m => (Token -> String) -> OAuthMonadT m ()
 twidgeAskAuthorization getUrl = 

@@ -29,7 +29,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 
 -}
 
-module Download(sendAuthRequest, simpleDownload) where
+module Download(sendAuthRequest, simpleDownload, twidgeCurlClient) where
 import System.Log.Logger
 import Data.ConfigFile
 import Data.List
