@@ -72,14 +72,14 @@ setup_worker cpath cp _ =
      let resp = 
            runOAuthM (fromApplication app) $ 
            do liftIO $ d "Trying first signRq2"
-              reqres1 <- signRq2 PLAINTEXT Nothing reqUrl
+              reqres1 <- signRq2 HMACSHA1 Nothing reqUrl
               liftIO $ d $ "First signRq2 result: " ++ (show reqres1)
               oauthRequest twidgeCurlClient reqres1
               
               twidgeAskAuthorization authUrl
               
               liftIO $ d "Trying second signRq2"
-              reqres2 <- signRq2 PLAINTEXT Nothing accUrl
+              reqres2 <- signRq2 HMACSHA1 Nothing accUrl
               liftIO $ d $ "Second signRq2 result: " ++ show reqres2
               oauthRequest twidgeCurlClient reqres2
               
