@@ -1,5 +1,5 @@
 {- hpodder component
-Copyright (C) 2006-2010 John Goerzen <jgoerzen@complete.org>
+Copyright (C) 2006-2013 John Goerzen <jgoerzen@complete.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 {- |
    Module     : Download
-   Copyright  : Copyright (C) 2006-2010 John Goerzen
+   Copyright  : Copyright (C) 2006-2013 John Goerzen
    License    : GNU GPL, version 2 or above
 
    Maintainer : John Goerzen <jgoerzen@complete.org>
@@ -38,8 +38,10 @@ import Data.Either.Utils(forceEither)
 import Data.Maybe
 import Network.OAuth.Http.Request
 import Network.OAuth.Http.Response
+import Network.OAuth.Http.CurlHttpClient
+import Network.OAuth.Http.HttpClient
+import Network.Curl
 import Network.OAuth.Consumer
-import Network.OAuth.Http.HttpClient(request)
 import OAuth
 import Data.ByteString.Lazy(ByteString)
 import Data.ByteString.Lazy.UTF8(toString)
@@ -56,12 +58,13 @@ twidgeCurlClient = OptionsCurlClient
                    ,CurlFailOnError True     -- fail on server errors 
                    ]
 
+{- | Download a webpage without using oauth. -}
 simpleDownload :: String -> IO String
 simpleDownload url =
   do r <- resp
      d $ "simpleDownload response from URL " ++ show url ++ ": " ++ show r
      return . toString . rspPayload $ r
-  where CurlM resp = request (fromJust $ parseURL url)
+  where resp = (runClient_ twidgeCurlClient) (fromJust $ parseURL url)
 
 sendAuthRequest :: Method -> ConfigParser -> String -> [(String, String)] -> [(String, String)] -> IO ByteString
 sendAuthRequest mth cp url getopts postoptlist =
@@ -81,14 +84,10 @@ sendAuthRequest mth cp url getopts postoptlist =
                                                     postoptlist)
                                ,method = mth
                                }
-       
-       let CurlM resp = runOAuth $ 
-                        do ignite app
-                           putToken $ AccessToken 
-                                       {application = app,
-                                        oauthParams = fromList (read oauthdata)
-                                       }
-                           serviceRequest HMACSHA1 Nothing request
+       let token = AccessToken app (fromList (read oauthdata))
+       let resp = runOAuthM token $ 
+                  do r <- signRq2 HMACSHA1 (Just $ Realm "realm") request
+                     serviceRequest twidgeCurlClient r
        r <- resp
        d $ "response: " ++ show r
        return . rspPayload $ r
