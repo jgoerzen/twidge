@@ -30,6 +30,7 @@ Written by John Goerzen, jgoerzen\@complete.org
 -}
 
 module Download(sendAuthRequest, simpleDownload, twidgeCurlClient) where
+import Control.Monad(unless)
 import System.Log.Logger
 import Data.ConfigFile
 import Data.List
@@ -66,6 +67,15 @@ simpleDownload url =
      return . toString . rspPayload $ r
   where resp = (runClient_ twidgeCurlClient) (fromJust $ parseURL url)
 
+needsUpgrade :: String
+needsUpgrade = 
+  unlines $ 
+  ["Your configuration needs to be updated to work with changes at Twitter."
+  ,"Please edit your configuration file and fix the urlbase option.  In most"
+  ,"cases, you can set it like this:"
+  ,""
+  ,"urlbase: %(serverbase)s/1.1"]
+
 sendAuthRequest :: Method -> ConfigParser -> String -> [(String, String)] -> [(String, String)] -> IO ByteString
 sendAuthRequest mth cp url getopts postoptlist =
     do app <- case getApp cp of      
@@ -76,6 +86,8 @@ sendAuthRequest mth cp url getopts postoptlist =
                    ++ show x
          Right y -> return y
        
+       unless (urlbase /= "https://api.twitter.com/1") $
+         fail $ needsUpgrade
        let parsedUrl = fromJust . parseURL $ urlbase ++ url ++ optstr
        
        -- add to the request the GET/POST headers
