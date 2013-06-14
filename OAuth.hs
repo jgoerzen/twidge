@@ -48,6 +48,14 @@ twitterKeys = (twitterDeObfuscator (fst obfuscatedTwitterKeys),
 twitterDeObfuscator :: String -> String
 twitterDeObfuscator = reverse . map rot13
 
+instance Show Application where
+  show (Application a b c) = "Application " ++ show a ++ " " ++ show b ++ " " ++ show c
+
+instance Show Token where
+  show (TwoLegg app oauthp) = "TwoLegg " ++ show app ++ " " ++ show oauthp
+  show (ReqToken app oauthp) = "ReqToken " ++ show app ++ " " ++ show oauthp
+  show (AccessToken app oauthp) = "AccessToken " ++ show app ++ " " ++ show oauthp
+
 rot13 :: Char -> Char
 rot13 x = 
     case lookup x trans of
