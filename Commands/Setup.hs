@@ -138,9 +138,9 @@ setup_worker cpath cp _ =
           fix '%' = "%%"
           fix x = [x]
 
-twidgeAskAuthorization :: MonadIO m => (Token -> String) -> OAuthMonad m ()
+twidgeAskAuthorization :: MonadIO m => (Token -> String) -> OAuthMonadT m ()
 twidgeAskAuthorization getUrl = 
-  do token <- M.get
+  do token <- getToken
      answer <- liftIO $ do putStrLn "OK, next I need you to authorize Twidge to access your account."
                            putStrLn "Please cut and paste this URL and open it in a web browser:\n"
                            putStrLn (getUrl token)
@@ -150,7 +150,7 @@ twidgeAskAuthorization getUrl =
                            putStrLn "if you don't get one.)\n"
                            putStr   "Authorization key: "
                            getLine
-     M.put (injectOAuthVerifier answer token)
+     putToken (injectOAuthVerifier answer token)
 
 setup_help =
   "Usage: twidge setup\n\n"
