@@ -1,3 +1,11 @@
+twidge (1.1.0) unstable; urgency=low
+
+  * Update to new twitter API.  Thanks to Adam Fitzpatrick for the patch.
+    Closes: #712223, #632259.
+  * Updated to newer hoauth.  Now buildable in sid again.
+
+ -- John Goerzen <jgoerzen@complete.org>  Fri, 14 Jun 2013 00:30:27 -0500
+
 twidge (1.0.9) unstable; urgency=low
 
   * Correctly handle UTF-8 updates given on the command line.
