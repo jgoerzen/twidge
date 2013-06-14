@@ -264,10 +264,9 @@
     <para>
       Several commands can display updates from yourself or others.
       They all share a common syntax and common set of options.  The
-      commands are <command>lsarchive</command>,
+      commands are
       <command>lsdm</command>, <command>lsdmarchive</command>,
       <command>lsrecent</command>, <command>lsreplies</command>,
-      <command>lsrt</command>, <command>lsrtarchive</command>,
       and <command>lsrtreplies</command>.
       Here are the common options:
     </para>
@@ -404,26 +403,6 @@
       are undefined if you use such options simultaneously.
     </para>
 
-    <refsect2 id="twidge.commands.lsarchive">
-      <title>lsarchive</title>
-      <para>
-        Lists your own posts.  With the one
-        <literal>lsarchive</literal> option, you can also list the
-        posts of a specific other user:
-      </para>
-      <variablelist>
-        <varlistentry>
-          <term>-U <replaceable>USERNAME</replaceable></term>
-          <term>--username=<replaceable>USERNAME</replaceable></term>
-          <listitem><para>
-              Instead of showing your own updates, instead show those of
-              a differerent user.
-            </para>
-          </listitem>
-        </varlistentry>
-      </variablelist>
-    </refsect2>
-
     <refsect2 id="twidge.commands.lsdm">
       <title>lsdm</title>
       <para>
@@ -454,28 +433,6 @@
       <para>
         Lists recent replies made by anyone on the microblogging site
         to you.
-      </para>
-    </refsect2>
-
-    <refsect2 id ="twidge.commands.lsrt">
-      <title>lsrt</title>
-      <para>
-        Lists new-style retweets made by those that you follow. 
-      </para>
-      <para>
-        Note: identi.ca doesn't support new-style retweets and will
-        return an error on this command.
-      </para>
-    </refsect2>
-
-    <refsect2 id="twidge.commands.lsrtarchive">
-      <title>lsrtarchive</title>
-      <para>
-        Lists the new-style retweets you made yourself.
-      </para>
-      <para>
-        Note: identi.ca doesn't support new-style retweets and will
-        return an error on this command.
       </para>
     </refsect2>
 
@@ -730,9 +687,6 @@ urlbase = https://twitter.com
 shortenurls = yes
 
 ; Last IDs seen by different commands.  Written to with -s.
-
-[lsarchive]
-lastid = 917383569
 
 [lsrecent]
 lastid = 914881241
