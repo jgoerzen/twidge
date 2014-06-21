@@ -1,3 +1,9 @@
+twidge (1.1.2) unstable; urgency=medium
+
+  * Fix mail generation for tweets containing \n.
+
+ -- John Goerzen <jgoerzen@complete.org>  Sat, 21 Jun 2014 12:45:34 -0500
+
 twidge (1.1.1) unstable; urgency=medium
 
   * Relax aeson upper bound.  Closes: #746110.

@@ -292,7 +292,7 @@ mailto section cp args m recipient =
     runIO $ echo (message ++ "\n") -|- (sendmail, ["-t"])
     where sendmail = (forceEither $ get cp section "sendmail")::String
           msgid = genMsgId section m cp
-          subject = take 30 (sText m) ++ "... (twidge " ++ section ++ ")"
+          subject = take 30 (filter (/= '\n') $ sText m) ++ "... (twidge " ++ section ++ ")"
           message = unlines $ 
                     (case get cp section "mailfrom" of
                       Left _ -> ["Subject: " ++ (sSender m) ++ ": " ++ subject]
