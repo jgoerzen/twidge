@@ -1,3 +1,9 @@
+twidge (1.1.1) unstable; urgency=medium
+
+  * Relax aeson upper bound.  Closes: #746110.
+
+ -- John Goerzen <jgoerzen@complete.org>  Sat, 21 Jun 2014 10:54:29 -0500
+
 twidge (1.1.0) unstable; urgency=low
 
   * Update to new twitter API.  Thanks to Adam Fitzpatrick for the patch.
