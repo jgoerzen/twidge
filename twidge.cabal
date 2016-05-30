@@ -45,17 +45,25 @@ Flag withBitly
   description: Enable bit.ly and j.mp shorteners (requires Bitly module)
   default: False
 
+Flag network-uri
+  description: Get Network.URI from the network-uri package
+  default: True
 
 Executable twidge
-  Build-Depends: network, unix, parsec, MissingH>=1.0.0,
+  Build-Depends: unix, parsec, MissingH>=1.0.0,
    mtl, base >= 4 && < 5, hslogger, hoauth>=0.3.4 && <0.4,
    ConfigFile, directory, HSH, regex-posix, utf8-string, binary,
    bytestring, curl, old-locale, time, aeson>=0.6.1.0,
-   text>=0.11.2.0 && <0.12
+   text>=0.11.2.0
 
   if flag(withBitly)
     Build-Depends: Bitly
     CPP-OPTIONS: -DUSE_BITLY
+
+  if flag(network-uri)
+    Build-depends: network-uri >= 2.6, network >= 2.6
+  else
+    Build-depends: network-uri < 2.6, network < 2.6
 
   Main-Is: twidge.hs
   Other-Modules: Commands, Commands.FollowBlock, Commands.Ls,
