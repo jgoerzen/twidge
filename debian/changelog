@@ -1,3 +1,9 @@
+twidge (1.2.0) unstable; urgency=medium
+
+  * Perge pull request #66 to work with newer text library.  Closes: #818518.
+
+ -- John Goerzen <jgoerzen@complete.org>  Mon, 30 May 2016 15:16:16 -0500
+
 twidge (1.1.2) unstable; urgency=medium
 
   * Fix mail generation for tweets containing \n.
